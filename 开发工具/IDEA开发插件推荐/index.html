@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>IDEA开发插件推荐 | mmzsblog</title>
+  <meta name="description" content="实用 alibba java coding guidelines  这是阿里巴巴代码检测插件，有了它，再也不用担心代码不规范了，因为有它一直在监视你的代码规范，为你纠正和提示！  Lombok plugin  实体类开发神器，可以简化你的实体类，让你i不再写get/set方法，还能快速的实现builder模式，以及链式调用方法，总之就是为了简化实体类而生的插件。  CamelCase  将不是驼峰">
+<meta name="keywords" content="idea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IDEA开发插件推荐">
+<meta property="og:url" content="https://blog.mmzsblog.cn/开发工具/IDEA开发插件推荐/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="实用 alibba java coding guidelines  这是阿里巴巴代码检测插件，有了它，再也不用担心代码不规范了，因为有它一直在监视你的代码规范，为你纠正和提示！  Lombok plugin  实体类开发神器，可以简化你的实体类，让你i不再写get/set方法，还能快速的实现builder模式，以及链式调用方法，总之就是为了简化实体类而生的插件。  CamelCase  将不是驼峰">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.452Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IDEA开发插件推荐">
+<meta name="twitter:description" content="实用 alibba java coding guidelines  这是阿里巴巴代码检测插件，有了它，再也不用担心代码不规范了，因为有它一直在监视你的代码规范，为你纠正和提示！  Lombok plugin  实体类开发神器，可以简化你的实体类，让你i不再写get/set方法，还能快速的实现builder模式，以及链式调用方法，总之就是为了简化实体类而生的插件。  CamelCase  将不是驼峰">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/开发工具/IDEA开发插件推荐/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#实用"><span class="toc-number">1.</span> <span class="toc-text">实用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#装逼"><span class="toc-number">2.</span> <span class="toc-text">装逼</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它"><span class="toc-number">3.</span> <span class="toc-text">其它</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-IDEA开发插件推荐" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      IDEA开发插件推荐
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/开发工具/IDEA开发插件推荐/" class="article-date">
+	  <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/开发工具/">开发工具</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/idea/">idea</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/开发工具/IDEA开发插件推荐/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 753(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="实用"><a href="#实用" class="headerlink" title="实用"></a>实用</h2><ul>
+<li><code>alibba java coding guidelines</code></li>
+</ul>
+<p>这是阿里巴巴代码检测插件，有了它，再也不用担心代码不规范了，因为有它一直在监视你的代码规范，为你纠正和提示！</p>
+<ul>
+<li><code>Lombok plugin</code></li>
+</ul>
+<p>实体类开发神器，可以简化你的实体类，让你i不再写get/set方法，还能快速的实现builder模式，以及链式调用方法，总之就是为了简化实体类而生的插件。</p>
+<ul>
+<li><code>CamelCase</code></li>
+</ul>
+<p>将不是驼峰格式的命名自动转化驼峰；快捷键：<code>shift+alt+u`</code></p>
+<ul>
+<li><code>Mybatis plugin</code></li>
+</ul>
+<p>可以在mapper接口中和mapper的xml文件中来回跳转，就想接口跳到实现类那样简单。</p>
+<ul>
+<li><code>Rainbow Brackets</code></li>
+</ul>
+<p>彩虹颜色的括号，看着很舒服，能清晰的配对左右括号，敲代码效率变高</p>
+<ul>
+<li><code>JRebel for IntelliJ</code></li>
+</ul>
+<p>一款热部署插件，只要不是修改了项目的配置文件，用它都可以实现热部署。收费的，破解比较麻烦。不过功能确实很强大。算是开发必备神器了。热部署快捷键是control+F9/command+F9。</p>
+<ul>
+<li><code>.ignore</code></li>
+</ul>
+<p>git提交时过滤掉不需要提交的文件，很方便，有些本地文件是不需要提交到Git上的。</p>
+<h2 id="装逼"><a href="#装逼" class="headerlink" title="装逼"></a>装逼</h2><ul>
+<li><code>CodeGlance</code></li>
+</ul>
+<p>在编辑区的右侧显示的代码地图，方便快速定位。 </p>
+<ul>
+<li><code>Material Theme UI</code></li>
+</ul>
+<p>这是一款主题插件，可以让你的ide的图标变漂亮，配色搭配的很到位，还可以切换不同的颜色，甚至可以自定义颜色。默认的配色就很漂亮了，如果需要修改配色，可以在工具栏中<code>Tools-&gt;Material Theme</code>然后修改配色等。</p>
+<ul>
+<li><code>Background image Plus</code></li>
+</ul>
+<p>这是一款可以设置idea背景图片的插件，不但可以设置固体的图片，还可以设置一段时间后随机变化背景图片，以及设置图片的透明度等等。 </p>
+<ul>
+<li><code>activate-power-mode</code></li>
+</ul>
+<p>这是一款让你在编码的时候，整个屏幕都为之颤抖的插件。可以在工具栏<code>Window-&gt;activate-power-mode</code>进行设置。</p>
+<ul>
+<li><code>Nyan progress bar</code></li>
+</ul>
+<p>这是一个将你idea中的所有的进度条都变成萌新动画的小插件。这款插件较大，内存不是很充足的话，慎用！</p>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><ul>
+<li><code>codehelper.generator</code></li>
+</ul>
+<p>可以让你在创建一个对象并赋值的时候，快速的生成代码，不需要一个一个属性的向里面set,根据new关键字，自动生成掉用set方法的代码，还可以一键填入默认值。</p>
+<ul>
+<li><code>GenerateAllSetter</code></li>
+</ul>
+<p>一键调用一个对象的所有set方法并且赋予默认值 在对象字段多的时候非常方便，在做项目时，每层都有各自的实体对象需要相互转换，但是考虑BeanUtil.copyProperties()等这些工具的弊端，有些地方就需要手动的赋值时，有这个插件就会很方便，创建完对象后在变量名上面按Alt+Enter就会出来 generate all setter选项。 </p>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/开发工具/IDEA开发插件推荐/" title="IDEA开发插件推荐" target="_blank" rel="external">https://blog.mmzsblog.cn/开发工具/IDEA开发插件推荐/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/Java/一文详解集合的不同之处/" title="一文详解集合的不同之处"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

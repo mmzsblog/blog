@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>日志框架 | mmzsblog</title>
+  <meta name="description" content="日志框架的概念日志的作用是用来追踪和记录我们的程序运行中的信息，我们可以利用日志很快定位问题，追踪分析。 日志级别首先要知道日志级别是干什么用的，日志级别是当你使用不同的方式运行的时候，根据你运行的方式和你设置的日志打印级别来确定哪些信息需要输出。 规定：日志只会打印设置的优先级及比自己高优先级的内容。日志级别优先级排序: OFF &amp;gt; FATAL &amp;gt; ERROR &amp;gt; WARN &amp;">
+<meta name="keywords" content="框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日志框架">
+<meta property="og:url" content="https://blog.mmzsblog.cn/J2ee/日志框架/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="日志框架的概念日志的作用是用来追踪和记录我们的程序运行中的信息，我们可以利用日志很快定位问题，追踪分析。 日志级别首先要知道日志级别是干什么用的，日志级别是当你使用不同的方式运行的时候，根据你运行的方式和你设置的日志打印级别来确定哪些信息需要输出。 规定：日志只会打印设置的优先级及比自己高优先级的内容。日志级别优先级排序: OFF &amp;gt; FATAL &amp;gt; ERROR &amp;gt; WARN &amp;">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://blog.mmzsblog.cn/J2ee/日志框架/slf4j-concrete-bindings1.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/J2ee/日志框架/slf4j_brige.png">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.494Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="日志框架">
+<meta name="twitter:description" content="日志框架的概念日志的作用是用来追踪和记录我们的程序运行中的信息，我们可以利用日志很快定位问题，追踪分析。 日志级别首先要知道日志级别是干什么用的，日志级别是当你使用不同的方式运行的时候，根据你运行的方式和你设置的日志打印级别来确定哪些信息需要输出。 规定：日志只会打印设置的优先级及比自己高优先级的内容。日志级别优先级排序: OFF &amp;gt; FATAL &amp;gt; ERROR &amp;gt; WARN &amp;">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/J2ee/日志框架/slf4j-concrete-bindings1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/J2ee/日志框架/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#日志框架的概念"><span class="toc-number">1.</span> <span class="toc-text">日志框架的概念</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#日志级别"><span class="toc-number">2.</span> <span class="toc-text">日志级别</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#常用的日志框架"><span class="toc-number">3.</span> <span class="toc-text">常用的日志框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Jul-Java-Util-Logging"><span class="toc-number">3.1.</span> <span class="toc-text">Jul: Java Util Logging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Log4j"><span class="toc-number">3.2.</span> <span class="toc-text">Log4j</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Log4J2"><span class="toc-number">3.3.</span> <span class="toc-text">Log4J2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Commons-Logging"><span class="toc-number">3.4.</span> <span class="toc-text">Commons Logging</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Slf4J"><span class="toc-number">3.5.</span> <span class="toc-text">Slf4J</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logback"><span class="toc-number">3.6.</span> <span class="toc-text">Logback</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Commons-Logging与Slf4j实现机制对比"><span class="toc-number">4.</span> <span class="toc-text">Commons Logging与Slf4j实现机制对比</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如果在项目中如果选择日志框架"><span class="toc-number">5.</span> <span class="toc-text">如果在项目中如果选择日志框架</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何在项目中使用Slf4J"><span class="toc-number">6.</span> <span class="toc-text">如何在项目中使用Slf4J</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Slf4J与其他各种日志的桥接"><span class="toc-number">6.1.</span> <span class="toc-text">Slf4J与其他各种日志的桥接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何桥接遗留的API"><span class="toc-number">6.2.</span> <span class="toc-text">如何桥接遗留的API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#遗留的api桥接方案"><span class="toc-number">6.2.1.</span> <span class="toc-text">遗留的api桥接方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用slf4j桥接要注意事项"><span class="toc-number">6.3.</span> <span class="toc-text">使用slf4j桥接要注意事项</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-日志框架" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      日志框架
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/J2ee/日志框架/" class="article-date">
+	  <time datetime="2018-10-24T02:24:00.000Z" itemprop="datePublished">2018-10-24</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/J2ee/">J2ee</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/框架/">框架</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/J2ee/日志框架/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.5k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="日志框架的概念"><a href="#日志框架的概念" class="headerlink" title="日志框架的概念"></a>日志框架的概念</h1><p>日志的作用是用来追踪和记录我们的程序运行中的信息，我们可以利用日志很快定位问题，追踪分析。</p>
+<h1 id="日志级别"><a href="#日志级别" class="headerlink" title="日志级别"></a>日志级别</h1><p>首先要知道日志级别是干什么用的，日志级别是当你使用不同的方式运行的时候，根据你运行的方式和你设置的日志打印级别来确定哪些信息需要输出。<br></p>
+<p><font style="color:red;"><strong>规定：日志只会打印设置的优先级及比自己高优先级的内容。</strong></font><br><br>日志级别优先级排序: OFF &gt; FATAL &gt; ERROR &gt; WARN &gt; INFO &gt; DEBUG &gt; TRACE &gt; ALL</p>
+<ul>
+<li>OFF：</li>
+<li>FATAL：</li>
+<li>ERROR：</li>
+<li>WARN：</li>
+<li>INFO：</li>
+<li>DEBUG：</li>
+<li>TRACE：</li>
+<li>ALL：<h1 id="常用的日志框架"><a href="#常用的日志框架" class="headerlink" title="常用的日志框架"></a>常用的日志框架</h1><h2 id="Jul-Java-Util-Logging"><a href="#Jul-Java-Util-Logging" class="headerlink" title="Jul: Java Util Logging"></a>Jul: Java Util Logging</h2>Sun公司的日志框架，原生的日志框架，优点是使用非常简单，直接在 JDK 中就可以使用。但 JDKLog 功能比较太过于简单，不支持占位符显示，拓展性比较差，所以现在用的人也很少。<br>示例：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import java.util.logging.Logger;</span><br><span class="line"> </span><br><span class="line">/****</span><br><span class="line"> ** JDKLog Demo</span><br><span class="line"> **/</span><br><span class="line">public class JDKLog</span><br><span class="line">&#123;</span><br><span class="line">    public static void main( String[] args )</span><br><span class="line">    &#123;</span><br><span class="line">        Logger logger = Logger.getLogger(&quot;JDKLog&quot;);</span><br><span class="line">        logger.info(&quot;Hello World.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Log4j"><a href="#Log4j" class="headerlink" title="Log4j"></a>Log4j</h2><p>Apache的日志框架，有多个分级（DEBUG/INFO/WARN/ERROR）记录级别，可以很好地将不同日志级别的日志分开记录，极大地方便了日志的查看。</p>
+<ul>
+<li><p>引入依赖包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;log4j&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;log4j&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.2.17&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>log4j.properties</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"> ### 设置###</span><br><span class="line">log4j.rootLogger = debug,stdout,D,E</span><br><span class="line"></span><br><span class="line">### 输出信息到控制抬 ###</span><br><span class="line">log4j.appender.stdout = org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.stdout.Target = System.out</span><br><span class="line">log4j.appender.stdout.layout = org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.stdout.layout.ConversionPattern = [%-5p] %d&#123;yyyy-MM-dd HH:mm:ss,SSS&#125; method:%l%n%m%n</span><br><span class="line"></span><br><span class="line">### 输出DEBUG 级别以上的日志到=E://logs/error.log ###</span><br><span class="line">log4j.appender.D = org.apache.log4j.DailyRollingFileAppender</span><br><span class="line">log4j.appender.D.File = E://logs/log.log</span><br><span class="line">log4j.appender.D.Append = true</span><br><span class="line">log4j.appender.D.Threshold = DEBUG </span><br><span class="line">log4j.appender.D.layout = org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.D.layout.ConversionPattern = %-d&#123;yyyy-MM-dd HH:mm:ss&#125;  [ %t:%r ] - [ %p ]  %m%n</span><br><span class="line"></span><br><span class="line">### 输出ERROR 级别以上的日志到=E://logs/error.log ###</span><br><span class="line">log4j.appender.E = org.apache.log4j.DailyRollingFileAppender</span><br><span class="line">log4j.appender.E.File =E://logs/error.log </span><br><span class="line">log4j.appender.E.Append = true</span><br><span class="line">log4j.appender.E.Threshold = ERROR </span><br><span class="line">log4j.appender.E.layout = org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.E.layout.ConversionPattern = %-d&#123;yyyy-MM-dd HH:mm:ss&#125;  [ %t:%r ] - [ %p ]  %m%n</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Log4J2"><a href="#Log4J2" class="headerlink" title="Log4J2"></a>Log4J2</h2><p>Log4j升级版，2.x的版本在架构上进行了一些升级，配置文件也发生了一些变化。</p>
+<ul>
+<li>引入依赖包<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- Log4J --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;log4j-api&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;2.6.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;log4j-core&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;2.6.2&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>注：log4j和log4j2的依赖包路径是不一样的，这是为了区分log4j和log4j2，开发者专门设置的。</p>
+<ul>
+<li>增加配置文件 log4j2.xml 放在 resource 目录下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;    </span><br><span class="line">&lt;configuration status=&quot;error&quot;&gt;  </span><br><span class="line">&lt;!--     先定义所有的appender --&gt;  </span><br><span class="line">    &lt;appenders&gt;  </span><br><span class="line">&lt;!--         这个输出控制台的配置 --&gt;  </span><br><span class="line">        &lt;Console name=&quot;Console&quot; target=&quot;SYSTEM_OUT&quot;&gt;  </span><br><span class="line">&lt;!--             控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） --&gt;  </span><br><span class="line">            &lt;ThresholdFilter level=&quot;trace&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;  </span><br><span class="line">&lt;!--             这个都知道是输出日志的格式 --&gt;  </span><br><span class="line">            &lt;PatternLayout pattern=&quot;%d&#123;HH:mm:ss.SSS&#125; %-5level %class&#123;36&#125; %L %M - %msg%xEx%n&quot;/&gt;  </span><br><span class="line">        &lt;/Console&gt;  </span><br><span class="line"></span><br><span class="line">&lt;!--         文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，这个也挺有用的，适合临时测试用 --&gt;  </span><br><span class="line">&lt;!--         append为TRUE表示消息增加到指定文件中，false表示消息覆盖指定的文件内容，默认值是true --&gt;  </span><br><span class="line">        &lt;File name=&quot;log&quot; fileName=&quot;log/test.log&quot; append=&quot;false&quot;&gt;  </span><br><span class="line">            &lt;PatternLayout pattern=&quot;%d&#123;HH:mm:ss.SSS&#125; %-5level %class&#123;36&#125; %L %M - %msg%xEx%n&quot;/&gt;  </span><br><span class="line">        &lt;/File&gt;  </span><br><span class="line"></span><br><span class="line">&lt;!--          添加过滤器ThresholdFilter,可以有选择的输出某个级别以上的类别  onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;意思是匹配就接受,否则直接拒绝  --&gt;  </span><br><span class="line">        &lt;File name=&quot;ERROR&quot; fileName=&quot;logs/error.log&quot;&gt;  </span><br><span class="line">            &lt;ThresholdFilter level=&quot;error&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;  </span><br><span class="line">            &lt;PatternLayout pattern=&quot;%d&#123;yyyy.MM.dd &apos;at&apos; HH:mm:ss z&#125; %-5level %class&#123;36&#125; %L %M - %msg%xEx%n&quot;/&gt;  </span><br><span class="line">        &lt;/File&gt;  </span><br><span class="line"></span><br><span class="line">&lt;!--         这个会打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 --&gt;  </span><br><span class="line">        &lt;RollingFile name=&quot;RollingFile&quot; fileName=&quot;logs/web.log&quot;  </span><br><span class="line">                     filePattern=&quot;logs/$$&#123;date:yyyy-MM&#125;/web-%d&#123;MM-dd-yyyy&#125;-%i.log.gz&quot;&gt;  </span><br><span class="line">            &lt;PatternLayout pattern=&quot;%d&#123;yyyy-MM-dd &apos;at&apos; HH:mm:ss z&#125; %-5level %class&#123;36&#125; %L %M - %msg%xEx%n&quot;/&gt;  </span><br><span class="line">            &lt;SizeBasedTriggeringPolicy size=&quot;2MB&quot;/&gt;  </span><br><span class="line">        &lt;/RollingFile&gt;  </span><br><span class="line">    &lt;/appenders&gt;  </span><br><span class="line"></span><br><span class="line">&lt;!--     然后定义logger，只有定义了logger并引入的appender，appender才会生效 --&gt;  </span><br><span class="line">    &lt;loggers&gt;  </span><br><span class="line">&lt;!--         建立一个默认的root的logger --&gt;  </span><br><span class="line">        &lt;root level=&quot;trace&quot;&gt;  </span><br><span class="line">            &lt;appender-ref ref=&quot;RollingFile&quot;/&gt;  </span><br><span class="line">            &lt;appender-ref ref=&quot;Console&quot;/&gt;  </span><br><span class="line">            &lt;appender-ref ref=&quot;ERROR&quot; /&gt;  </span><br><span class="line">            &lt;appender-ref ref=&quot;log&quot;/&gt;  </span><br><span class="line">        &lt;/root&gt; </span><br><span class="line">    &lt;/loggers&gt;  </span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Commons-Logging"><a href="#Commons-Logging" class="headerlink" title="Commons Logging"></a>Commons Logging</h2><p>日志门面，支持运行时动态加载日志组件实现。也就是说，在应用代码中，只需要调用commons logging的接口，底层实现可以是log4j，也可以是Java Util Logging。</p>
+<h2 id="Slf4J"><a href="#Slf4J" class="headerlink" title="Slf4J"></a>Slf4J</h2><p>与Commons Logging对立的阵营，这是接口，实现是Logback。</p>
+<h2 id="Logback"><a href="#Logback" class="headerlink" title="Logback"></a>Logback</h2><p>Slf4J的实现。</p>
+<h1 id="Commons-Logging与Slf4j实现机制对比"><a href="#Commons-Logging与Slf4j实现机制对比" class="headerlink" title="Commons Logging与Slf4j实现机制对比"></a>Commons Logging与Slf4j实现机制对比</h1><ul>
+<li><strong>Commons logging实现机制</strong>：Commons logging是通过动态查找机制，在程序运行时，使用自己的ClassLoader寻找和载入本地具体的实现。详细策略可以查看commons-logging-*.jar包中的org.apache.commons.logging.impl.LogFactoryImpl.java文件。由于OSGi不同的插件使用独立的ClassLoader，OSGI的这种机制保证了插件互相独立, 其机制限制了commons logging在OSGi中的正常使用。</li>
+<li><strong>Slf4j实现机制</strong>：Slf4j在编译期间，静态绑定本地的LOG库，因此可以在OSGi中正常使用。它是通过查找类路径下org.slf4j.impl.StaticLoggerBinder，然后绑定工作都在这类里面进。<h1 id="如果在项目中如果选择日志框架"><a href="#如果在项目中如果选择日志框架" class="headerlink" title="如果在项目中如果选择日志框架"></a>如果在项目中如果选择日志框架</h1></li>
+<li>Slf4j实现机制决定Slf4j限制较少，使用范围更广。由于Slf4j在编译期间，静态绑定本地的LOG库使得通用性要比Commons logging要好。</li>
+</ul>
+<ul>
+<li><p>Logback拥有更好的性能。Logback声称：某些关键操作，比如判定是否记录一条日志语句的操作，其性能得到了显著的提高。这个操作在Logback中需要3纳秒，而在Log4J中则需要30纳秒。LogBack创建记录器（logger）的速度也更快：13毫秒，而在Log4J中需要23毫秒。更重要的是，它获取已存在的记录器只需94纳秒，而Log4J需要2234纳秒，时间减少到了1/23。跟JUL相比的性能提高也是显著的。</p>
+</li>
+<li><p>Commons Logging开销更高 在使Commons Logging时为了减少构建日志信息的开销，通常的做法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if(log.isDebugEnabled())&#123;</span><br><span class="line">    log.debug(&quot;User name： &quot; +</span><br><span class="line">    user.getName() + &quot; buy goods id ：&quot; + good.getId());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在Slf4j阵营，你只需这么做：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log.debug(&quot;User name：&#123;&#125; ,buy goods id ：&#123;&#125;&quot;, user.getName(),good.getId());</span><br></pre></td></tr></table></figure></p>
+<p>也就是说，slf4j把构建日志的开销放在了它确认需要显示这条日志之后，减少内存和cup的开销，使用占位符号，代码也更为简洁。</p>
+<ul>
+<li>Logback文档免费。Logback的所有文档是全面免费提供的，不象Log4J那样只提供部分免费文档而需要用户去购买付费文档。<h1 id="如何在项目中使用Slf4J"><a href="#如何在项目中使用Slf4J" class="headerlink" title="如何在项目中使用Slf4J"></a>如何在项目中使用Slf4J</h1><h2 id="Slf4J与其他各种日志的桥接"><a href="#Slf4J与其他各种日志的桥接" class="headerlink" title="Slf4J与其他各种日志的桥接"></a>Slf4J与其他各种日志的桥接</h2>jar包名 | 说明<br>—|—<br>slf4j-log4j12-1.7.13.jar |     log4j1.2版本的桥接器，你需要将log4j.jar加入classpath。<br>slf4j-jdk14-1.7.13.jar | java.util.logging的桥接器，JDK原生日志框架。<br>slf4j-nop-1.7.13.jar|NOP桥接器，默默丢弃一切日志。<br>slf4j-simple-1.7.13.jar|    一个简单实现的桥接器，该实现输出所有事件到System.err. 只有INFO以及高于该级别的消息被打印，在小型应用中它也许是有用的。<br>slf4j-jcl-1.7.13.jar|    Jakarta Commons Logging 的桥接器. 这个桥接器将SLF4j所有日志委派给JCL。<br>logback-classic-1.0.13.jar(requires logback-core-1.0.13.jar)|slf4j的原生实现，logback直接实现了slf4j的接口，因此使用slf4j与 logback的结合使用也意味更小的内存与计算开销<br>具体接入方式如下：<br><img src="./slf4j-concrete-bindings1.png" alt=""><h2 id="如何桥接遗留的API"><a href="#如何桥接遗留的API" class="headerlink" title="如何桥接遗留的API"></a>如何桥接遗留的API</h2>在使用不同的框架的时候，可能别人集成的框架不一样。比如Spring Framework集成的是Commons Logging，而XSocket依赖的是Java Util Logging。现在我们需要解决不同框架中的不同日志组件都统一为Slf4J。SLF4J会根据绑定器把日志交给具体的日志实现工具。Slf4J带有几个桥接模块，可以重定向log4j，JCL和Java.util.logging中的api到Slf4J。<h3 id="遗留的api桥接方案"><a href="#遗留的api桥接方案" class="headerlink" title="遗留的api桥接方案"></a>遗留的api桥接方案</h3>jar包名|作用<br>—|—<br>log4j-over-slf4j-version.jar|将log4j重定向到slf4j<br>jcl-over-slf4j-version.jar|将commons logging里的Simple Logger重定向到slf4j<br>jul-to-slf4j-version.jar|将Java Util Logging 重定向到slf4j<br>桥接方式参考下图：<br><img src="./slf4j_brige.png" alt=""><h2 id="使用slf4j桥接要注意事项"><a href="#使用slf4j桥接要注意事项" class="headerlink" title="使用slf4j桥接要注意事项"></a>使用slf4j桥接要注意事项</h2>在使用slf4j桥接时要注意避免形成死循环，在项目依赖的jar包中不要存在以下情况:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>多个日志jar包形成死循环的条件</th>
+<th>产生原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>log4j-over-slf4j.jar和slf4j-log4j12.jar同时存在</td>
+<td>由于slf4j-log4j12.jar的存在会将所有日志调用委托给log4j。但由于同时由于log4j-over-slf4j.jar的存在，会将所有对log4j api的调用委托给相应等值的slf4j,所以log4j-over-slf4j.jar和slf4j-log4j12.jar同时存在会形成死循环</td>
+</tr>
+<tr>
+<td>jul-to-slf4j.jar和slf4j-jdk14.jar同时存在</td>
+<td>由于slf4j-jdk14.jar的存在会将所有日志调用委托给jdk的log。但由于同时jul-to-slf4j.jar的存在，会将所有对jul api的调用委托给相应等值的slf4j，所以jul-to-slf4j.jar和slf4j-jdk14.jar同时存在会形成死循环。</td>
+</tr>
+</tbody>
+</table>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/J2ee/日志框架/" title="日志框架" target="_blank" rel="external">https://blog.mmzsblog.cn/J2ee/日志框架/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/利用SHA-1算法和RSA秘钥进行签名验签/" title="利用SHA-1算法和RSA秘钥进行签名验签"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/注解@CrossOrigin详解/" title="注解@CrossOrigin详解"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

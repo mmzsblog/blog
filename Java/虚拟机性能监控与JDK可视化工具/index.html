@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>虚拟机性能监控与JDK可视化工具 | mmzsblog</title>
+  <meta name="description" content="JDK命令行工具jps(JVM Proccess Status Tool) 显示指定系统内所有HotSpot虚拟机进程 参数 -q 只输出LVMID(Local Virtual Machine Identifier)，省略主类名 -m 输出虚拟机进程启动时传递给主类main()函数的参数 -l 输出全路径名，如果是jar则输出jar的全路径 -v 输出虚拟机进程启动时JVM参数jstat(JVM">
+<meta name="keywords" content="JVM虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机性能监控与JDK可视化工具">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/虚拟机性能监控与JDK可视化工具/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="JDK命令行工具jps(JVM Proccess Status Tool) 显示指定系统内所有HotSpot虚拟机进程 参数 -q 只输出LVMID(Local Virtual Machine Identifier)，省略主类名 -m 输出虚拟机进程启动时传递给主类main()函数的参数 -l 输出全路径名，如果是jar则输出jar的全路径 -v 输出虚拟机进程启动时JVM参数jstat(JVM">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.535Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="虚拟机性能监控与JDK可视化工具">
+<meta name="twitter:description" content="JDK命令行工具jps(JVM Proccess Status Tool) 显示指定系统内所有HotSpot虚拟机进程 参数 -q 只输出LVMID(Local Virtual Machine Identifier)，省略主类名 -m 输出虚拟机进程启动时传递给主类main()函数的参数 -l 输出全路径名，如果是jar则输出jar的全路径 -v 输出虚拟机进程启动时JVM参数jstat(JVM">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/虚拟机性能监控与JDK可视化工具/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK命令行工具"><span class="toc-number">1.</span> <span class="toc-text">JDK命令行工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#jps-JVM-Proccess-Status-Tool"><span class="toc-number">1.1.</span> <span class="toc-text">jps(JVM Proccess Status Tool)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jstat-JVM-Statistics-Monitoring-Tool"><span class="toc-number">1.2.</span> <span class="toc-text">jstat(JVM Statistics Monitoring Tool)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jinfo-Configuration-Info-for-Java"><span class="toc-number">1.3.</span> <span class="toc-text">jinfo(Configuration Info for Java)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jmap-Memory-Map-for-Java"><span class="toc-number">1.4.</span> <span class="toc-text">jmap(Memory Map for Java)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jhat-JVM-Heap-Dump-Browser"><span class="toc-number">1.5.</span> <span class="toc-text">jhat(JVM Heap Dump Browser)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jstack-Stack-Trace-for-Java"><span class="toc-number">1.6.</span> <span class="toc-text">jstack(Stack Trace for Java)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HSDIS-JIT生成代码反汇编"><span class="toc-number">1.7.</span> <span class="toc-text">HSDIS:JIT生成代码反汇编</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JDK可视化工具"><span class="toc-number">2.</span> <span class="toc-text">JDK可视化工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#JConsole"><span class="toc-number">2.1.</span> <span class="toc-text">JConsole</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#VisualVM"><span class="toc-number">2.2.</span> <span class="toc-text">VisualVM</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-虚拟机性能监控与JDK可视化工具" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      虚拟机性能监控与JDK可视化工具
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/虚拟机性能监控与JDK可视化工具/" class="article-date">
+	  <time datetime="2016-10-26T02:24:00.000Z" itemprop="datePublished">2016-10-26</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    老王和小杨
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/虚拟机性能监控与JDK可视化工具/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 780(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="JDK命令行工具"><a href="#JDK命令行工具" class="headerlink" title="JDK命令行工具"></a>JDK命令行工具</h1><h2 id="jps-JVM-Proccess-Status-Tool"><a href="#jps-JVM-Proccess-Status-Tool" class="headerlink" title="jps(JVM Proccess Status Tool)"></a>jps(JVM Proccess Status Tool)</h2><ul>
+<li>显示指定系统内所有HotSpot虚拟机进程</li>
+<li>参数<ul>
+<li><strong>-q</strong> 只输出LVMID(Local Virtual Machine Identifier)，省略主类名</li>
+<li><strong>-m</strong> 输出虚拟机进程启动时传递给主类main()函数的参数</li>
+<li><strong>-l</strong> 输出全路径名，如果是jar则输出jar的全路径</li>
+<li><strong>-v</strong> 输出虚拟机进程启动时JVM参数<h2 id="jstat-JVM-Statistics-Monitoring-Tool"><a href="#jstat-JVM-Statistics-Monitoring-Tool" class="headerlink" title="jstat(JVM Statistics Monitoring Tool)"></a>jstat(JVM Statistics Monitoring Tool)</h2></li>
+</ul>
+</li>
+<li>收集HotSpot虚拟机各方面的运行数据</li>
+<li><p>命令格式：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat [option vmid [interval[s|ms] [count]]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>option：用户想要查询的虚拟机信息<ul>
+<li><strong>-class</strong> 监视类装载、卸载数量、总空间及类装载耗时</li>
+<li><strong>-gc</strong> 监控Java堆状况，包括eden、survivor、老年代、永久代等容量、已用空间、GC时间合计等信息</li>
+<li><strong>-gccapacity</strong> 与-gc差不多，但输出主要关注Java堆各个区域使用到的最大、最小空间</li>
+<li><strong>-gcutil</strong> 与-gc差不多，但输出主要关注已使用空间占总空间的百分比</li>
+<li><strong>-gccause</strong> 与-gcutil一样，但是会多输出导致上次GC的原因</li>
+<li><strong>-gcnew</strong> 监视新生代GC状况</li>
+<li><strong>-gcnewcapacity</strong> 与-gcnew差不多，但输出主要关注使用到的最大、最小空间</li>
+<li><strong>-gcold</strong> 监视老年代GC装快</li>
+<li><strong>-gcoldcapacity</strong> 与-gcold差不多，但输出主要关注使用到的最大、最小空间</li>
+<li><strong>-gcpermcapacity</strong> 输出永久代使用到的最大、最小空间</li>
+<li><strong>-compiler</strong> 输出JIT编译过的方法、耗时等信息</li>
+<li><strong>-printcompilation</strong> 输出已经被JIT编译的方法</li>
+</ul>
+</li>
+<li><p>VMID和LVMID的区别：如果是本地则两个一样；如果是远程虚拟机，则VMID为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[protocol:][//lvmid[@hostname[:port]/servername]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>例：假如每250ms查询一次进程2764的垃圾收集情况，一共查询20次，命令为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -gc 2764 250 20</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="jinfo-Configuration-Info-for-Java"><a href="#jinfo-Configuration-Info-for-Java" class="headerlink" title="jinfo(Configuration Info for Java)"></a>jinfo(Configuration Info for Java)</h2><ul>
+<li>显示虚拟机配置信息</li>
+<li>格式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo [option] pid</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="jmap-Memory-Map-for-Java"><a href="#jmap-Memory-Map-for-Java" class="headerlink" title="jmap(Memory Map for Java)"></a>jmap(Memory Map for Java)</h2><ul>
+<li>生成虚拟机的内存存储快照（heapdump文件）</li>
+<li><p>命令格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap [option] pid</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>option参数</p>
+<ul>
+<li>-dump 生成Java堆转储快照，格式为：-dump:[live,]format=b,file=<filename>，其中live子参数说明是否只dump出存活的对象</filename></li>
+<li>-finalizerinfo 显示在F-Queue中等待Finalizer线程执行finalize方法，只在linux/Solaris平台下有效</li>
+<li>-heap 显示Java堆详细信息，只在linux/Solaris平台下有效</li>
+<li>-histo 显示堆中对象统计信息， 包括类、实例数量、合计容量</li>
+<li>-permstat 以ClassLoader为统计口径显示永久代内存状态。只在linux/Solaris平台下有效</li>
+<li>-F 当虚拟机进程对-dump选项没有响应时，可以使用这个强制生成。只在linux/Solaris平台下有效<h2 id="jhat-JVM-Heap-Dump-Browser"><a href="#jhat-JVM-Heap-Dump-Browser" class="headerlink" title="jhat(JVM Heap Dump Browser)"></a>jhat(JVM Heap Dump Browser)</h2></li>
+</ul>
+</li>
+<li>用于分析heapdump文件，它会建立一个HTTP/HTML服务器，让用户可以再浏览器上查看分析结果（耗时长，不推荐使用）<h2 id="jstack-Stack-Trace-for-Java"><a href="#jstack-Stack-Trace-for-Java" class="headerlink" title="jstack(Stack Trace for Java)"></a>jstack(Stack Trace for Java)</h2></li>
+<li>显示虚拟机线程快照</li>
+<li><p>命令格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack [option] vmid</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>option 参数：</p>
+<ul>
+<li>-F 当正常输出的请求不被响应时，强制输出线程堆栈</li>
+<li>-l 除堆栈外，显示关于锁的附加信息</li>
+<li>-m 如果调用到本地方法，可显示C/C++的堆栈<h2 id="HSDIS-JIT生成代码反汇编"><a href="#HSDIS-JIT生成代码反汇编" class="headerlink" title="HSDIS:JIT生成代码反汇编"></a>HSDIS:JIT生成代码反汇编</h2><h1 id="JDK可视化工具"><a href="#JDK可视化工具" class="headerlink" title="JDK可视化工具"></a>JDK可视化工具</h1><h2 id="JConsole"><a href="#JConsole" class="headerlink" title="JConsole"></a>JConsole</h2><h2 id="VisualVM"><a href="#VisualVM" class="headerlink" title="VisualVM"></a>VisualVM</h2></li>
+</ul>
+</li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/虚拟机性能监控与JDK可视化工具/" title="虚拟机性能监控与JDK可视化工具" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/虚拟机性能监控与JDK可视化工具/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/类文件结构/" title="类文件结构"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/GC与内存分配策略/" title="GC与内存分配策略"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

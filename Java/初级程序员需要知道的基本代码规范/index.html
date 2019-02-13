@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>初级程序员需要知道的基本代码规范 | mmzsblog</title>
+  <meta name="description" content="初级程序员需要知道的基本代码规范作为一个程序员，写代码乱糟糟的咋行呢？所以今天我将我在《阿里巴巴Java开发手册》中看到的一些有用的、适合初级程序员的代码基本规范，分享给大家！  1.【强制】大括号的使用约定。如果是大括号内为空，则简洁地写成{}即可，不需要换行；如果是非空代码块则：　　　　1） 左大括号前不换行。　　　　2） 左大括号后换行。　　　　3） 右大括号前换行。　　　　4） 右大括号后">
+<meta name="keywords" content="编程语言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初级程序员需要知道的基本代码规范">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/初级程序员需要知道的基本代码规范/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="初级程序员需要知道的基本代码规范作为一个程序员，写代码乱糟糟的咋行呢？所以今天我将我在《阿里巴巴Java开发手册》中看到的一些有用的、适合初级程序员的代码基本规范，分享给大家！  1.【强制】大括号的使用约定。如果是大括号内为空，则简洁地写成{}即可，不需要换行；如果是非空代码块则：　　　　1） 左大括号前不换行。　　　　2） 左大括号后换行。　　　　3） 右大括号前换行。　　　　4） 右大括号后">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初级程序员需要知道的基本代码规范">
+<meta name="twitter:description" content="初级程序员需要知道的基本代码规范作为一个程序员，写代码乱糟糟的咋行呢？所以今天我将我在《阿里巴巴Java开发手册》中看到的一些有用的、适合初级程序员的代码基本规范，分享给大家！  1.【强制】大括号的使用约定。如果是大括号内为空，则简洁地写成{}即可，不需要换行；如果是非空代码块则：　　　　1） 左大括号前不换行。　　　　2） 左大括号后换行。　　　　3） 右大括号前换行。　　　　4） 右大括号后">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/初级程序员需要知道的基本代码规范/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初级程序员需要知道的基本代码规范"><span class="toc-number">1.</span> <span class="toc-text">初级程序员需要知道的基本代码规范</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-初级程序员需要知道的基本代码规范" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      初级程序员需要知道的基本代码规范
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/初级程序员需要知道的基本代码规范/" class="article-date">
+	  <time datetime="2016-12-05T13:26:14.000Z" itemprop="datePublished">2016-12-05</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/编程语言/">编程语言</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/初级程序员需要知道的基本代码规范/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.5k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 9(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="初级程序员需要知道的基本代码规范"><a href="#初级程序员需要知道的基本代码规范" class="headerlink" title="初级程序员需要知道的基本代码规范"></a>初级程序员需要知道的基本代码规范</h2><p>作为一个程序员，写代码乱糟糟的咋行呢？所以今天我将我在《阿里巴巴Java开发手册》中看到的一些有用的、适合初级程序员的代码基本规范，分享给大家！</p>
+<ul>
+<li>1.【强制】大括号的使用约定。如果是大括号内为空，则简洁地写成{}即可，不需要换行；如果是非空代码块则：<br>　　　　1） 左大括号前不换行。<br>　　　　2） 左大括号后换行。<br>　　　　3） 右大括号前换行。<br>　　　　4） 右大括号后还有 else 等代码则不换行；表示终止的右大括号后必须换行。
+　　　　</li>
+<li>2.【强制】 左小括号和字符之间不出现空格；同样，右小括号和字符之间也不出现空格。详见第 5 条下方正例提示。<br>　　　　反例：if (空格 a == b 空格)
+　　　　</li>
+<li><p>3.【强制】if/for/while/switch/do 等保留字与括号之间都必须加空格。</p>
+</li>
+<li><p>4.【强制】任何二目、三目运算符的左右两边都需要加一个空格。<br>　　　　说明：运算符包括赋值运算符=、逻辑运算符&amp;&amp;、加减乘除符号等。
+　　　　</p>
+</li>
+<li>5.【强制】采用 4 个空格缩进，禁止使用 tab 字符。<br>　　　　说明：如果使用 tab 缩进，必须设置 1 个 tab 为 4 个空格。IDEA 设置 tab 为 4 个空格时，<br>请勿勾选 Use tab character；而在 eclipse 中，必须勾选 insert spaces for tabs。<br>正例： （涉及上面五点）  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123; </span><br><span class="line">    // 缩进 4 个空格 </span><br><span class="line">    String say = &quot;hello&quot;; </span><br><span class="line">    // 运算符的左右必须有一个空格 </span><br><span class="line">    int flag = 0; </span><br><span class="line"> </span><br><span class="line">    // 关键词 if 与括号之间必须有一个空格，括号内的 f 与左括号，0 与右括号不需要空格 </span><br><span class="line">    if (flag == 0) &#123; </span><br><span class="line">        System.out.println(say); </span><br><span class="line">    &#125; </span><br><span class="line"> </span><br><span class="line">    // 左大括号前加空格且不换行；左大括号后换行 </span><br><span class="line">    if (flag == 1) &#123; </span><br><span class="line">        System.out.println(&quot;world&quot;); </span><br><span class="line">    // 右大括号前换行，右大括号后有 else，不用换行 </span><br><span class="line">    &#125; else &#123; </span><br><span class="line">        System.out.println(&quot;ok&quot;); </span><br><span class="line">    // 在右大括号后直接结束，则必须换行 </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>6.【强制】注释的双斜线与注释内容之间有且仅有一个空格。<br>　　正例：// 注释内容，注意在//和注释内容之间有一个空格。
+　　</li>
+<li><p>7.【强制】单行字符数限制不超过 120 个，超出需要换行，换行时遵循如下原则：<br>　　　　1） 第二行相对第一行缩进 4 个空格，从第三行开始，不再继续缩进，参考示例。<br>　　　　2） 运算符与下文一起换行。<br>　　　　3） 方法调用的点符号与下文一起换行。<br>　　　　4） 方法调用时，多个参数，需要换行时，在逗号后进行。<br>　　　　5） 在括号前不要换行，见反例。</p>
+<ul>
+<li><p>正例：</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">StringBuffer sb = new StringBuffer(); </span><br><span class="line">// 超过 120 个字符的情况下，换行缩进 4 个空格，点号和方法名称一起换行</span><br><span class="line">sb.append(&quot;zi&quot;).append(&quot;xin&quot;)... </span><br><span class="line">    .append(&quot;huang&quot;)... </span><br><span class="line">    .append(&quot;huang&quot;)... </span><br><span class="line">    .append(&quot;huang&quot;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>反例：</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">StringBuffer sb = new StringBuffer(); </span><br><span class="line">// 超过 120 个字符的情况下，不要在括号前换行</span><br><span class="line">sb.append(&quot;zi&quot;).append(&quot;xin&quot;)...append </span><br><span class="line">    (&quot;huang&quot;); </span><br><span class="line">    </span><br><span class="line">// 参数很多的方法调用可能超过 120 个字符，不要在逗号前换行</span><br><span class="line">method(args1, args2, args3, ... </span><br><span class="line">    , argsX);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>8.【强制】方法参数在定义和传入时，多个参数逗号后边必须加空格。<br>正例：下例中实参的”a”,后边必须要有一个空格。<br><code>method(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;);</code></p>
+</li>
+<li><p>9.【强制】IDE 的 text file encoding 设置为 UTF-8; IDE 中文件的换行符使用 Unix 格式，不要使用 Windows 格式。</p>
+</li>
+<li><p>10.【推荐】没有必要增加若干空格来使某一行的字符与上一行对应位置的字符对齐。<br>　正例：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int a = 3; </span><br><span class="line">long b = 4L; </span><br><span class="line">float c = 5F; </span><br><span class="line">StringBuffer sb = new StringBuffer();</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>　　 说明：增加 sb 这个变量，如果需要对齐，则给 a、b、c 都要增加几个空格，在变量比较多的情况下，是一种累赘的事情。</p>
+<ul>
+<li><p>11.【推荐】方法体内的执行语句组、变量的定义语句组、不同的业务逻辑之间或者不同的语义之间插入一个空行。相同业务逻辑和语义之间不需要插入空行。<br>　　说明：没有必要插入多个空行进行隔开。</p>
+</li>
+<li><p>【强制】避免通过一个类的对象引用访问此类的静态变量或静态方法，无谓增加编译器解析成本，直接用类名来访问即可。</p>
+</li>
+<li><p>【强制】不能使用过时的类或方法。<br>　　说明：<code>java.net.URLDecoder</code>中的方法 decode(String encodeStr) 这个方法已经过时，应该使用双参数 decode(String source, String encode)。接口提供方既然明确是过时接口，那么有义务同时提供新的接口；作为调用方来说，有义务去考证过时方法的新实现是什么。
+　　</p>
+</li>
+<li>【强制】Object 的 equals 方法容易抛空指针异常，应使用常量或确定有值的对象来调用equals。<br>　　　　正例：<code>&quot;test&quot;.equals(object);</code><br>　　　　反例：<code>object.equals(&quot;test&quot;);</code><br>　　说明：推荐使用 <code>java.util.Objects#equals</code>（JDK7 引入的工具类）
+　　</li>
+<li><p>【强制】所有的相同类型的包装类对象之间值的比较，全部使用 equals 方法比较。<br>　　说明：对于 Integer var = ? 在-128 至 127 范围内的赋值，Integer 对象是在 IntegerCache.cache 产生，会复用已有对象，这个区间内的 Integer 值可以直接使用==进行 判断，但是这个区间之外的所有数据，都会在堆上产生，并不会复用已有对象，这是一个大坑，推荐使用 equals 方法进行判断。</p>
+</li>
+<li><p>【强制】构造方法里面禁止加入任何业务逻辑，如果有初始化逻辑，请放在 init 方法中。</p>
+</li>
+<li><p>【强制】POJO 类必须写 toString 方法。使用 IDE 的中工具：source&gt; generate toString时，如果继承了另一个 POJO 类，注意在前面加一下 super.toString。<br>　　说明：在方法执行抛出异常时，可以直接调用 POJO 的 toString()方法打印其属性值，便于排查问题。</p>
+</li>
+<li><p>【推荐】使用索引访问用 String 的 split 方法得到的数组时，需做最后一个分隔符后有无内容的检查，否则会有抛 IndexOutOfBoundsException 的风险。<br>　　说明：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String str = &quot;a,b,c,,&quot;; </span><br><span class="line">String[] ary = str.split(&quot;,&quot;); </span><br><span class="line">// 预期大于 3，结果是 3</span><br><span class="line">System.out.println(ary.length);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>【推荐】当一个类有多个构造方法，或者多个同名方法，这些方法应该按顺序放置在一起，便于阅读，此条规则优先于第 15 条规则。</p>
+</li>
+<li><p>15.【推荐】 类内方法定义顺序依次是：公有方法或保护方法 &gt; 私有方法 &gt; getter/setter方法。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;说明：公有方法是类的调用者和维护者最关心的方法，首屏展示最好；保护方法虽然只是子类关心，也可能是“模板设计模式”下的核心方法；而私有方法外部一般不需要特别关心，是一个黑盒实现；因为承载的信息价值较低，所有 Service 和 DAO 的 getter/setter 方法放在类体最后。</p>
+</li>
+<li>16.【推荐】setter 方法中，参数名称与类成员变量名称一致，this.成员名 = 参数名。在getter/setter 方法中，不要增加业务逻辑，增加排查问题的难度。<br>反例：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public Integer getData() &#123; </span><br><span class="line">    if (true) &#123; </span><br><span class="line">        return this.data + 100; </span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return this.data - 100;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>17.【推荐】循环体内，字符串的连接方式，使用 StringBuilder 的 append 方法进行扩展。<br>　　说明：反编译出的字节码文件显示每次循环都会 new 出一个 StringBuilder 对象，然后进行append 操作，最后通过 toString 方法返回 String 对象，造成内存资源浪费。</p>
+<pre><code>反例：
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String str = &quot;start&quot;; </span><br><span class="line">for (int i = 0; i &lt; 100; i++) &#123; </span><br><span class="line">    str = str + &quot;hello&quot;; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>18.【推荐】final 可以声明类、成员变量、方法、以及本地变量，下列情况使用 final 关键字：<br>　　　　1） 不允许被继承的类，如：String 类。<br>　　　　2） 不允许修改引用的域对象，如：POJO 类的域变量。<br>　　　　3） 不允许被重写的方法，如：POJO 类的 setter 方法。<br>　　　　4） 不允许运行过程中重新赋值的局部变量。<br>　　　　5） 避免上下文重复使用一个变量，使用 final 描述可以强制重新定义一个变量，方便更好地进行重构。</p>
+</li>
+<li><p>【强制】中括号是数组类型的一部分，数组定义如下：String[] args;</p>
+</li>
+</ul>
+<ul>
+<li><p>【强制】POJO类中布尔类型的变量，都不要加is，否则部分框架解析会引起序列化错误；</p>
+</li>
+<li><p>【推荐】除常用方法（如 getXxx/isXxx）等外，不要在条件判断中执行其它复杂的语句，将复杂逻辑判断的结果赋值给一个有意义的布尔变量名，以提高可读性。<br>说明：很多 if 语句内的逻辑相当复杂，阅读者需要分析条件表达式的最终结果，才能明确什么样的条件执行什么样的语句，那么，如果阅读者分析逻辑表达式错误呢？<br>正例：// 伪代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">final boolean existed = (file.open(fileName, &quot;w&quot;) != null) &amp;&amp; (...) || (...);</span><br><span class="line">    if (existed) &#123;</span><br><span class="line">         ...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>【强制】在 if/else/for/while/do 语句中必须使用大括号。即使只有一行代码，避免采用单行的编码方式：if (condition) statements;</li>
+</ul>
+<ul>
+<li>【推荐】类内方法定义顺序依次是：公有方法或保护方法&gt;私有方法&gt;getter/setter方法；<br>&nbsp;&nbsp;&nbsp;&nbsp;说明：公有方法是类的调用者和维护者最关心的方法，首屏展示最好；保护方法虽然只是子类关心，也可能是“模板设计模式”下的核心方法；而私有方法外部一般不需要特别关心，是一个黑盒实现；因为承载的信息价值较低，所有 Service 和 DAO 的 getter/setter 方法放在类体最后。<br><br><br><br>如需了解更多，请看<a href="https://mp.weixin.qq.com/s/sZPsFlK9lHiTeREm4Q1PZg" target="_blank" rel="noopener">《阿里巴巴Java开发手册》</a> ;<br><br><br><br></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/初级程序员需要知道的基本代码规范/" title="初级程序员需要知道的基本代码规范" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/初级程序员需要知道的基本代码规范/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/注解@CrossOrigin详解/" title="注解@CrossOrigin详解"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/Java内存模型/" title="Java内存模型"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

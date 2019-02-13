@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>GC与内存分配策略 | mmzsblog</title>
+  <meta name="description" content="GC算法早期GC算法引用计数法可达性分析算法当对象到GC Roots没有任何引用链相连时，此时对象是不可达的。此时该对象并不是“非死不可”，此时它暂时处于“缓刑”状态。第一次会被标记并且进行一次筛选，筛选的条件是对象是否有必要执行finalize()方法。以下两种情况会被视为没有必要执行：  对象没有覆盖finalize()方法 finalize()方法已经被虚拟机调用过  如果对象被判定为有必要">
+<meta name="keywords" content="JVM虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GC与内存分配策略">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/GC与内存分配策略/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="GC算法早期GC算法引用计数法可达性分析算法当对象到GC Roots没有任何引用链相连时，此时对象是不可达的。此时该对象并不是“非死不可”，此时它暂时处于“缓刑”状态。第一次会被标记并且进行一次筛选，筛选的条件是对象是否有必要执行finalize()方法。以下两种情况会被视为没有必要执行：  对象没有覆盖finalize()方法 finalize()方法已经被虚拟机调用过  如果对象被判定为有必要">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Java/GC与内存分配策略/Serial收集器.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Java/GC与内存分配策略/ParallelScavenge收集器.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Java/GC与内存分配策略/CMS收集器.png">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.440Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GC与内存分配策略">
+<meta name="twitter:description" content="GC算法早期GC算法引用计数法可达性分析算法当对象到GC Roots没有任何引用链相连时，此时对象是不可达的。此时该对象并不是“非死不可”，此时它暂时处于“缓刑”状态。第一次会被标记并且进行一次筛选，筛选的条件是对象是否有必要执行finalize()方法。以下两种情况会被视为没有必要执行：  对象没有覆盖finalize()方法 finalize()方法已经被虚拟机调用过  如果对象被判定为有必要">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/Java/GC与内存分配策略/Serial收集器.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/GC与内存分配策略/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GC算法"><span class="toc-number">1.</span> <span class="toc-text">GC算法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#早期GC算法"><span class="toc-number">2.</span> <span class="toc-text">早期GC算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#引用计数法"><span class="toc-number">2.1.</span> <span class="toc-text">引用计数法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#可达性分析算法"><span class="toc-number">2.2.</span> <span class="toc-text">可达性分析算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#引用的概念"><span class="toc-number">2.3.</span> <span class="toc-text">引用的概念</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#回收方法区"><span class="toc-number">3.</span> <span class="toc-text">回收方法区</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#GC算法-1"><span class="toc-number">3.1.</span> <span class="toc-text">GC算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#标记-清除法"><span class="toc-number">3.1.1.</span> <span class="toc-text">标记-清除法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#复制算法"><span class="toc-number">3.1.2.</span> <span class="toc-text">复制算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进复制算法"><span class="toc-number">3.1.3.</span> <span class="toc-text">改进复制算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#标记-整理算法"><span class="toc-number">3.1.4.</span> <span class="toc-text">标记-整理算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分代收集算法"><span class="toc-number">3.1.5.</span> <span class="toc-text">分代收集算法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HotSpot"><span class="toc-number">4.</span> <span class="toc-text">HotSpot</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#可达性分析"><span class="toc-number">4.1.</span> <span class="toc-text">可达性分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#枚举根节点"><span class="toc-number">4.1.1.</span> <span class="toc-text">枚举根节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC停顿"><span class="toc-number">4.1.2.</span> <span class="toc-text">GC停顿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OopMap"><span class="toc-number">4.1.3.</span> <span class="toc-text">OopMap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SafePoint"><span class="toc-number">4.1.4.</span> <span class="toc-text">SafePoint</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#抢断式中断"><span class="toc-number">4.1.4.1.</span> <span class="toc-text">抢断式中断</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#主动式中断"><span class="toc-number">4.1.4.2.</span> <span class="toc-text">主动式中断</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SafeRegion"><span class="toc-number">4.1.5.</span> <span class="toc-text">SafeRegion</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#垃圾收集器"><span class="toc-number">4.2.</span> <span class="toc-text">垃圾收集器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#并行和并发"><span class="toc-number">4.2.1.</span> <span class="toc-text">并行和并发</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Serial收集器"><span class="toc-number">4.2.2.</span> <span class="toc-text">Serial收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParNew收集器"><span class="toc-number">4.2.3.</span> <span class="toc-text">ParNew收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Parallel-Scavenge-收集器"><span class="toc-number">4.2.4.</span> <span class="toc-text">Parallel Scavenge 收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Serial-Old收集器"><span class="toc-number">4.2.5.</span> <span class="toc-text">Serial Old收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Parallel-Old收集器"><span class="toc-number">4.2.6.</span> <span class="toc-text">Parallel Old收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMS-Concurrent-Mark-Sweep-收集器"><span class="toc-number">4.2.7.</span> <span class="toc-text">CMS(Concurrent Mark Sweep)收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#G1-收集器"><span class="toc-number">4.2.8.</span> <span class="toc-text">G1 收集器</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#理解GC日志"><span class="toc-number">5.</span> <span class="toc-text">理解GC日志</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#内存分配与回收策略"><span class="toc-number">6.</span> <span class="toc-text">内存分配与回收策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#对象内存分配，可能分为以下几种情况："><span class="toc-number">6.1.</span> <span class="toc-text">对象内存分配，可能分为以下几种情况：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#堆：大多数分配在堆上"><span class="toc-number">6.1.1.</span> <span class="toc-text">堆：大多数分配在堆上</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#栈：JIT编译有可能间接分配在栈上"><span class="toc-number">6.1.2.</span> <span class="toc-text">栈：JIT编译有可能间接分配在栈上</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码测试"><span class="toc-number">6.2.</span> <span class="toc-text">代码测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Serial-Serial-Old收集器"><span class="toc-number">6.2.1.</span> <span class="toc-text">Serial / Serial Old收集器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#大对象直接进入老年代"><span class="toc-number">6.2.2.</span> <span class="toc-text">大对象直接进入老年代</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#长期存活的直接进入老年代"><span class="toc-number">6.2.3.</span> <span class="toc-text">长期存活的直接进入老年代</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态对象年龄判断"><span class="toc-number">6.2.4.</span> <span class="toc-text">动态对象年龄判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空间分配担保"><span class="toc-number">6.2.5.</span> <span class="toc-text">空间分配担保</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#“冒险”的概念"><span class="toc-number">6.2.5.1.</span> <span class="toc-text">“冒险”的概念</span></a></li></ol></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-GC与内存分配策略" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      GC与内存分配策略
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/GC与内存分配策略/" class="article-date">
+	  <time datetime="2016-10-25T02:24:00.000Z" itemprop="datePublished">2016-10-25</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    老王和小杨
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/GC与内存分配策略/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 4.7k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 18(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="GC算法"><a href="#GC算法" class="headerlink" title="GC算法"></a>GC算法</h1><h1 id="早期GC算法"><a href="#早期GC算法" class="headerlink" title="早期GC算法"></a>早期GC算法</h1><h2 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h2><h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>当对象到GC Roots没有任何引用链相连时，此时对象是不可达的。<br>此时该对象并不是“非死不可”，此时它暂时处于“缓刑”状态。第一次会被标记并且进行一次筛选，筛选的条件是对象是否有必要执行finalize()方法。以下两种情况会被视为没有必要执行：</p>
+<ul>
+<li>对象没有覆盖finalize()方法</li>
+<li>finalize()方法已经被虚拟机调用过</li>
+</ul>
+<p>如果对象被判定为有必要执行finalize()方法，在此方法的执行过程中，对象与引用链上任何对象发生关联，则此对象可在第二次标记的时候移出即将回收的集合。相反，如果还没有发生关联，则此时被真正回收。</p>
+<h2 id="引用的概念"><a href="#引用的概念" class="headerlink" title="引用的概念"></a>引用的概念</h2><ul>
+<li>JDK1.2以前<ul>
+<li>引用</li>
+<li>非引用</li>
+</ul>
+</li>
+<li>JDK1.2以后<ul>
+<li><strong>强引用：</strong> 普遍存在，类似“Object obj = new Object()”。只要强引用还在，则不会被GC。</li>
+<li><strong>软引用(Soft Reference)：</strong> 有用但并非必须的对象。这些对象在程序将要发生OOM之前进行二次回收。如果二次回收还没有足够内存，则抛OOM异常。</li>
+<li><strong>弱引用：</strong> 比Soft Reference更弱，这些对象只能活到下次GC之前。在GC的时候，无论内存是否足够，都会将此引用对象回收。</li>
+<li><strong>虚引用(PhantomReference)：</strong> 最弱的引用关系，其作用是在虚引用关联的对象被GC时会收到一个系统通知。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"> /**</span><br><span class="line"> * 此代码的功能：</span><br><span class="line"> * 1 对象可以在被GC时自我拯救</span><br><span class="line"> * 2 自我拯救的机会只有一次，因为一个对象的finalize()方法只能被系统自动调用一次</span><br><span class="line"> */</span><br><span class="line">public class FinalizeEspaceGC &#123;</span><br><span class="line">    public static FinalizeEspaceGC SAVE_HOOK = null;</span><br><span class="line">    public void isAlive()&#123;</span><br><span class="line">        System.out.println(&quot;yes,i am still alive!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void finalize() throws Throwable &#123;</span><br><span class="line">        super.finalize();</span><br><span class="line">        System.out.println(&quot;finalize method executed!&quot;);</span><br><span class="line">        FinalizeEspaceGC.SAVE_HOOK = this;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Throwable&#123;</span><br><span class="line">        SAVE_HOOK = new FinalizeEspaceGC();</span><br><span class="line">        //对象第一次成功拯救自己</span><br><span class="line">        SAVE_HOOK = null;</span><br><span class="line">        System.gc();</span><br><span class="line">        //因为finalize()方法优先级很低，暂停0.5秒</span><br><span class="line">        Thread.sleep(500);</span><br><span class="line">        if(SAVE_HOOK != null) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            System.out.println(&quot;no,i am dead!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        //下面代码与上面完全一样，但是这次却自救失败了</span><br><span class="line">        SAVE_HOOK = null;</span><br><span class="line">        System.gc();</span><br><span class="line">        //因为finalize()方法优先级很低，暂停0.5秒</span><br><span class="line">        Thread.sleep(500);</span><br><span class="line">        if(SAVE_HOOK != null) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            System.out.println(&quot;no,i am dead!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="回收方法区"><a href="#回收方法区" class="headerlink" title="回收方法区"></a>回收方法区</h1><p>主要包括两个部分：</p>
+<ul>
+<li>废弃常量：如果常量池中的某个字符串在系统中没有任何一个String对象的引用，那么如果发生内存回收，则此常量会被系统清理出常量池。</li>
+<li>无用的类：满足以下三个条件：<ul>
+<li>该类的所有实例已经被回收</li>
+<li>加载该类的ClassLoader已经被回收</li>
+<li>该类对应的java.lang.Class对象没有任何地方被引用，无法在任何地方通过反射访问该类的方法<h2 id="GC算法-1"><a href="#GC算法-1" class="headerlink" title="GC算法"></a>GC算法</h2><h3 id="标记-清除法"><a href="#标记-清除法" class="headerlink" title="标记-清除法"></a>标记-清除法</h3>首先标记，然后在GC的时候清除标记的对象。不足之处：</li>
+</ul>
+</li>
+<li>标记和清除两个过程的效率都不高</li>
+<li>空间问题，标记清楚后会产生大量不连续的内存碎片<h3 id="复制算法"><a href="#复制算法" class="headerlink" title="复制算法"></a>复制算法</h3></li>
+<li>将可用内存划分为大小相等的两块，每次只是用其中一块</li>
+<li>当这块内存用完后，将存活的对象复制到另一块内存中</li>
+<li>将已使用的内存空间清理掉<h3 id="改进复制算法"><a href="#改进复制算法" class="headerlink" title="改进复制算法"></a>改进复制算法</h3>由于新生代的迭代速率较快，所以内存不需要按照1：1的比例划分。而是将内存分为一块较大的Eden区域和两块较小的Survivor空间，每次使用Eden和其中一块Survivor。<h3 id="标记-整理算法"><a href="#标记-整理算法" class="headerlink" title="标记-整理算法"></a>标记-整理算法</h3>让所有存活的对象往内存一端移动，然后清理掉边界以外的内存。<h3 id="分代收集算法"><a href="#分代收集算法" class="headerlink" title="分代收集算法"></a>分代收集算法</h3>根据对象存活周期不同将内存分为几块：</li>
+<li>新生代</li>
+<li>老年代</li>
+</ul>
+<p>根据各个年代的特点采用最适当的收集算法。</p>
+<h1 id="HotSpot"><a href="#HotSpot" class="headerlink" title="HotSpot"></a>HotSpot</h1><h2 id="可达性分析"><a href="#可达性分析" class="headerlink" title="可达性分析"></a>可达性分析</h2><h3 id="枚举根节点"><a href="#枚举根节点" class="headerlink" title="枚举根节点"></a>枚举根节点</h3><h3 id="GC停顿"><a href="#GC停顿" class="headerlink" title="GC停顿"></a>GC停顿</h3><p>在整个分析期间，为了保证分析准确性，整个分析过程中，对象引用不能变化。因此,GC时必须停顿所有的Java执行线程。</p>
+<h3 id="OopMap"><a href="#OopMap" class="headerlink" title="OopMap"></a>OopMap</h3><ul>
+<li>执行系统停顿下来时，不需要检查完所有执行上下文及全文引用位置，而使用OopMap。</li>
+<li>类加载完成时，HotSpot会记录偏移量上的类型供GC扫描。<h3 id="SafePoint"><a href="#SafePoint" class="headerlink" title="SafePoint"></a>SafePoint</h3></li>
+<li>程序并非在所有位置都停顿下来进行GC，只有在达到SafePoint时才暂停。</li>
+<li>SafePoint不能太少导致GC等待时间过长，SafePoint不能太多导致GC花费更多内存空间。</li>
+<li>选取标准：是否具有让程序长时间执行的特征。<h4 id="抢断式中断"><a href="#抢断式中断" class="headerlink" title="抢断式中断"></a>抢断式中断</h4></li>
+<li>首先将所有线程中断，如果有线程中断的地方不在SafePoint上则恢复，让它跑到SafePoint上。</li>
+<li>现在几乎没有虚拟机采用<h4 id="主动式中断"><a href="#主动式中断" class="headerlink" title="主动式中断"></a>主动式中断</h4></li>
+<li>当GC需要中断线程的时候，不直接对线程操作，而是设置一个标志，各个线程主动轮询这个标志，如果发现中断标志为真，则自己中断挂起。<h3 id="SafeRegion"><a href="#SafeRegion" class="headerlink" title="SafeRegion"></a>SafeRegion</h3>在一段代码片段中，引用关系不会发生变化。在这个区域中任意地方开始GC都是安全的。<h2 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h2>算法是方法论，而垃圾收集器就是具体实现。<h3 id="并行和并发"><a href="#并行和并发" class="headerlink" title="并行和并发"></a>并行和并发</h3></li>
+<li>并行：多个垃圾收集器线程同时运行，但是用户线程暂停。</li>
+<li>并发：垃圾收集器线程和用户线程同时运行，但是不是同一个CPU处理。<h3 id="Serial收集器"><a href="#Serial收集器" class="headerlink" title="Serial收集器"></a>Serial收集器</h3></li>
+<li>最基本、发展历史最悠久</li>
+<li>新生代收集器</li>
+<li>单线程收集器</li>
+<li>Client模式下首选<br><img src="./Serial收集器.png" alt=""><h3 id="ParNew收集器"><a href="#ParNew收集器" class="headerlink" title="ParNew收集器"></a>ParNew收集器</h3></li>
+<li>Serial收集器的多线程版</li>
+<li>新生代收集器</li>
+<li>Server模式下首选<h3 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge 收集器"></a>Parallel Scavenge 收集器</h3></li>
+<li>新生代收集器</li>
+<li>并行多线程收集器</li>
+<li>目的是达到一个可控制的吞吐量，而不是关注于缩短用户线程的停顿时间。<ul>
+<li>吞吐量=运行用户代码时间/（运行用户代码时间 + 垃圾收集时间）</li>
+</ul>
+</li>
+<li><p>精确控制吞吐量的参数：</p>
+<ul>
+<li><p>控制最大垃圾收集停顿时间，大于0的毫秒数。<strong>并不是设置的小就能使系统垃圾收集速度变快。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxGCPauseMillis</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>直接设置吞吐量大小，0到100的整数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:GCTimeRatio</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>GC自适应调节策略：根据当前系统运行情况收集性能监控信息，动态调整新生代大小、Eden与Survivor区比例、老年代对象年龄等参数，无需手工设置。提供最合适的停顿时间或者最大的吞吐量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#开关参数</span><br><span class="line">-XX:+UseAdaptiveSizePolicy</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="./ParallelScavenge收集器.png" alt=""></p>
+<h3 id="Serial-Old收集器"><a href="#Serial-Old收集器" class="headerlink" title="Serial Old收集器"></a>Serial Old收集器</h3><ul>
+<li>Serial收集器的老年代版本</li>
+<li>单线程收集器</li>
+<li>使用标记整理算法</li>
+<li>主要是Client端虚拟机使用</li>
+<li>如果在Server模式下，主要有两大用途：<ul>
+<li>JDK1.5及之前的版本，配合Parallel Scavenge使用。</li>
+<li>作为CMS的后备预案，在并发收集发生Concurrent Mode Failure时使用。<h3 id="Parallel-Old收集器"><a href="#Parallel-Old收集器" class="headerlink" title="Parallel Old收集器"></a>Parallel Old收集器</h3></li>
+</ul>
+</li>
+<li>Parallel Scavenge 收集器的老年代版本</li>
+<li>多线程收集器</li>
+<li>使用标记整理算法<h3 id="CMS-Concurrent-Mark-Sweep-收集器"><a href="#CMS-Concurrent-Mark-Sweep-收集器" class="headerlink" title="CMS(Concurrent Mark Sweep)收集器"></a>CMS(Concurrent Mark Sweep)收集器</h3></li>
+<li>以获取最短回收停顿时间为目标</li>
+<li>使用标记清除算法</li>
+<li>运作过程如下：<ul>
+<li><strong>初始标记(CMS initial mark)</strong>：标记GC Roots能直接关联到的对象，速度很快。</li>
+<li><strong>并发标记(CMS concurrent mark)</strong>：进行GC Roots Tracing的过程</li>
+<li><strong>重新标记(CMS remark)</strong>：修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，比初始标记稍长，但远比并发标记时间短。</li>
+<li><strong>并发清除(CMS concurrent sweep)</strong>：<br><img src="./CMS收集器.png" alt=""></li>
+</ul>
+</li>
+<li><p>总体来说，CMS收集器的内存回收过程是与用户线程并发执行的。</p>
+</li>
+<li><p>CMS的三个明显缺点</p>
+<ul>
+<li>CPU大于4个时，CMS回收垃圾线程随着CPU数量的增加而减少；而当CPU少于4个时，CMS对用户程序的影响就可能变得很大。  <ul>
+<li>增量式并发收集器(Incremental Concurrent Mark Sweep /i-CMS)：但是效果一般，不推荐使用。 </li>
+</ul>
+</li>
+<li>无法处理浮动垃圾，Concurrent Mode Failure会导致另一次Full GC产生而只能将这部分回收失败的垃圾留在下次GC再清理。因此CMS必须预留一部分空间提供给并发收集时的程序使用。<ul>
+<li>JDK1.5默认设置老年代使用86%后激活CMS收集器，如果应用中老年代增长不是太快，可以调高参数-XX:CMSInitiatingOccupancyFraction的值来提高触发百分比。</li>
+<li>JDK1.6中，CMS启动阈值已经提高到92%。</li>
+<li>如果运行期间预留的内存不够CMS，就会出现Concurrent Mode Failure，此时会启动后备预案：临时启用Serial Old收集器重新进行老年代垃圾收集，这样会导致停顿时间很长。</li>
+<li>因此，参数-XX:CMSInitiatingOccupancyFraction设置的太高容易导致大量Concurrent Mode Failure，性能反而会降低。<ul>
+<li>标记清除算法会产生很多的内存碎片。</li>
+<li>CMS提供了一个-XX:UseCMSCompactAtFullCollection开关参数，默认开启，用于在CMS收集器顶不住Full GC时，开启内存碎片合并整理过程，这个过程无法并发，因此停顿时间会变长。</li>
+<li>虚拟机还提供了另一个参数-XX:CMSFullGCsBeforeCompaction，用于设置执行多少次不压缩的Full GC后进行一次压缩的Full GC（默认为0，表示每次进入Full GC时都进行碎片整理）。<h3 id="G1-收集器"><a href="#G1-收集器" class="headerlink" title="G1 收集器"></a>G1 收集器</h3></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>当今收集器技术发展最前沿的成果之一</li>
+<li>面向服务端应用</li>
+<li>具有以下特点<ul>
+<li>并行和并发</li>
+<li>分代收集<ul>
+<li>将Java堆划分为多个大小相等的独立区域（Region），新生代和老年代的概念还在，只是不再是物理隔离，而是一部分Region的集合。</li>
+</ul>
+</li>
+<li>空间整合</li>
+<li>可预测的停顿<ul>
+<li>使用<strong>Remembered Set</strong>来避免在整个Java堆中进行全区域的垃圾收集。</li>
+<li>G1跟踪各个Region里的垃圾堆积的价值大小（回收所获得的空间及回收所需的时间），后台维护一个优先列表。</li>
+<li>每次根据允许的收集时间，优先回收价值最大的Region（Garbage-First）。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>G1收集器运作大致可划分为以下步骤：</p>
+<ul>
+<li>初始标记(Initial Marking)</li>
+<li>并发标记(Concurrent Marking)</li>
+<li>最终标记(Final Marking)</li>
+<li>筛选回收(Live Data Counting and Evacuation)<h1 id="理解GC日志"><a href="#理解GC日志" class="headerlink" title="理解GC日志"></a>理解GC日志</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">33.125:[GC [DefNew: 3324K-&gt;152K(3712K),0.0025925 secs] 3324K-&gt;152K(11904K) 0.0031680 secs]</span><br><span class="line">100.667:[Full GC [Tenured: 0K-&gt;210K(10240K),0.0149142 secs]4603K-&gt;210K(19456K),[Perm : 2999K-&gt;2999K(21248K)],0.0150007 secs][Times:user=0.01 sys=0.00,real=0.02 secs]</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>最前面的数字 33.125: 和 100.667：</p>
+<ul>
+<li>表示GC发生的时间，含义是从Java虚拟机启动以来经过的秒数</li>
+</ul>
+</li>
+<li>GC日志开头的 [GC 和 [Full GC：<ul>
+<li>说明这次垃圾收集的停顿类型，而不是区分新生代GC还是老年代GC</li>
+<li>如果有Full说明是发生了停顿（Stop-The-World）</li>
+</ul>
+</li>
+<li>接下来的 [DefNew 、[Tenured 、 [Perm <ul>
+<li>表示GC发生的区域。 <ul>
+<li>DefNew -&gt; Defualt New Generation <strong>Serial收集器的新生代</strong></li>
+<li>ParNew -&gt; Parallel New Generation <strong>Parallel Scavenge收集器的新生代</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>后面方括号内部的3324K-&gt;152K(3712K)：<ul>
+<li>表示GC前该内存已使用量 -&gt; GC后该内存区域已使用量 (该内存区域总容量) </li>
+</ul>
+</li>
+<li>方括号外3324K-&gt;152K(11904K)：<ul>
+<li>表示GC前Java堆已使用量 -&gt; GC后Java堆已使用量 (Java堆总容量)</li>
+</ul>
+</li>
+<li>0.0031680 secs：<ul>
+<li>表示该内存区域GC所占用的时间，单位为秒。</li>
+<li>有的收集器会给出更具体的数据，如[Times : user=0.01 sys=0.00,real=0.02 secs]<ul>
+<li>这里面的user、sys、real与Linux的time命令所输出的时间含义一致。<ul>
+<li>user 用户消耗CPU的时间</li>
+<li>sys 内核消耗CPU的时间</li>
+<li>real 操作从开始到结束所经过的墙钟时间（Wall Clock Time）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>GC常用参数总结</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UseSerialGC</td>
+<td>虚拟机在Client下的默认值，打开后，使用Serial + Serial Old进行内存回收</td>
+</tr>
+<tr>
+<td>UseParNewGC</td>
+<td>打开后，使用ParNew + Serial Old进行内存回收</td>
+</tr>
+<tr>
+<td>UseConcMarkSweepGC</td>
+<td>打开后，使用ParNew + CMS + Serial Old（CMF备用）进行内存回收。</td>
+</tr>
+<tr>
+<td>UseParallelGC</td>
+<td>虚拟机在Server模式下的默认值，打开后，使用Parallel Scavenge + Serial Old进行内存回收</td>
+</tr>
+<tr>
+<td>UseParallelOldGC</td>
+<td>打开后，使用Parallel Scavenge + Parallel Old 进行内存回收</td>
+</tr>
+<tr>
+<td>SurvivorRatio</td>
+<td>新生代中Eden与Survivor的容量比，默认为8，代表：Eden：Survivor=8：1</td>
+</tr>
+<tr>
+<td>PretenureSizeThreshold</td>
+<td>直接晋升到老年代的对象大小</td>
+</tr>
+<tr>
+<td>MaxTenuringThreshold</td>
+<td>晋升到老年代的对象年龄。每经过一次Minor GC后年龄加1</td>
+</tr>
+<tr>
+<td>UseAdaptiveSizePolicy</td>
+<td>动态调整Java堆中各个区域的大小及进入老年代的年龄</td>
+</tr>
+<tr>
+<td>HandlePromotionFailure</td>
+<td>是否允许分配担保失败，即老年代的剩余空间不足以应付新生代的整个Eden和Survivor区的所有对象都存活的极端情况</td>
+</tr>
+<tr>
+<td>ParallelGCThreads</td>
+<td>设置并行GC时进行内存回收的线程数</td>
+</tr>
+<tr>
+<td>GCTimeRatio</td>
+<td>GC时间占总时间的比率，默认为99，即允许1%的GC时间。仅在使用Parallel Scavenge收集器时生效</td>
+</tr>
+<tr>
+<td>MaxGCPauseMillis</td>
+<td>设置GC最大停顿时间。仅在使用Parallel Scavenge收集器时生效</td>
+</tr>
+<tr>
+<td>CMSInitiatingOccupancyFraction</td>
+<td>设置CMS在老年代空间被使用多少后触发垃圾收集。仅在使用CMS收集器时生效</td>
+</tr>
+<tr>
+<td>UseCMSCompactAtFullGollection</td>
+<td>设置CMS收集器在完成垃圾收集后是否要进行一次内存碎片整理。仅在使用CMS收集器时生效</td>
+</tr>
+<tr>
+<td>CMSFullGCsBeforeCompaction</td>
+<td>设置CMS收集器在进行若干次GC后再启动一次内存碎片整理。仅在使用CMS收集器时生效</td>
+</tr>
+</tbody>
+</table>
+<h1 id="内存分配与回收策略"><a href="#内存分配与回收策略" class="headerlink" title="内存分配与回收策略"></a>内存分配与回收策略</h1><h2 id="对象内存分配，可能分为以下几种情况："><a href="#对象内存分配，可能分为以下几种情况：" class="headerlink" title="对象内存分配，可能分为以下几种情况："></a>对象内存分配，可能分为以下几种情况：</h2><h3 id="堆：大多数分配在堆上"><a href="#堆：大多数分配在堆上" class="headerlink" title="堆：大多数分配在堆上"></a>堆：大多数分配在堆上</h3><ul>
+<li>Eden</li>
+<li>TLAB：如果启动了本地线程分配缓冲，优先在TLAB上分配</li>
+<li>Tenured：有可能直接分配在老年代中<h3 id="栈：JIT编译有可能间接分配在栈上"><a href="#栈：JIT编译有可能间接分配在栈上" class="headerlink" title="栈：JIT编译有可能间接分配在栈上"></a>栈：JIT编译有可能间接分配在栈上</h3><h2 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h2><h3 id="Serial-Serial-Old收集器"><a href="#Serial-Serial-Old收集器" class="headerlink" title="Serial / Serial Old收集器"></a>Serial / Serial Old收集器</h3></li>
+<li><p>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * VM Args:</span><br><span class="line"> * -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCdetails -XX:SurvivorRatio=8</span><br><span class="line"> * -verbose:gc 输出GC的详细情况</span><br><span class="line"> * -Xms20M -Xmx20M 限值Java堆大小为20MB</span><br><span class="line"> * -Xmn10M 新生代10M</span><br><span class="line"> * -XX:+PrintGCdetails 打印内存回收日志</span><br><span class="line"> * -XX:SurvivorRatio=8 Eden区与Survivor区的内存比8:1</span><br><span class="line"> */</span><br><span class="line">public class Serial &#123;</span><br><span class="line">    private static final int _1MB = 1024 * 1024;</span><br><span class="line">    public static void testAllcation()&#123;</span><br><span class="line">        byte[] allocation1,allocation2,allocation3,allocation4;</span><br><span class="line">        allocation1 = new byte[2 * _1MB];</span><br><span class="line">        allocation2 = new byte[2 * _1MB];</span><br><span class="line">        allocation3 = new byte[2 * _1MB];</span><br><span class="line">        allocation4 = new byte[4 * _1MB]; //出现一次Minor GC</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&quot;D:\Program Files (x86)\Java\jdk1.8.0_171\bin\java.exe&quot; -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 &quot;...&quot; com.laowang.vm.allocation.Serial</span><br><span class="line">[GC (Allocation Failure) [DefNew: 7474K-&gt;583K(9216K), 0.0039100 secs] 7474K-&gt;6727K(19456K), 0.0227873 secs] [Times: user=0.00 sys=0.00, real=0.01 secs] </span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 9216K, used 4843K [0x07400000, 0x07e00000, 0x07e00000)</span><br><span class="line">  eden space 8192K,  52% used [0x07400000, 0x078290f8, 0x07c00000)</span><br><span class="line">  from space 1024K,  56% used [0x07d00000, 0x07d91cc8, 0x07e00000)</span><br><span class="line">  to   space 1024K,   0% used [0x07c00000, 0x07c00000, 0x07d00000)</span><br><span class="line"> tenured generation   total 10240K, used 6144K [0x07e00000, 0x08800000, 0x08800000)</span><br><span class="line">   the space 10240K,  60% used [0x07e00000, 0x08400030, 0x08400200, 0x08800000)</span><br><span class="line"> Metaspace       used 211K, capacity 2280K, committed 2368K, reserved 4480K</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="大对象直接进入老年代"><a href="#大对象直接进入老年代" class="headerlink" title="大对象直接进入老年代"></a>大对象直接进入老年代</h3><ul>
+<li><p>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * VM Args:</span><br><span class="line"> * -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8</span><br><span class="line"> * -XX:PretenureSizeThreshold=3145728 设置大于3MB的对象直接进入老年代，这里不能直接写3MB</span><br><span class="line"> */</span><br><span class="line">public class Tenured &#123;</span><br><span class="line">    private static final int _1MB = 1024 * 1024;</span><br><span class="line">    public static void testPretenureSizeThreshold()&#123;</span><br><span class="line">        byte[] allocation;</span><br><span class="line">        allocation = new byte[4 * _1MB];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        testPretenureSizeThreshold();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&quot;D:\Program Files (x86)\Java\jdk1.8.0_171\bin\java.exe&quot; -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:PretenureSizeThreshold=3145728 &quot;...&quot; com.laowang.vm.allocation.Tenured</span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 9216K, used 1494K [0x07600000, 0x08000000, 0x08000000)</span><br><span class="line">  eden space 8192K,  18% used [0x07600000, 0x07775ab0, 0x07e00000)</span><br><span class="line">  from space 1024K,   0% used [0x07e00000, 0x07e00000, 0x07f00000)</span><br><span class="line">  to   space 1024K,   0% used [0x07f00000, 0x07f00000, 0x08000000)</span><br><span class="line"> tenured generation   total 10240K, used 4096K [0x08000000, 0x08a00000, 0x08a00000)</span><br><span class="line">   the space 10240K,  40% used [0x08000000, 0x08400010, 0x08400200, 0x08a00000)</span><br><span class="line"> Metaspace       used 210K, capacity 2280K, committed 2368K, reserved 4480K</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="长期存活的直接进入老年代"><a href="#长期存活的直接进入老年代" class="headerlink" title="长期存活的直接进入老年代"></a>长期存活的直接进入老年代</h3><ul>
+<li><p>代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * VM Args:</span><br><span class="line"> * -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8</span><br><span class="line"> * -XX:MaxTenuringThreshold=1 经过1次GC后进入Survivor的对象没被回收，第二次就直接进入tenured</span><br><span class="line"> * -XX:+PrintTenuringDistribution 打印</span><br><span class="line"> */</span><br><span class="line">public class TenuringThreshold &#123;</span><br><span class="line">    private static final int _1MB = 1024 * 1024;</span><br><span class="line">    public static void testTenuringThreshold()&#123;</span><br><span class="line">        byte[] allocation1,allocation2,allocation3;</span><br><span class="line">        allocation1 = new byte[_1MB / 4];</span><br><span class="line">        allocation2 = new byte[4 * _1MB];</span><br><span class="line">        allocation3 = new byte[4 * _1MB];</span><br><span class="line">        allocation3 = null;</span><br><span class="line">        allocation3 = new byte[4 * _1MB];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        testTenuringThreshold();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&quot;D:\Program Files (x86)\Java\jdk1.8.0_171\bin\java.exe&quot; -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:MaxTenuringThreshold=1 -XX:+PrintTenuringDistribution &quot;...&quot; com.laowang.vm.allocation.TenuringThreshold</span><br><span class="line">[GC (Allocation Failure) [DefNew</span><br><span class="line">Desired survivor size 524288 bytes, new threshold 1 (max 1)</span><br><span class="line">- age   1:     886848 bytes,     886848 total</span><br><span class="line">: 5682K-&gt;866K(9216K), 0.0037215 secs] 5682K-&gt;4962K(19456K), 0.0037612 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">[GC (Allocation Failure) [DefNew</span><br><span class="line">Desired survivor size 524288 bytes, new threshold 1 (max 1)</span><br><span class="line">: 4962K-&gt;0K(9216K), 0.0010335 secs] 9058K-&gt;4955K(19456K), 0.0010503 secs] [Times: user=0.00 sys=0.00, real=0.00 secs] </span><br><span class="line">Heap</span><br><span class="line"> def new generation   total 9216K, used 4178K [0x07200000, 0x07c00000, 0x07c00000)</span><br><span class="line">  eden space 8192K,  51% used [0x07200000, 0x07614938, 0x07a00000)</span><br><span class="line">  from space 1024K,   0% used [0x07a00000, 0x07a00000, 0x07b00000)</span><br><span class="line">  to   space 1024K,   0% used [0x07b00000, 0x07b00000, 0x07c00000)</span><br><span class="line"> tenured generation   total 10240K, used 4955K [0x07c00000, 0x08600000, 0x08600000)</span><br><span class="line">   the space 10240K,  48% used [0x07c00000, 0x080d6ea8, 0x080d7000, 0x08600000)</span><br><span class="line"> Metaspace       used 219K, capacity 2280K, committed 2368K, reserved 4480K</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="动态对象年龄判断"><a href="#动态对象年龄判断" class="headerlink" title="动态对象年龄判断"></a>动态对象年龄判断</h3><ul>
+<li>当Survivor中的相同年龄的所有对象大小总和大于Survivor的一半时，年龄大于或等于该年龄的对象就可以直接进入老年代。不用等到MaxTenuredThreshold设置的值。<h3 id="空间分配担保"><a href="#空间分配担保" class="headerlink" title="空间分配担保"></a>空间分配担保</h3></li>
+<li>在Minor GC之前，虚拟机会先检查老年代的连续内存空间够不够新生代所有对象的内存空<ul>
+<li>如果够，那么Minor GC保证是安全的。</li>
+<li>如果不够，则虚拟机会查看HandlePromotionFailure设置值是否允许担保失败。<ul>
+<li>如果允许，则会继续检查老年代的最大可用连续空间是否大于历次晋升到老年代对象的平均水平。<ul>
+<li>如果大于，将尝试着进行一次Minor GC，尽管这次Minor GC是有风险的</li>
+<li>如果小于或者HandlePromotionFailure设置不允许冒险，那么就会进行一次Full GC。<h4 id="“冒险”的概念"><a href="#“冒险”的概念" class="headerlink" title="“冒险”的概念"></a>“冒险”的概念</h4></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>当大量对象在Minor GC后仍然存活，就需要老年代进行分配担保</li>
+<li>把Survivor无法容纳的对象直接进入老年代</li>
+<li>要进行这样的担保，首先要保证老年代的空间足够容纳这些对象</li>
+<li>对象有多少能够最终存活下来在实际完成内存回收之前无法确定，所以只有按照以前晋升老年代的对象容量的平均值做参考</li>
+<li>如果不够，再确定是否需要进行Full GC来腾出更多空间<br><br><br></li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/GC与内存分配策略/" title="GC与内存分配策略" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/GC与内存分配策略/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/虚拟机性能监控与JDK可视化工具/" title="虚拟机性能监控与JDK可视化工具"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/JVM内存划分及OOM分析/" title="JVM内存划分及OOM分析"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

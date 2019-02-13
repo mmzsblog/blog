@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>字节码指令 | mmzsblog</title>
+  <meta name="description" content="Java虚拟机指令Java虚拟机指令的构成 一个字节长度 代表着某种特定操作含义的数字（称为操作码，Opcode） 跟随其后的零到多个代表此操作数所需的参数（称为操作数，Operands）  Java虚拟机采用的是面向操作数栈而不是寄存器的架构 优点：放弃操作数长度对齐，可以省略很多填充和间隔符号。 缺点：在某种程度上会导致解释执行字节码时损失一些性能。字节码与数据类型   大多数指令都包含了其操">
+<meta name="keywords" content="JVM虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字节码指令">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/字节码指令/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="Java虚拟机指令Java虚拟机指令的构成 一个字节长度 代表着某种特定操作含义的数字（称为操作码，Opcode） 跟随其后的零到多个代表此操作数所需的参数（称为操作数，Operands）  Java虚拟机采用的是面向操作数栈而不是寄存器的架构 优点：放弃操作数长度对齐，可以省略很多填充和间隔符号。 缺点：在某种程度上会导致解释执行字节码时损失一些性能。字节码与数据类型   大多数指令都包含了其操">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.488Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字节码指令">
+<meta name="twitter:description" content="Java虚拟机指令Java虚拟机指令的构成 一个字节长度 代表着某种特定操作含义的数字（称为操作码，Opcode） 跟随其后的零到多个代表此操作数所需的参数（称为操作数，Operands）  Java虚拟机采用的是面向操作数栈而不是寄存器的架构 优点：放弃操作数长度对齐，可以省略很多填充和间隔符号。 缺点：在某种程度上会导致解释执行字节码时损失一些性能。字节码与数据类型   大多数指令都包含了其操">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/字节码指令/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Java虚拟机指令"><span class="toc-number">1.</span> <span class="toc-text">Java虚拟机指令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java虚拟机指令的构成"><span class="toc-number">1.1.</span> <span class="toc-text">Java虚拟机指令的构成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字节码与数据类型"><span class="toc-number">1.2.</span> <span class="toc-text">字节码与数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#加载和存储指令"><span class="toc-number">1.2.1.</span> <span class="toc-text">加载和存储指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#运算指令"><span class="toc-number">1.2.2.</span> <span class="toc-text">运算指令</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#运算结果异常分析"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">运算结果异常分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#类型转换指令"><span class="toc-number">1.2.3.</span> <span class="toc-text">类型转换指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象创建与访问指令"><span class="toc-number">1.2.4.</span> <span class="toc-text">对象创建与访问指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#操作数栈管理指令"><span class="toc-number">1.2.5.</span> <span class="toc-text">操作数栈管理指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#控制转移指令"><span class="toc-number">1.2.6.</span> <span class="toc-text">控制转移指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法调用和返回指令"><span class="toc-number">1.2.7.</span> <span class="toc-text">方法调用和返回指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异常处理指令"><span class="toc-number">1.2.8.</span> <span class="toc-text">异常处理指令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#同步指令"><span class="toc-number">1.2.9.</span> <span class="toc-text">同步指令</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-字节码指令" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      字节码指令
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/字节码指令/" class="article-date">
+	  <time datetime="2016-10-28T02:24:00.000Z" itemprop="datePublished">2016-10-28</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    老王和小杨
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/字节码指令/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="Java虚拟机指令"><a href="#Java虚拟机指令" class="headerlink" title="Java虚拟机指令"></a>Java虚拟机指令</h1><h2 id="Java虚拟机指令的构成"><a href="#Java虚拟机指令的构成" class="headerlink" title="Java虚拟机指令的构成"></a>Java虚拟机指令的构成</h2><ul>
+<li>一个字节长度</li>
+<li>代表着某种特定操作含义的数字（称为操作码，Opcode）</li>
+<li>跟随其后的零到多个代表此操作数所需的参数（称为操作数，Operands） </li>
+<li>Java虚拟机采用的是<strong>面向操作数栈</strong>而不是<del>寄存器</del>的架构<ul>
+<li>优点：放弃操作数长度对齐，可以省略很多填充和间隔符号。</li>
+<li>缺点：在某种程度上会导致解释执行字节码时损失一些性能。<h2 id="字节码与数据类型"><a href="#字节码与数据类型" class="headerlink" title="字节码与数据类型"></a>字节码与数据类型</h2></li>
+</ul>
+</li>
+<li>大多数指令都包含了其操作所对应的数据类型信息。</li>
+<li>大部分与数据类型相关的字节码指令，它们的操作码助记符中都有特殊的卫子夫来表名专门为哪种数据类型服务。<ul>
+<li>i代表对int类型的数据操作</li>
+<li>l代表long</li>
+<li>s代表short</li>
+<li>b代表byte</li>
+<li>c代表char</li>
+<li>f代表float</li>
+<li>d代表double</li>
+<li>a代表reference</li>
+</ul>
+</li>
+<li>也有一些指令的助记符中没有明确的指明操作类型的字母：<ul>
+<li>如arraylength，它没有代表数据类型的特殊字符，但是操作数也只能是个数组类型的对象。</li>
+</ul>
+</li>
+<li>还有一些指令，如goto则是与数据类型无关的。</li>
+<li>因此，Java虚拟机的指令集对于特定的操作只提供了<strong>有限的类型相关指令</strong>去支持它。也就是说，指令集将会故意被设计成非完全独立的。有一些单独的指令可以在必要的时候用来将一些不支持的类型转换为可被支持的类型。<h3 id="加载和存储指令"><a href="#加载和存储指令" class="headerlink" title="加载和存储指令"></a>加载和存储指令</h3>用于将数据在栈帧中的局部变量表和操作数栈之间来回传输，包括：</li>
+<li>将一个局部变量加载到操作栈：iload、iload_<n>、lload、lload_<n>、fload、fload_<n>、dload、dload_<n>、aload、aload_<n></n></n></n></n></n></li>
+<li>将一个数值从操作数栈存储到局部变量表：istore、istore_<n>、lstore、lstore_<n>、fstore、fstore_<n>、dstore、dstore_<n>、astore、astore_<n>。</n></n></n></n></n></li>
+<li>将一个常量加载到操作数栈：bipush、sipush、ldc、ldc_w、ldc2_w、aconst_null、iconst_ml、iconst_<i>、lconst_<l>、fconst_<f>、dconst_<d>。</d></f></l></i></li>
+<li>扩充局部变量表的访问索引的指令：wide。<br><br>==注：<n> <l>等，表示一组指令，如iload_<n> 代表iload_0,iload_1,iload_2和iload3这几条指令。==<h3 id="运算指令"><a href="#运算指令" class="headerlink" title="运算指令"></a>运算指令</h3>用于对两个操作数栈上的值进行某种特定运算，并把结果重新存入操作栈顶。指令如下：</n></l></n></li>
+<li>加法指令：iadd、ladd、fadd、dadd。</li>
+<li>减法指令：isub、lsub、fsub、dsub。</li>
+<li>乘法指令：imul、lmul、fmul、dmul。</li>
+<li>除法指令：idiv、ldiv、fdiv、ddiv。</li>
+<li>求余指令：irem、lrem、frem、drem。</li>
+<li>取反指令：ineg、lneg、fneg、dneg。</li>
+<li>位移指令：ishl、ishr、iushr、lshl、lshr、lushr。</li>
+<li>按位或指令：ior、lor。</li>
+<li>按位与指令：iand、land。</li>
+<li>按位异或指令：ixor、lxor。</li>
+<li>局部变量自增指令：iinc。</li>
+<li>比较指令：dcmpg、dcmpl、fcmpg、fcmpl、lcmp。<br><br>==注：byte、short、char和boolean类型没有直接支持的算数指令，对于这类数据的运算，应使用操作int类型的指令代替。==<h4 id="运算结果异常分析"><a href="#运算结果异常分析" class="headerlink" title="运算结果异常分析"></a>运算结果异常分析</h4></li>
+<li>数据运算可能导致溢出，如两个很大的正整数相加，结果可能会是一个负数。Java虚拟机规范没有明确定义整型数据溢出的具体运算结果，仅规定了在处理整型数据时，只有除法指令以及求余指令中当出现除数为零时会导致虚拟机抛出ArithmeticException异常，其余任何整型数运算都不应该抛出运行时异常。</li>
+<li>浮点数运算时，所有运算结果必须舍入到适当的精度，非精确的结果必须舍入为可被表示的最接近的精确值，如果有两种可表示的形式与该值一样接近，将优先选择最低有效位为零的。</li>
+<li>浮点数转换 为整数时，Java虚拟机使用向零舍入模式，这种模式的舍入结果会导致数字被截断，所有小数部分的有效字节都会被丢弃。</li>
+<li>在处理浮点数运算时，不会抛出==任何运行时异常==，当一个操作产生溢出时，将会使用有符号的无穷大来表示，如果某个操作结果没有明确的数学定义的话，将会使用NaN来表示，所有使用NaN值作为操作数的算数操作，结果都会返回NaN。</li>
+<li>在对long类型数值进行比较时，虚拟机采用带符号的比较方式，而对浮点数值进行比较时，虚拟机会采用<strong>无信号比较*</strong>方式。<h3 id="类型转换指令"><a href="#类型转换指令" class="headerlink" title="类型转换指令"></a>类型转换指令</h3>可以将两种不同的数值类型进行相互转换，这些转换操作一般用于实现用户代码中的显式类型转换操作。</li>
+<li>直接支持宽化类型转换，及向上转，小转大。<ul>
+<li>int到long、float或者double类型。</li>
+<li>long到float、double类型。</li>
+<li>float到double类型。</li>
+</ul>
+</li>
+<li>处理窄化类型转换时，必须显式地使用转化指令来完成。这些指令包括：<ul>
+<li>i2b</li>
+<li>i2c</li>
+<li>i2s</li>
+<li>l2i</li>
+<li>f2i</li>
+<li>f2l</li>
+<li>d2i</li>
+<li>d2l</li>
+<li>d2f<br>但可能导致转换结果产生不同的正负号、不同的数量级，也可能导致数值的精度丢失。<h3 id="对象创建与访问指令"><a href="#对象创建与访问指令" class="headerlink" title="对象创建与访问指令"></a>对象创建与访问指令</h3>虽然累实例和数组都是对象，但是Java虚拟机对类实例和数组的创建和操作使用了不同的字节码指令。指令如下：</li>
+</ul>
+</li>
+<li>创建对象指令：new</li>
+<li>创建数组指令：newarray、anewarray、multianewarray</li>
+<li>访问类字段和实例字段的指令：getfield、putfield、getstatic、putstatic</li>
+<li>把一个数组元素加载到操作数栈的指令：baload、caload、saload、iaload、laload、faload、daload、aaload。</li>
+<li>将一个操作数栈的值存储到数组元素中的指令：bastore、castore、sastore、iastore、fastore、dastore、aastore。</li>
+<li>取数组长度的指令：arraylength。</li>
+<li>检查类实例类型的指令：instanceof、checkcast。<h3 id="操作数栈管理指令"><a href="#操作数栈管理指令" class="headerlink" title="操作数栈管理指令"></a>操作数栈管理指令</h3></li>
+<li>将操作数栈的栈顶一个或两个元素出栈：pop、pop2。</li>
+<li>复制栈顶一个或两个数值并将复制值或双份的复制值重新压入栈顶：dup、dup2、dup_x1、dup2_x1、dup_x2、dup2_x2.</li>
+<li>将栈最顶端的两个数值互换：swap。<h3 id="控制转移指令"><a href="#控制转移指令" class="headerlink" title="控制转移指令"></a>控制转移指令</h3>可以让Java虚拟机有条件或无条件地从指定的位置指令或不是控制转移指令的下一条指令继续执行程序。可以认为控制转移指令就是在有条件或无条件地修改PC寄存器的值。指令如下：</li>
+<li>条件分支：ifeq、iflt、ifle、ifne、ifgt、ifge、ifnull、ifnonnull、if_icmpeq、if_icmpne、if_icmplt、if_icmpgt、if_icmple、if_icmpge、if_acmpeq和if_acmpne。</li>
+<li>复合条件分支：tableswitch、lookupswitch。</li>
+<li>无条件分支：goto、goto_w、jsr、jsr_w、ret。<h3 id="方法调用和返回指令"><a href="#方法调用和返回指令" class="headerlink" title="方法调用和返回指令"></a>方法调用和返回指令</h3></li>
+<li>调用对象的实例方法：invokevirtual</li>
+<li>调用接口方法：invokeinsterface</li>
+<li>调用一些需要特殊处理的实例方法（实例初始化方法、私有方法和父类方法等）：invokespecial</li>
+<li>调用静态方法（类方法）：invokestatic</li>
+<li>在运行时动态解析出调用点限定符所引用的方法，并执行该方法：invokedynamic。<h3 id="异常处理指令"><a href="#异常处理指令" class="headerlink" title="异常处理指令"></a>异常处理指令</h3>显式抛出异常的操作（throw语句）都由athrow指令来实现。<h3 id="同步指令"><a href="#同步指令" class="headerlink" title="同步指令"></a>同步指令</h3>Java虚拟机可以支持方法及的同步和方法内部一段指令序列的同步，这两种同步结构都是使用Monitor来支持的。<br><br>方法级的同步是隐式的，无需通过字节码指令来控制，它是现在方法调用和返回操作之中。虚拟机可以从方法常量池的方法表结构中的<strong>ACC_SYNCHRONIZED</strong>访问标志得知一个方法是否声名为同步方法。当方法调用时，调用指令将会检查方法的<strong>ACC_SYNCHRONIZED</strong>是否被设置，如果设置了，执行线程就要求先陈宫持有Monitor，然后才能执行这个方法，当方法完成时释放Monitor。</li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/字节码指令/" title="字节码指令" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/字节码指令/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/虚拟机类加载机制/" title="虚拟机类加载机制"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/类文件结构/" title="类文件结构"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

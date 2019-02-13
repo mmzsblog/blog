@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>类文件结构 | mmzsblog</title>
+  <meta name="description" content="Class类文件的结构概念 Class文件是一组以8位字节为基础单位的二进制流 按顺序整齐排列 没有分隔符 排序方式：高位在前 Big-Endian: 最高位字节在地址最低位、最低位字节在地址最高位。  Little-Endian：相反。存储方式   类似于C语言结构体的伪结构来存储 只有两种数据类型： 无符号数：属于基本数据类型 u1 : 1个字节 u2 : 2个字节 u4 : 4个字节 u8">
+<meta name="keywords" content="JVM虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="类文件结构">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/类文件结构/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="Class类文件的结构概念 Class文件是一组以8位字节为基础单位的二进制流 按顺序整齐排列 没有分隔符 排序方式：高位在前 Big-Endian: 最高位字节在地址最低位、最低位字节在地址最高位。  Little-Endian：相反。存储方式   类似于C语言结构体的伪结构来存储 只有两种数据类型： 无符号数：属于基本数据类型 u1 : 1个字节 u2 : 2个字节 u4 : 4个字节 u8">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.529Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="类文件结构">
+<meta name="twitter:description" content="Class类文件的结构概念 Class文件是一组以8位字节为基础单位的二进制流 按顺序整齐排列 没有分隔符 排序方式：高位在前 Big-Endian: 最高位字节在地址最低位、最低位字节在地址最高位。  Little-Endian：相反。存储方式   类似于C语言结构体的伪结构来存储 只有两种数据类型： 无符号数：属于基本数据类型 u1 : 1个字节 u2 : 2个字节 u4 : 4个字节 u8">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/类文件结构/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Class类文件的结构"><span class="toc-number">1.</span> <span class="toc-text">Class类文件的结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#概念"><span class="toc-number">1.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#存储方式"><span class="toc-number">1.2.</span> <span class="toc-text">存储方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#魔数"><span class="toc-number">1.3.</span> <span class="toc-text">魔数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Class文件的版本"><span class="toc-number">1.4.</span> <span class="toc-text">Class文件的版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常量池"><span class="toc-number">1.5.</span> <span class="toc-text">常量池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问标志-access-flags"><span class="toc-number">1.6.</span> <span class="toc-text">访问标志(access_flags)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类索引-this-class-、父类索引-super-class-与接口索引-interfaces-集合"><span class="toc-number">1.7.</span> <span class="toc-text">类索引(this_class)、父类索引(super_class)与接口索引(interfaces)集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#字段表集合-field-info"><span class="toc-number">1.8.</span> <span class="toc-text">字段表集合(field_info)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法表集合"><span class="toc-number">1.9.</span> <span class="toc-text">方法表集合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#属性表集合"><span class="toc-number">1.10.</span> <span class="toc-text">属性表集合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Code属性"><span class="toc-number">1.10.1.</span> <span class="toc-text">Code属性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#this关键字"><span class="toc-number">1.10.1.1.</span> <span class="toc-text">this关键字</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exceptions属性"><span class="toc-number">1.10.2.</span> <span class="toc-text">Exceptions属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LineNumberTable属性"><span class="toc-number">1.10.3.</span> <span class="toc-text">LineNumberTable属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LocalVariableTable属性"><span class="toc-number">1.10.4.</span> <span class="toc-text">LocalVariableTable属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SourceFile属性"><span class="toc-number">1.10.5.</span> <span class="toc-text">SourceFile属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ConstantValue属性"><span class="toc-number">1.10.6.</span> <span class="toc-text">ConstantValue属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InnerClasses属性"><span class="toc-number">1.10.7.</span> <span class="toc-text">InnerClasses属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deprecated及Synthetic属性"><span class="toc-number">1.10.8.</span> <span class="toc-text">Deprecated及Synthetic属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#StackMapTable属性"><span class="toc-number">1.10.9.</span> <span class="toc-text">StackMapTable属性*</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Signature属性"><span class="toc-number">1.10.10.</span> <span class="toc-text">Signature属性*</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BootstrapMethods属性"><span class="toc-number">1.10.11.</span> <span class="toc-text">BootstrapMethods属性*</span></a></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-类文件结构" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      类文件结构
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/类文件结构/" class="article-date">
+	  <time datetime="2016-10-27T02:24:00.000Z" itemprop="datePublished">2016-10-27</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    老王和小杨
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/类文件结构/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.5k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="Class类文件的结构"><a href="#Class类文件的结构" class="headerlink" title="Class类文件的结构"></a>Class类文件的结构</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li>Class文件是一组以8位字节为基础单位的二进制流</li>
+<li>按顺序整齐排列</li>
+<li>没有分隔符</li>
+<li>排序方式：高位在前<ul>
+<li>Big-Endian: <strong>最高位字节在地址最低位、最低位字节在地址最高位。</strong> </li>
+<li>Little-Endian：<strong>相反。</strong><h2 id="存储方式"><a href="#存储方式" class="headerlink" title="存储方式"></a>存储方式</h2></li>
+</ul>
+</li>
+<li>类似于C语言结构体的伪结构来存储</li>
+<li>只有两种数据类型：<ul>
+<li>无符号数：属于基本数据类型<ul>
+<li>u1 : 1个字节</li>
+<li>u2 : 2个字节</li>
+<li>u4 : 4个字节</li>
+<li>u8 : 8个字节</li>
+</ul>
+</li>
+<li>表：多个无符号数或其他表作为数据项构成的复合数据类型<ul>
+<li>以”_info”结尾。</li>
+<li>描述有层次关系的复合结构数据</li>
+<li>整个Class文件本质上就是一张表<h2 id="魔数"><a href="#魔数" class="headerlink" title="魔数"></a>魔数</h2></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>魔数<ul>
+<li>每个Class文件的头4个字节。</li>
+<li>确定这个文件是不是一个能被虚拟机接受的Class文件</li>
+<li>Java中的值为：0xCAFEBABE –&gt; 咖啡宝贝？<h2 id="Class文件的版本"><a href="#Class文件的版本" class="headerlink" title="Class文件的版本"></a>Class文件的版本</h2></li>
+<li>紧接着的4个字节<ul>
+<li>第5个和第6个：次版本号（Minor Version） </li>
+<li>第7个和第8个：主版本号（Major Version）</li>
+</ul>
+</li>
+<li>满足向下兼容，即高版本兼容低版本的Class文件<h2 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h2></li>
+</ul>
+</li>
+<li>紧接着版本号</li>
+<li>Class文件中的资源仓库</li>
+<li>常量池容量计数值（constant_pool_count）<ul>
+<li>常量池中常量数量不确定，所以需要一个计数</li>
+<li>是u2类型的数据</li>
+<li>从1开始而不是从0开始计数<ul>
+<li>设计者将0位做特殊考虑，特殊情况下，有些指向常量池的索引数据要表达“==不引用任何常量池项目==”的意义。 </li>
+</ul>
+</li>
+<li>常量池容量（偏移地址：0x00000008）为十六进制数0x0016，十进制22，表示常量池中有21项常量，索引1~21。</li>
+</ul>
+</li>
+<li>主要存放类型<ul>
+<li>字面量(Literal)：如文本字符串、final常量等</li>
+<li>符号引用(Symbolic References)<ul>
+<li>类和接口的全限定名</li>
+<li>字段的名称和描述符</li>
+<li>方法的名称和描述符</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>14种常量池的每个常量表<ul>
+<li>CONSTANT_Utf8_info 1 UTF-8<br><br>包含的类型:<ul>
+<li>u1 tag 1 标志位</li>
+<li>u2 length 1 utf-8字符串的长度</li>
+<li>u1 bytes length 真正的字符串内容</li>
+</ul>
+</li>
+<li>CONSTANT_Integer_info 3 整型</li>
+<li>CONSTANT_Float_info 4 浮点型</li>
+<li>CONSTANT_Long_info 5 长整型</li>
+<li>CONSTANT_Double_info 6 双精</li>
+<li>CONSTANT_Class_info 7 类或接口的符号引用</li>
+<li>CONSTANT_String_info 8 字符串型</li>
+<li>CONSTANT_Fieldref_info 9 字段的符号引用</li>
+<li>CONSTANT_Methodref_info 10 类中方法的符号引用</li>
+<li>CONSTANT_InterfaceMethodref_info 11 接口中方法的符号引用</li>
+<li>CONSTANT_NameAndType_info 12 字段或方法的部分符号引用</li>
+<li>CONSTANT_MethodHandle_info 15 方法句柄</li>
+<li>CONSTANT_MethodType_info 16 标识方法类型</li>
+<li>CONSTANT_InvokeDynamic_info 18 动态方法调用点</li>
+</ul>
+</li>
+<li>java代码示例<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">PS E:\&gt; javac .\TestClass.java</span><br><span class="line">PS E:\&gt; javap -verbose .\TestClass.class</span><br><span class="line">Classfile /E:/TestClass.class</span><br><span class="line">  Last modified 2018-8-9; size 293 bytes</span><br><span class="line">  MD5 checksum a364fba0fc6304868b1a4cc1a3ba3729</span><br><span class="line">  Compiled from &quot;TestClass.java&quot;</span><br><span class="line">public class org.laowang.clazz.TestClass</span><br><span class="line">  minor version: 0</span><br><span class="line">  major version: 52</span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER</span><br><span class="line">Constant pool:</span><br><span class="line">   #1 = Methodref          #4.#15         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">   #2 = Fieldref           #3.#16         // org/laowang/clazz/TestClass.m:I</span><br><span class="line">   #3 = Class              #17            // org/laowang/clazz/TestClass</span><br><span class="line">   #4 = Class              #18            // java/lang/Object</span><br><span class="line">   #5 = Utf8               m</span><br><span class="line">   #6 = Utf8               I</span><br><span class="line">   #7 = Utf8               &lt;init&gt;</span><br><span class="line">   #8 = Utf8               ()V</span><br><span class="line">   #9 = Utf8               Code</span><br><span class="line">  #10 = Utf8               LineNumberTable</span><br><span class="line">  #11 = Utf8               inc</span><br><span class="line">  #12 = Utf8               ()I</span><br><span class="line">  #13 = Utf8               SourceFile</span><br><span class="line">  #14 = Utf8               TestClass.java</span><br><span class="line">  #15 = NameAndType        #7:#8          // &quot;&lt;init&gt;&quot;:()V</span><br><span class="line">  #16 = NameAndType        #5:#6          // m:I</span><br><span class="line">  #17 = Utf8               org/laowang/clazz/TestClass</span><br><span class="line">  #18 = Utf8               java/lang/Object</span><br><span class="line">&#123;</span><br><span class="line">  public org.laowang.clazz.TestClass();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=1, locals=1, args_size=1</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">         4: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 3: 0</span><br><span class="line"></span><br><span class="line">  public int inc();</span><br><span class="line">    descriptor: ()I</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=2, locals=1, args_size=1</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: getfield      #2                  // Field m:I</span><br><span class="line">         4: iconst_1</span><br><span class="line">         5: iadd</span><br><span class="line">         6: ireturn</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 7: 0</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: &quot;TestClass.java&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="访问标志-access-flags"><a href="#访问标志-access-flags" class="headerlink" title="访问标志(access_flags)"></a>访问标志(access_flags)</h2><ul>
+<li>紧接着常量池</li>
+<li>两个字节</li>
+<li>总共16位，当前只定义了其中8个，未使用的一律为0</li>
+<li></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>标志名称</th>
+<th>标志值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACC_PUBLIC</td>
+<td>0x0001</td>
+<td>public</td>
+</tr>
+<tr>
+<td>ACC_FINAL</td>
+<td>0x0010</td>
+<td>final</td>
+</tr>
+<tr>
+<td>ACC_SUPER</td>
+<td>0x0020</td>
+<td>invokespecial（JDK1.0.2之后编译出来的类这个标志欧必须为真）</td>
+</tr>
+<tr>
+<td>ACC_INTERFACE</td>
+<td>0x0400</td>
+<td>abstract(接口或者类)</td>
+</tr>
+<tr>
+<td>ACC_SYNTHETIC</td>
+<td>0x1000</td>
+<td>并非由用户代码产生</td>
+</tr>
+<tr>
+<td>ACC_ANNOTATION</td>
+<td>0x2000</td>
+<td>注解</td>
+</tr>
+<tr>
+<td>ACC_ENUM</td>
+<td>0x4000</td>
+<td>枚举</td>
+</tr>
+</tbody>
+</table>
+<h2 id="类索引-this-class-、父类索引-super-class-与接口索引-interfaces-集合"><a href="#类索引-this-class-、父类索引-super-class-与接口索引-interfaces-集合" class="headerlink" title="类索引(this_class)、父类索引(super_class)与接口索引(interfaces)集合"></a>类索引(this_class)、父类索引(super_class)与接口索引(interfaces)集合</h2><ul>
+<li>紧接着访问标志</li>
+<li>u2类型(this_class、super_class)</li>
+<li>u2类型集合(interfaces)</li>
+<li>各索引的含义<ul>
+<li>这三项数据来确定类的<strong>继承关系</strong></li>
+<li>类索引(this_class)用来确定类全限定名</li>
+<li>父类索引(super_class)用来确定父类的全限定名</li>
+<li>接口索引描述类实现的接口，按从左到右的顺序排列。</li>
+</ul>
+</li>
+<li>父类索引(super_class)除了java.lang.Object外，其他的类都不为0。<h2 id="字段表集合-field-info"><a href="#字段表集合-field-info" class="headerlink" title="字段表集合(field_info)"></a>字段表集合(field_info)</h2></li>
+<li>描述接口或类中声名的变量</li>
+<li>包含：<ul>
+<li>作用域(public private protected)</li>
+<li>实例变量还是类变量(static)</li>
+<li>可变性(final)</li>
+<li>并发可见性(volatile)</li>
+<li>序列化(transient)</li>
+<li>字段数据类型</li>
+<li>字段名称</li>
+</ul>
+</li>
+<li>全限定名，相当于类的全路径，只是把.换成/，如java/lang/Object</li>
+<li>简单名称，方法或属性名的简写，如inc()方法和m属性，则简单名称为inc和m</li>
+<li>描述符：<ul>
+<li>描述字段的数据类型、方法的参数列表和返回值。</li>
+<li>基本数据类型和void都用一个大写字母来表示，对象类型用L加全限定名来表示</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>标识名称</th>
+<th>含义 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B</td>
+<td>byte</td>
+</tr>
+<tr>
+<td>C</td>
+<td>char</td>
+</tr>
+<tr>
+<td>D</td>
+<td>double</td>
+</tr>
+<tr>
+<td>F</td>
+<td>float</td>
+</tr>
+<tr>
+<td>I</td>
+<td>int</td>
+</tr>
+<tr>
+<td>J</td>
+<td>long</td>
+</tr>
+<tr>
+<td>S</td>
+<td>short</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>V</td>
+<td>void</td>
+</tr>
+<tr>
+<td>L</td>
+<td>对象类型</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>数组描述符：<ul>
+<li>一维数组:String[] –&gt; [Ljava/lang/String</li>
+<li>二维数组:String[][] –&gt; [[Ljava/lang/String</li>
+</ul>
+</li>
+<li>方法描述符：<ul>
+<li>参数列表在前，返回值在后的顺序</li>
+<li>参数列表放在()内，如：<ul>
+<li>void inc() 描述符为()V</li>
+<li>int indexOf(char[] source,int sourceOffset,int sourceCount,char[] target,int targetOffset,int targetCount,int fromIndex) 描述为 ([CII[CIII)I<h2 id="方法表集合"><a href="#方法表集合" class="headerlink" title="方法表集合"></a>方法表集合</h2></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>包含<ul>
+<li>访问标志(access_flags)</li>
+<li>名称索引(name_index)</li>
+<li>描述符索引(descriptor_index)</li>
+<li>属性表集合(attributes)</li>
+</ul>
+</li>
+<li>方法表集合中没有方法里面的代码，Java代码存在属性表集合中名为“Code”的属性里面</li>
+<li>重写和重载的原理<ul>
+<li>重写(Override)：如果父类方法在子类中没有被重写，方法表集合中就不会出现来自父类的方法信息。但是，有可能出现编译器自动添加的方法，如类构造器<clinit>方法和实例构造器<init>方法。 </init></clinit></li>
+<li>重载(Overload)：要重载一个方法，除了要与原方法具有相同的简单名称之外，还要求必须拥有一个与原方法不同的特征签名。因为返回值不会包含在特征签名中，因此Java语言里无法仅仅依靠返回值的不同来对一个已有的方法进行重载。但在Class文件格式中，如果一个方法有相同的名称和特征签名，但返回值不同，也可以合法共存于同一个Class文件中。<ul>
+<li>特征签名：一个方法中各个参数在常量池中的字段符号引用的集合。<h2 id="属性表集合"><a href="#属性表集合" class="headerlink" title="属性表集合"></a>属性表集合</h2></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>描述某些场景的专有信息</li>
+<li>没有太多顺序、长度、内容的限值</li>
+<li>虚拟机规范预定于的属性</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>使用位置</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code</td>
+<td>方法表</td>
+<td>Java代码编译成的字节码指令</td>
+</tr>
+<tr>
+<td>ConstantValue</td>
+<td>字段表</td>
+<td>final关键字定义的常量</td>
+</tr>
+<tr>
+<td>Deprecated</td>
+<td>类、方法表、字段表</td>
+<td>被声明为deprecated的方法和字段</td>
+</tr>
+<tr>
+<td>Exceptions</td>
+<td>方法表</td>
+<td>方法抛出的异常</td>
+</tr>
+<tr>
+<td>EnclosingMethod</td>
+<td>类文件</td>
+<td>只有当一个类是局部类或匿名类时才能拥有这个属性，这个属性用于标识这个类所在的<strong>外围方法</strong></td>
+</tr>
+<tr>
+<td>InnerClasses</td>
+<td>类文件</td>
+<td>内部类列表</td>
+</tr>
+<tr>
+<td>LineNumberTable</td>
+<td>Code属性</td>
+<td>Java源码的行号与字节码指令的对应关系</td>
+</tr>
+<tr>
+<td>LocalVariableTable</td>
+<td>Code属性</td>
+<td>方法的局部变量描述</td>
+</tr>
+<tr>
+<td>StackMapTable</td>
+<td>Code属性</td>
+<td>JDK1.6新增，供新的类型检查验证器检查和处理目标方法的局部变量和操作数栈所需要的类型是否匹配</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>类、方法表、字段表</td>
+<td>JDK1.5新增，支持泛型情况下的方法签名</td>
+</tr>
+<tr>
+<td>SourceFile</td>
+<td>类文件</td>
+<td>记录源文件名</td>
+</tr>
+<tr>
+<td>SourceDebugExtension</td>
+<td>类文件</td>
+<td>JDK1.6新增，用于存储额外的调试信息</td>
+</tr>
+<tr>
+<td>Synthetic</td>
+<td>类、方法表、字段表</td>
+<td>标识方法或字段为编译器自动生成的</td>
+</tr>
+<tr>
+<td>LocalVarialbleTypeTable</td>
+<td>类</td>
+<td>JDK1.5新增，使用特征签名代替描述符</td>
+</tr>
+<tr>
+<td>RuntimeVisibleAnnotations</td>
+<td>类、方法表、字段表</td>
+<td>JDK1.5新增，为动态注解提供支持，指明哪些注解是运行时可见的</td>
+</tr>
+<tr>
+<td>RuntimeInvisibleAnnotations</td>
+<td>类、方法表、字段表</td>
+<td>JDK1.5新增，指明哪些注解是运行时不可见的</td>
+</tr>
+<tr>
+<td>RuntimeVisibleParameterAnnotations</td>
+<td>方法表</td>
+<td>JDK1.5新增，与RuntimeVisibleAnnotations类似，只不过作用对象为方法参数</td>
+</tr>
+<tr>
+<td>RuntimeInvisibleParameterAnnotations</td>
+<td>方法表</td>
+<td>JDK1.5新增，与RuntimeInvisibleAnnotations类似，只不过作用对象为方法参数</td>
+</tr>
+<tr>
+<td>AnnotationDefault</td>
+<td>方法表</td>
+<td>JDK1.5新增，用于记录注解类元素的默认值</td>
+</tr>
+<tr>
+<td>BootstrapMethods</td>
+<td>类文件</td>
+<td>JDK1.7新增，用于保存invokedynamic指令引用的引导方法限定符</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Code属性"><a href="#Code属性" class="headerlink" title="Code属性"></a>Code属性</h3><ul>
+<li>Java编译器处理后的字节码指令存储在Code属性内</li>
+<li>Code属性出现在方法表的属性集合中</li>
+<li>并非所有的方法表都必须存在这个属性</li>
+<li>结构</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>u2</td>
+<td>attribute_name_index：指向CONSTANT_UTF8_info型常量的索引</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u4</td>
+<td>attribute_length：属性值的长度</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>max_stack：操作数栈的最大深度</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>max_locals：局部变量表所需的存储空间</td>
+<td>1 </td>
+</tr>
+<tr>
+<td>u4</td>
+<td>code_length：编译后的字节码指令长度</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u1</td>
+<td>code：编译后的字节码指令流</td>
+<td>code_length </td>
+</tr>
+<tr>
+<td>u2</td>
+<td>exception_table_length：异常表长度</td>
+<td>1</td>
+</tr>
+<tr>
+<td>excpetion_info</td>
+<td>exception_table：异常表内容</td>
+<td>excpetion_table_length</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>attributes_counts： 属性数量</td>
+<td>1 </td>
+</tr>
+<tr>
+<td>attribute_info</td>
+<td>attributes： 属性内容</td>
+<td>attributes_counts</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Code属性是Class文件中最重要的一个属性，如果把Class文件就分为代码（Code）和元数据（Metadata）两部分。那么Code可以解释为描述代码，元数据解释为其他数据。<ul>
+<li><strong>attribute_name_index</strong>：固定为“Code”，表示该属性的名字</li>
+<li><strong>attribute_length</strong>：由于属性名和属性长度一共6个字节（u2+u4），所以属性值的长度就是整个属性表的长度减去这两个属性。</li>
+<li><strong>max_stack</strong>：在方法执行的任意时刻，操作数栈都不会超过这个长度。虚拟机运行的时候根据这个值来分配栈帧中的操作栈深度。</li>
+<li>max_locals：单位是Slot，是虚拟机为局部变量分配内存的最小单位。（参考对应01、虚拟机 VM Stack）<ul>
+<li><strong>Slot可重用</strong>：并不是方法中使用了多少个局部变量，就把这些局部变量所占Slot之和作为max_locals。当代码执行超出一个局部变量的作用域时，这个局部变量所占的Slot可以被其他局部变量所使用。</li>
+</ul>
+</li>
+<li>code_length：code_length代表编译后的字节码长度，code是存储字节码指令的一系列字节流。</li>
+<li>exception_table_length：不是必须存在的。<h4 id="this关键字"><a href="#this关键字" class="headerlink" title="this关键字"></a>this关键字</h4></li>
+</ul>
+</li>
+<li>在任何实例方法里面，都可以通过this关键字访问到此方法所属的对象。</li>
+<li>它的实现其实非常简单，仅仅是通过Javac编译器编译的时候把对this关键字的访问转变为对一个普通方法参数的访问，然后在虚拟机调用实例方法时自动传入此参数而已。</li>
+<li>因此在实例方法的局部变量表中至少会存在一个指向当前对象实例的局部变量。</li>
+<li>局部变量表中也会预留出第一个Slot位来存放对象实例的引用，方法参数值从1开始计算。这个处理只对实例方法有效，而对静态方法无效。</li>
+<li><p>例：</p>
+<ul>
+<li><p>有效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package org.laowang.clazz;</span><br><span class="line"></span><br><span class="line">public class TestClass&#123;</span><br><span class="line">	private int m;</span><br><span class="line">	</span><br><span class="line">	public int inc()&#123;</span><br><span class="line">		return m+1;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>无效：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package org.laowang.clazz;</span><br><span class="line"></span><br><span class="line">public class TestClass&#123;</span><br><span class="line">	private static int m;</span><br><span class="line">	</span><br><span class="line">	public static int inc()&#123;</span><br><span class="line">		return m+1;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Exceptions属性"><a href="#Exceptions属性" class="headerlink" title="Exceptions属性"></a>Exceptions属性</h3><p>列举出方法中可能抛出的受查异常（Checked Exceptions），也就是方法描述时在throws关键字后面列举的异常。结构如下：<br>类型 | 名称 | 数量<br>—|—|—<br>u2 | attribute_name_index | 1<br>u4 | attribute_length | 1<br>u2 | number_of_exceptions | 1<br>u2 | exception_index_table | number_of_exceptions</p>
+<h3 id="LineNumberTable属性"><a href="#LineNumberTable属性" class="headerlink" title="LineNumberTable属性"></a>LineNumberTable属性</h3><ul>
+<li>描述Java源码行号与字节码行号（字节码的偏移量）之间的对应关系。</li>
+<li>不是运行时必须的属性，但默认会生成到Class文件中</li>
+<li>可以在Javac中分别使用-g:none或-g:lines来取消或者要求生成这项信息。</li>
+<li>如果不生成这个属性，最大的影响是当抛出异常时，堆栈中部会显示出错的行号，并且在调试的时候，也无法按照源码来设置断点。<h3 id="LocalVariableTable属性"><a href="#LocalVariableTable属性" class="headerlink" title="LocalVariableTable属性"></a>LocalVariableTable属性</h3></li>
+<li>描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系</li>
+<li>不是运行时必须的属性，但是会默认生成到Class文件中。</li>
+<li>可以在Javac中分别使用-g:none或-g:vars来取消或者要求生成这项信息。</li>
+<li>如果不生成这个属性，最大的影响是当其他人引用这个方法时，所有的参数名称都回丢失，IDE将会使用诸如arg0、arg1之类的占位符代替原有的参数名，但对程序运行没有影响。<h3 id="SourceFile属性"><a href="#SourceFile属性" class="headerlink" title="SourceFile属性"></a>SourceFile属性</h3></li>
+<li>记录生成这个Class文件的源码文件名称。</li>
+<li>可选的属性。</li>
+<li>可以在Javac中分别使用-g:none或-g:source来关闭或者要求生成这项信息。</li>
+<li>如果不开启，最大的影响是内部类抛出异常的时候，堆栈中将不会显示出错代码所属的文件名。<h3 id="ConstantValue属性"><a href="#ConstantValue属性" class="headerlink" title="ConstantValue属性"></a>ConstantValue属性</h3></li>
+<li>通知虚拟机自动为静态变量赋值。<ul>
+<li>如果是非静态变量，赋值是在<init>方法中。</init></li>
+<li>如果是静态：<ul>
+<li>如果是被final static修饰的一个变量，并且是基本类型或者是String类型，就要生成ConstantValue来进行初始化。</li>
+<li>如果没有被final修饰或者不是基本类型及字符串，则会选择在<clinit>方法中进行初始化。<h3 id="InnerClasses属性"><a href="#InnerClasses属性" class="headerlink" title="InnerClasses属性"></a>InnerClasses属性</h3></clinit></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>记录内部类与宿主类之间的关联。</li>
+<li>如果一个类定义了内部类，那编译器将会为它以及它所包含的内部类生成InnerClasses属性。<h3 id="Deprecated及Synthetic属性"><a href="#Deprecated及Synthetic属性" class="headerlink" title="Deprecated及Synthetic属性"></a>Deprecated及Synthetic属性</h3></li>
+<li>Deprecated： 使用@Deprecated注解进行设置，表示不再推荐使用，过时了。</li>
+<li>Synthetic：表示字段或方法并不是由Java源码直接产生的，而是由编译器添加的。<h3 id="StackMapTable属性"><a href="#StackMapTable属性" class="headerlink" title="StackMapTable属性*"></a>StackMapTable属性*</h3><h3 id="Signature属性"><a href="#Signature属性" class="headerlink" title="Signature属性*"></a>Signature属性*</h3><h3 id="BootstrapMethods属性"><a href="#BootstrapMethods属性" class="headerlink" title="BootstrapMethods属性*"></a>BootstrapMethods属性*</h3></li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/类文件结构/" title="类文件结构" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/类文件结构/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/字节码指令/" title="字节码指令"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/虚拟机性能监控与JDK可视化工具/" title="虚拟机性能监控与JDK可视化工具"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

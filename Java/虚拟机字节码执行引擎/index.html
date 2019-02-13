@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>虚拟机字节码执行引擎 | mmzsblog</title>
+  <meta name="description" content="执行引擎概述执行引擎是虚拟机最核心的组成部分之一。可能分为：  解释执行：通过解释器执行 编译执行：通过即时编译器产生本地代码执行。运行时栈帧结构栈帧用于支持虚拟机进行方法调用和方法执行的数据结构，是虚拟机运行时数据区中的虚拟机栈的栈元素。注意：每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。栈帧存储的东西包括：方法的局部变量表 是一组变量值存储空间，用于存">
+<meta name="keywords" content="JVM虚拟机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机字节码执行引擎">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/虚拟机字节码执行引擎/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="执行引擎概述执行引擎是虚拟机最核心的组成部分之一。可能分为：  解释执行：通过解释器执行 编译执行：通过即时编译器产生本地代码执行。运行时栈帧结构栈帧用于支持虚拟机进行方法调用和方法执行的数据结构，是虚拟机运行时数据区中的虚拟机栈的栈元素。注意：每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。栈帧存储的东西包括：方法的局部变量表 是一组变量值存储空间，用于存">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.533Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="虚拟机字节码执行引擎">
+<meta name="twitter:description" content="执行引擎概述执行引擎是虚拟机最核心的组成部分之一。可能分为：  解释执行：通过解释器执行 编译执行：通过即时编译器产生本地代码执行。运行时栈帧结构栈帧用于支持虚拟机进行方法调用和方法执行的数据结构，是虚拟机运行时数据区中的虚拟机栈的栈元素。注意：每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。栈帧存储的东西包括：方法的局部变量表 是一组变量值存储空间，用于存">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/虚拟机字节码执行引擎/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#执行引擎概述"><span class="toc-number">1.</span> <span class="toc-text">执行引擎概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#运行时栈帧结构"><span class="toc-number">1.1.</span> <span class="toc-text">运行时栈帧结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#栈帧"><span class="toc-number">1.1.1.</span> <span class="toc-text">栈帧</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#方法的局部变量表"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">方法的局部变量表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#slot-Variable-Slot，变量槽"><span class="toc-number">1.1.1.1.1.</span> <span class="toc-text">slot(Variable Slot，变量槽)</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#操作数栈"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">操作数栈</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#动态链接"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">动态链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#方法返回地址"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">方法返回地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#额外的附加信息"><span class="toc-number">1.1.1.5.</span> <span class="toc-text">额外的附加信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#方法调用"><span class="toc-number">1.2.</span> <span class="toc-text">方法调用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#解析"><span class="toc-number">1.2.1.</span> <span class="toc-text">解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分派"><span class="toc-number">1.2.2.</span> <span class="toc-text">分派</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#静态分派-Method-Overload-Resolution，方法重载分派"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">静态分派(Method Overload Resolution，方法重载分派)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#动态分派"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">动态分派</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#单分派与多分派"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">单分派与多分派</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态语言支持"><span class="toc-number">1.2.3.</span> <span class="toc-text">动态语言支持</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#动态类型语言"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">动态类型语言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JDK1-7与动态类型"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">JDK1.7与动态类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#java-lang-invoke包"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">java.lang.invoke包</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#MethodHandle与反射的区别"><span class="toc-number">1.2.3.3.1.</span> <span class="toc-text">MethodHandle与反射的区别</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#invokedynamic指令"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">invokedynamic指令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#掌握方法分派规则"><span class="toc-number">1.2.3.5.</span> <span class="toc-text">掌握方法分派规则*</span></a></li></ol></li></ol></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-虚拟机字节码执行引擎" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      虚拟机字节码执行引擎
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/虚拟机字节码执行引擎/" class="article-date">
+	  <time datetime="2016-10-30T02:24:00.000Z" itemprop="datePublished">2016-10-30</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    老王和小杨
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/虚拟机字节码执行引擎/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 9(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="执行引擎概述"><a href="#执行引擎概述" class="headerlink" title="执行引擎概述"></a>执行引擎概述</h1><p>执行引擎是虚拟机最核心的组成部分之一。可能分为：</p>
+<ul>
+<li>解释执行：通过解释器执行</li>
+<li>编译执行：通过即时编译器产生本地代码执行。<h2 id="运行时栈帧结构"><a href="#运行时栈帧结构" class="headerlink" title="运行时栈帧结构"></a>运行时栈帧结构</h2><h3 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h3>用于支持虚拟机进行方法调用和方法执行的数据结构，是虚拟机运行时数据区中的虚拟机栈的栈元素。<font style="color:red;"><br>注意：每一个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。</font><br><br><font style="font-size:20px;color:red;">栈帧存储的东西包括：</font><h4 id="方法的局部变量表"><a href="#方法的局部变量表" class="headerlink" title="方法的局部变量表"></a>方法的局部变量表</h4></li>
+<li>是一组变量值存储空间，用于存放参数和方法内部定义的局部变量。</li>
+<li>在编译为Class文件时，就在方法的Code属性的<strong>max_locals</strong>确定了局部变量表的最大容量。</li>
+<li>在方法执行时，虚拟机使用局部变量表来完成参数值到参数变量列表的传递过程。</li>
+<li>如果是非静态方法，局部变量表中第0个索引的slot默认是用于传递方法所属的对象实例的引用，即this关键字。其余参数按照参数表顺序排列。</li>
+<li>为了节省空间，slot可重用。<h5 id="slot-Variable-Slot，变量槽"><a href="#slot-Variable-Slot，变量槽" class="headerlink" title="slot(Variable Slot，变量槽)"></a>slot(Variable Slot，变量槽)</h5></li>
+<li>局部变量表容量的最小单位。</li>
+<li>每个slot都应该可以存放一个boolean、byte、char、short、int、float、reference、returnAddress类型的数据。</li>
+<li>一个slot可以存放32位以内的数据类型。</li>
+<li>reference表示对对象数据的引用：<ul>
+<li>可以通过此引用直接或间接地查找到对象在Java堆中的数据存放的起始地址索引。</li>
+<li>可以通过此引用直接或间接地查找到对象所属数据类型在方法区中的存储类型信息。</li>
+</ul>
+</li>
+<li>64位的数据类型，虚拟机会以最高位对齐的方式为其分配两个连续的slot空间。</li>
+<li>64位的只有long和double两种。<br>虚拟机通过<font style="color:red">索引定位</font>的方式使用局部变量表。索引范围从0开始，到最大的slot数量。<br><br><strong>注：局部变量必须赋初值，与类变量不一样。</strong><h4 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h4></li>
+<li>也就是操作栈，后进先出（LIFO）栈。</li>
+<li>也是在编译时就已经确定栈的最大深度，在方法的Code属性的<strong>max_stacks</strong>确定。</li>
+<li>操作数栈的每一个元素可以是任意的数据类型，包括long和double。</li>
+<li>32位所占的栈容量为1,64位所占的栈容量为2。</li>
+<li>在方法执行的任何时候，操作数栈的深度都不会超过max_stacks。<h4 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h4><h4 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h4>在方法退出之后，都需要返回到方法被调用的位置程序才能继续执行。<strong>方法退出的过程，实际上就等于把当前栈出栈，因此退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，把返回值（如果有）压入调用者栈帧的操作数栈中，调整PC计数器的值以指向调用指令后面的一条指令。</strong><br><br>方法的退出方式：</li>
+<li>正常完成出口：调用者的PC计数器的值可以作为返回地址，栈帧中很可能会保存这个计数器的值。</li>
+<li>异常完成出口：返回地址是要通过异常处理器表来确定的，栈帧中一般不会保存这部分信息。<br><h4 id="额外的附加信息"><a href="#额外的附加信息" class="headerlink" title="额外的附加信息"></a>额外的附加信息</h4><h2 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h2></li>
+<li>方法调用不同于方法执行。<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><h3 id="分派"><a href="#分派" class="headerlink" title="分派"></a>分派</h3><h4 id="静态分派-Method-Overload-Resolution，方法重载分派"><a href="#静态分派-Method-Overload-Resolution，方法重载分派" class="headerlink" title="静态分派(Method Overload Resolution，方法重载分派)"></a>静态分派(Method Overload Resolution，方法重载分派)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 方法静态分派演示</span><br><span class="line"> */</span><br><span class="line">public class MethodOverloadResolution &#123;</span><br><span class="line">    static abstract class Human&#123;&#125;</span><br><span class="line">    static class Man extends Human&#123;&#125;</span><br><span class="line">    static class Woman extends Human&#123;&#125;</span><br><span class="line">    public void sayHello(Human human)&#123;</span><br><span class="line">        System.out.println(&quot;hello human!&quot;);</span><br><span class="line">    &#125;public void sayHello(Man man)&#123;</span><br><span class="line">        System.out.println(&quot;hello man!&quot;);</span><br><span class="line">    &#125;public void sayHello(Woman woman)&#123;</span><br><span class="line">        System.out.println(&quot;hello woman!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MethodOverloadResolution m = new MethodOverloadResolution();</span><br><span class="line">        Human man = new Man();</span><br><span class="line">        Human woman = new Woman();</span><br><span class="line">        m.sayHello(man);</span><br><span class="line">        m.sayHello(woman);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hello human!</span><br><span class="line">hello human!</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
+<p><font style="color:red;font-weight:bold">分析</font>：<br>首先解释两个概念：Human称为man这个对象的<strong>静态类型(Static Type)</strong>，而Man称为man这个对象的<strong>实际类型(Actual Type)</strong>。</p>
+<ul>
+<li>静态类型的变化仅仅在使用时发生，变量本身的静态类型不会改变，静态类型在编译期可知</li>
+<li>实际类型变化是在运行期才确定，编译器在编译的时候并不知道一个对象的实际类型是什么。<br></li>
+<li>例：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//实际类型变化</span><br><span class="line">Human man = new Man();</span><br><span class="line">Human woman = new Woman();</span><br><span class="line">//静态类型变化</span><br><span class="line">m.sayHello((Man)man);</span><br><span class="line">m.sayHello((Woman)woman);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>继续解读以上代码：在main()方法的两次sayHello()方法，已经确定了对象m是方法的接收者。在这个前提下，要使用哪个方法进行重载，完全取决于参数的参数列表（包括参数类型、参数个数等）。代码中刻意地定义了两个静态类型相同而实际类型不同的变量，但是编译器在重载的时候是<strong>通过参数的静态类型</strong>而不是实际类型进行判断的。并且静态类型是编译期可知。<br></p>
+<p><font style="color:red;font-size:20px;font-weight:bold">注：方法重载是静态分派的典型应用。</font></p>
+<h4 id="动态分派"><a href="#动态分派" class="headerlink" title="动态分派"></a>动态分派</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">package com.laowang.vm.invoke;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 方法动态分派演示</span><br><span class="line"> */</span><br><span class="line">public class MethodOverrideResolution &#123;</span><br><span class="line">    static abstract class Human&#123;</span><br><span class="line">        protected abstract void sayHell();</span><br><span class="line">    &#125;</span><br><span class="line">    static class Man extends Human&#123;</span><br><span class="line">        @Override</span><br><span class="line">        protected void sayHell() &#123;</span><br><span class="line">            System.out.println(&quot;man say hello&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;static class Woman extends Human&#123;</span><br><span class="line">        @Override</span><br><span class="line">        protected void sayHell() &#123;</span><br><span class="line">            System.out.println(&quot;woman say hello&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Human man = new Man();</span><br><span class="line">        Human woman = new Woman();</span><br><span class="line">        man.sayHell();</span><br><span class="line">        woman.sayHell();</span><br><span class="line">        man = new Woman();</span><br><span class="line">        man.sayHell();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">man say hello</span><br><span class="line">woman say hello</span><br><span class="line">woman say hello</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure></p>
+<p><font style="color:red;font-size:20px;font-weight:bold">注：方法重写是动态分派的典型应用。</font></p>
+<h4 id="单分派与多分派"><a href="#单分派与多分派" class="headerlink" title="单分派与多分派"></a>单分派与多分派</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 单分派和多分派演示</span><br><span class="line"> */</span><br><span class="line">public class Dispatcher &#123;</span><br><span class="line">    static class QQ&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    static class _360&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static class Father&#123;</span><br><span class="line">        public void hardChoice(QQ arg)&#123;</span><br><span class="line">            System.out.println(&quot;father choose qq!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        public void hardChoice(_360 arg)&#123;</span><br><span class="line">            System.out.println(&quot;father choose 360!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125; public static class Son extends Father&#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void hardChoice(QQ arg)&#123;</span><br><span class="line">            System.out.println(&quot;son choose qq!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        @Override</span><br><span class="line">        public void hardChoice(_360 arg)&#123;</span><br><span class="line">            System.out.println(&quot;son choose 360!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        public static void main(String[] args) &#123;</span><br><span class="line">            Father father = new Father();</span><br><span class="line">            Father son  = new Son();</span><br><span class="line">            father.hardChoice(new _360());</span><br><span class="line">            son.hardChoice(new QQ());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">father choose 360!</span><br><span class="line">son choose qq!</span><br></pre></td></tr></table></figure></p>
+<h3 id="动态语言支持"><a href="#动态语言支持" class="headerlink" title="动态语言支持"></a>动态语言支持</h3><h4 id="动态类型语言"><a href="#动态类型语言" class="headerlink" title="动态类型语言"></a>动态类型语言</h4><p>动态类型语言的关键特征是它的类检查的主体过程是在运行期而不是编译期。<br></p>
+<p><font style="font-size:18px;color:red;font-weight:bold;">注：变量无类型而变量值才有类型是动态类型语言的一个重要特征。</font></p>
+<h4 id="JDK1-7与动态类型"><a href="#JDK1-7与动态类型" class="headerlink" title="JDK1.7与动态类型"></a>JDK1.7与动态类型</h4><h4 id="java-lang-invoke包"><a href="#java-lang-invoke包" class="headerlink" title="java.lang.invoke包"></a>java.lang.invoke包</h4><p>在以前单纯依靠符号引用来确定调用的目标方法这种方式以外，提供一种新的动态确定目标方法的机制，称为<strong>MethodHandle</strong>。<br>例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">package com.laowang.vm;</span><br><span class="line"></span><br><span class="line">import java.lang.invoke.MethodHandle;</span><br><span class="line">import java.lang.invoke.MethodType;</span><br><span class="line"></span><br><span class="line">import static java.lang.invoke.MethodHandles.lookup;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Method handle 基础用法演示</span><br><span class="line"> */</span><br><span class="line">public class TestMethodHandle &#123;</span><br><span class="line">    static class ClassA &#123;</span><br><span class="line">        public void println(String s) &#123;</span><br><span class="line">            System.out.println(s);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Throwable &#123;</span><br><span class="line">        Object obj = System.currentTimeMillis() % 2 == 0 ? System.out : new ClassA();</span><br><span class="line">        getPrintlnMH(obj).invoke(&quot;icyfenix&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * MethodType:代表“方法类型”，包含了方法的返回值和具体参数（第一个参数和第二个及以后的参数）</span><br><span class="line">     * lookup()方法来自于MethodHandle.lookup，这句的作用是在指定类中查找符合给定的方法名称，方法类型，并且符合调用权限的方法句柄。</span><br><span class="line">     *</span><br><span class="line">     * 因为这里调用的是一个虚方法，按照Java语言的规则，方法第一个参数是隐式的，代表该方法的接收者，也就是this指向的对象，</span><br><span class="line">     * 这个参数以前是放在列表中进行传递的，而现在提供了bindTo()方法来完成这件事情。</span><br><span class="line">     * @param receiver</span><br><span class="line">     * @return</span><br><span class="line">     * @throws Throwable</span><br><span class="line">     */</span><br><span class="line">    private static MethodHandle getPrintlnMH(Object receiver) throws Throwable&#123;</span><br><span class="line">        MethodType mt = MethodType.methodType(void.class,String.class);</span><br><span class="line">        return lookup().findVirtual(receiver.getClass(),&quot;println&quot;,mt).bindTo(receiver);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是，不是可以用反射(Reflection)来解决这样的问题吗？</p>
+<h5 id="MethodHandle与反射的区别"><a href="#MethodHandle与反射的区别" class="headerlink" title="MethodHandle与反射的区别"></a>MethodHandle与反射的区别</h5><ul>
+<li>反射是在Java代码级别的模拟方法调用，而MethodHandle是在字节码级别。</li>
+<li>MethodHandle的findStatic(),findVirtual(),findSpecial()对应于invokestatic,invokevirtual&amp;invokeinterface和invokespecial这几条字节码指令执行的权限校验行为，但是在Reflection API中无需关心。</li>
+<li>Reflection中的java.lang.reflect.Hethod对象所包含的信息比java.lang.invoke.MethodHandle对象所包含的信息多。</li>
+<li><strong>**最关键的一点</strong>，Reflection API只是为了Java语言服务，而MethodHandle可以设计成服务于所有Java虚拟机，当然也包括Java语言。**<h4 id="invokedynamic指令"><a href="#invokedynamic指令" class="headerlink" title="invokedynamic指令"></a>invokedynamic指令</h4>每一处含有invokedynamic指令的位置都称作”动态调用点（Dynamic Call Site）“，这条指令的第一个参数不再是代表方法符号引用的CONSTANT_Methodref_info常量，而是CONSTANT_MethodrefDynamic_info常量，从这个常量中可以得到三个信息：</li>
+<li>Bootsrap method：引导方法，有固定的参数，返回值为java.lang.invoke.CallSite，这个代表真正的要执行的目标方法调用。</li>
+<li>Method Type：方法类型</li>
+<li>名称<h4 id="掌握方法分派规则"><a href="#掌握方法分派规则" class="headerlink" title="掌握方法分派规则*"></a>掌握方法分派规则*</h4></li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/虚拟机字节码执行引擎/" title="虚拟机字节码执行引擎" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/虚拟机字节码执行引擎/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/Java内存模型/" title="Java内存模型"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/虚拟机类加载机制/" title="虚拟机类加载机制"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

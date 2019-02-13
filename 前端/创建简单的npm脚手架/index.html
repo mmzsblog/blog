@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>创建简单的npm脚手架 | mmzsblog</title>
+  <meta name="description" content="前言vue-cli， webpack-cli 等脚手架是不是用起来爱不释手？自己写了个模版每次来回复制粘贴代码是不是很难维护？如果你是对前端、Node操作有一定的了解，同时也存在以上疑问，那就请尽情阅读尝试吧！ 本篇文章按照al-block-cli举例, al-block-cli是一个基于vue和elementUI而集成的一个开发模版，可安装进行使用 依赖 Commander.js 命令行工具 d">
+<meta name="keywords" content="node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="创建简单的npm脚手架">
+<meta property="og:url" content="https://blog.mmzsblog.cn/前端/创建简单的npm脚手架/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="前言vue-cli， webpack-cli 等脚手架是不是用起来爱不释手？自己写了个模版每次来回复制粘贴代码是不是很难维护？如果你是对前端、Node操作有一定的了解，同时也存在以上疑问，那就请尽情阅读尝试吧！ 本篇文章按照al-block-cli举例, al-block-cli是一个基于vue和elementUI而集成的一个开发模版，可安装进行使用 依赖 Commander.js 命令行工具 d">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.483Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="创建简单的npm脚手架">
+<meta name="twitter:description" content="前言vue-cli， webpack-cli 等脚手架是不是用起来爱不释手？自己写了个模版每次来回复制粘贴代码是不是很难维护？如果你是对前端、Node操作有一定的了解，同时也存在以上疑问，那就请尽情阅读尝试吧！ 本篇文章按照al-block-cli举例, al-block-cli是一个基于vue和elementUI而集成的一个开发模版，可安装进行使用 依赖 Commander.js 命令行工具 d">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/前端/创建简单的npm脚手架/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依赖"><span class="toc-number">2.</span> <span class="toc-text">依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#项目准备"><span class="toc-number">3.</span> <span class="toc-text">项目准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#初始化"><span class="toc-number">3.1.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装依赖"><span class="toc-number">3.2.</span> <span class="toc-text">安装依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构建结构"><span class="toc-number">3.3.</span> <span class="toc-text">构建结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#最终目录结构"><span class="toc-number">3.4.</span> <span class="toc-text">最终目录结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编写代码"><span class="toc-number">4.</span> <span class="toc-text">编写代码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件"><span class="toc-number">4.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#入口文件"><span class="toc-number">4.2.</span> <span class="toc-text">入口文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#命令交互"><span class="toc-number">4.3.</span> <span class="toc-text">命令交互</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试发布"><span class="toc-number">5.</span> <span class="toc-text">测试发布</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#测试"><span class="toc-number">5.1.</span> <span class="toc-text">测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#发布"><span class="toc-number">5.2.</span> <span class="toc-text">发布</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-创建简单的npm脚手架" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      创建简单的npm脚手架
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/前端/创建简单的npm脚手架/" class="article-date">
+	  <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    Alisdon
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/前端/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/node/">node</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/前端/创建简单的npm脚手架/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>vue-cli， webpack-cli 等脚手架是不是用起来爱不释手？自己写了个模版每次来回复制粘贴代码是不是很难维护？如果你是对前端、Node操作有一定的了解，同时也存在以上疑问，那就请尽情阅读尝试吧！</p>
+<p>本篇文章按照<code>al-block-cli</code>举例, <code>al-block-cli</code>是一个基于<code>vue</code>和<code>elementUI</code>而集成的一个开发模版，可安装进行使用</p>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><ol>
+<li><a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">Commander.js</a> 命令行工具</li>
+<li><a href="https://github.com/flipxfx/download-git-repo" target="_blank" rel="noopener">download-git-repo</a> git仓库代码下载</li>
+<li><a href="https://github.com/chalk/chalk" target="_blank" rel="noopener">chalk</a> 命令行输出样式美化</li>
+<li><a href="https://github.com/SBoudrias/Inquirer.js" target="_blank" rel="noopener">Inquirer.js</a> 命令行交互</li>
+<li><a href="https://github.com/sindresorhus/ora" target="_blank" rel="noopener">ora</a>命令行加载中效果</li>
+</ol>
+<p>根据上方的依赖插件即可以看出，<strong>其实脚手架就是一个利用终端命令将仓库中的代码拉取到本地的工具</strong>。<em>所以还没有模版代码的同学赶紧去创建个</em></p>
+<h2 id="项目准备"><a href="#项目准备" class="headerlink" title="项目准备"></a>项目准备</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm init</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>根据提示完成初始化搭建，如果不清楚如何配置可以<strong>直接回车</strong></p>
+</blockquote>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install commander download-git-repo chalk inquirer ora --save</span><br></pre></td></tr></table></figure>
+<h3 id="构建结构"><a href="#构建结构" class="headerlink" title="构建结构"></a>构建结构</h3><p>创建<code>bin</code>和<code>commands</code>文件夹以及配置文件templates.json。bin文件夹为可执行命令入口目录，commands则负责编写一些命令交互</p>
+<h3 id="最终目录结构"><a href="#最终目录结构" class="headerlink" title="最终目录结构"></a>最终目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- al-block-cli</span><br><span class="line">| - bin</span><br><span class="line">| - commands</span><br><span class="line">| - node_modules</span><br><span class="line">| - package.json</span><br><span class="line">| - templates.json</span><br></pre></td></tr></table></figure>
+<h2 id="编写代码"><a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h2><h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>输入默认需要的配置，如这里需要<code>github</code>的仓库地址和命令行的名称</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;init&quot;: &#123;</span><br><span class="line">    &quot;name&quot;: &quot;init&quot;,</span><br><span class="line">    &quot;path&quot;: &quot;Alisdon/al-block-template&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="入口文件"><a href="#入口文件" class="headerlink" title="入口文件"></a>入口文件</h3><p>新建<code>al-block-cli</code>文件，并在其第一行加入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#! /usr/bin/env node</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>此行为了防止操作系统用户没有将node装在默认的/usr/bin路径里。当系统看到这一行的时候，首先会到env设置里查找node的安装路径，再调用对应路径下的解释器程序完成操作。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env node</span><br><span class="line"></span><br><span class="line">process.env.NODE_PATH = __dirname + &apos;/../node_modules/&apos;;</span><br><span class="line"></span><br><span class="line">const program = require(&apos;commander&apos;);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">  .version(require(&apos;../package&apos;).version);</span><br><span class="line"></span><br><span class="line">program</span><br><span class="line">  .usage(&apos;&lt;command&gt;&apos;);</span><br><span class="line"></span><br><span class="line">program.command(&apos;init&apos;)</span><br><span class="line">  .description(&apos;create a new project&apos;)</span><br><span class="line">  .alias(&apos;i&apos;)</span><br><span class="line">  .action(() =&gt; &#123;</span><br><span class="line">    require(&apos;../commands/init&apos;)</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">program.parse(process.argv);</span><br><span class="line"></span><br><span class="line">if(!program.args.length)&#123;</span><br><span class="line">  program.help()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="命令交互"><a href="#命令交互" class="headerlink" title="命令交互"></a>命令交互</h3><p>新建<code>init.js</code>文件表示命令<code>init</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">const &#123; prompt &#125; = require(&apos;inquirer&apos;);</span><br><span class="line">const program = require(&apos;commander&apos;);</span><br><span class="line">const chalk = require(&apos;chalk&apos;);</span><br><span class="line">const download = require(&apos;download-git-repo&apos;);</span><br><span class="line">const ora = require(&apos;ora&apos;);</span><br><span class="line">const fs = require(&apos;fs&apos;);</span><br><span class="line"></span><br><span class="line">const option =  program.parse(process.argv).args[0];</span><br><span class="line">const question = [</span><br><span class="line">  &#123;</span><br><span class="line">    type: &apos;input&apos;,</span><br><span class="line">    name: &apos;name&apos;,</span><br><span class="line">    message: &apos;Project name&apos;,</span><br><span class="line">    default: typeof option === &apos;string&apos; ? option : &apos;al-block-template&apos;,</span><br><span class="line">    filter (val) &#123;</span><br><span class="line">      return val.trim()</span><br><span class="line">    &#125;,</span><br><span class="line">    validate (val) &#123;</span><br><span class="line">      const validate = (val.trim().split(&quot; &quot;)).length === 1;</span><br><span class="line">      return validate || &apos;Project name is not allowed to have spaces &apos;;</span><br><span class="line">    &#125;,</span><br><span class="line">    transformer (val) &#123;</span><br><span class="line">      return val;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    type: &apos;input&apos;,</span><br><span class="line">    name: &apos;description&apos;,</span><br><span class="line">    message: &apos;Project description&apos;,</span><br><span class="line">    default: &apos;Vue project&apos;,</span><br><span class="line">    validate () &#123;</span><br><span class="line">      return true;</span><br><span class="line">    &#125;,</span><br><span class="line">    transformer(val) &#123;</span><br><span class="line">      return val;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    type: &apos;input&apos;,</span><br><span class="line">    name: &apos;author&apos;,</span><br><span class="line">    message: &apos;Author&apos;,</span><br><span class="line">    default: &apos;&apos;,</span><br><span class="line">    validate () &#123;</span><br><span class="line">      return true;</span><br><span class="line">    &#125;,</span><br><span class="line">    transformer(val) &#123;</span><br><span class="line">      return val;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">module.exports = prompt(question).then((&#123;name, description, author&#125;) =&gt; &#123;</span><br><span class="line">  const gitPlace = require(&apos;../templates&apos;).init.path;</span><br><span class="line">  const projectName = name;</span><br><span class="line">  const spinner = ora(&apos;Downloading please wait...&apos;);</span><br><span class="line"></span><br><span class="line">  spinner.start();</span><br><span class="line">  download(`$&#123;gitPlace&#125;`, `./$&#123;projectName&#125;`, (err) =&gt; &#123;</span><br><span class="line">    if (err) &#123;</span><br><span class="line">      console.log(chalk.red(err));</span><br><span class="line">      process.exit()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fs.readFile(`./$&#123;projectName&#125;/package.json`, &apos;utf8&apos;, function (err, data) &#123;</span><br><span class="line">      if(err) &#123;</span><br><span class="line">        spinner.stop();</span><br><span class="line">        console.error(err);</span><br><span class="line">        return;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      const packageJson = JSON.parse(data);</span><br><span class="line">      packageJson.name = name;</span><br><span class="line">      packageJson.description = description;</span><br><span class="line">      packageJson.author = author;</span><br><span class="line"></span><br><span class="line">      fs.writeFile(`./$&#123;projectName&#125;/package.json`, JSON.stringify(packageJson, null, 2), &apos;utf8&apos;, function (err) &#123;</span><br><span class="line">        if(err) &#123;</span><br><span class="line">          spinner.stop();</span><br><span class="line">          console.error(err);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">          spinner.stop();</span><br><span class="line">          console.log(chalk.green(&apos;project init successfully!&apos;))</span><br><span class="line">          console.log(`</span><br><span class="line">            $&#123;chalk.yellow(`cd $&#123;name&#125;`)&#125;</span><br><span class="line">            $&#123;chalk.yellow(&apos;npm install&apos;)&#125;</span><br><span class="line">            $&#123;chalk.yellow(&apos;npm run dev&apos;)&#125;</span><br><span class="line">          `);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="测试发布"><a href="#测试发布" class="headerlink" title="测试发布"></a>测试发布</h2><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>至此，一个简单的脚手架（壳）就已经完成了，为了查看在编写过程中是否出错，我们现在本地进行测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ node bin/al-block-cli</span><br></pre></td></tr></table></figure>
+<p>如果没有报错，出现了熟悉的命令行，那就说明成功了</p>
+<h3 id="发布"><a href="#发布" class="headerlink" title="发布"></a>发布</h3><p>发布之前我们需要做个小调整，观察其他脚手架工具他们都是以自己独特的<code>key</code>值进行搭建，对此我们可以在<code>package.json</code>里面配置<code>bin</code>对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;bin&quot;: &#123;</span><br><span class="line">	&quot;al-block-cli&quot;: &quot;bin/al-block-cli&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这里需要注意<code>bin/</code>后面的<code>al-block-cli</code>,这个路径是由<a href="#入口文件">入口文件</a>的路径确定，如果你是建的<code>al-block-cli.js</code>则此处应该配置<code>bin/al-block-cli.js</code>，本篇是创建的没有后缀名的文件</p>
+</blockquote>
+<p>修改后生成的最终<code>package.json</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;al-block-cli&quot;,</span><br><span class="line">  &quot;version&quot;: &quot;1.0.0&quot;,</span><br><span class="line">  &quot;description&quot;: &quot;al-block-cli&quot;,</span><br><span class="line">  &quot;keywords&quot;: [</span><br><span class="line">    &quot;vue&quot;,</span><br><span class="line">    &quot;al-block&quot;,</span><br><span class="line">    &quot;al-block-cli&quot;</span><br><span class="line">  ],</span><br><span class="line">  &quot;scripts&quot;: &#123;</span><br><span class="line">    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;bin&quot;: &#123;</span><br><span class="line">    &quot;al-block-cli&quot;: &quot;bin/al-block-cli&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;preferGlobal&quot;: true,</span><br><span class="line">  &quot;author&quot;: &quot;Alisdon [920124512@qq.com]&quot;,</span><br><span class="line">  &quot;license&quot;: &quot;MIT&quot;,</span><br><span class="line">  &quot;dependencies&quot;: &#123;</span><br><span class="line">    &quot;chalk&quot;: &quot;^2.4.1&quot;,</span><br><span class="line">    &quot;commander&quot;: &quot;^2.19.0&quot;,</span><br><span class="line">    &quot;download-git-repo&quot;: &quot;^1.1.0&quot;,</span><br><span class="line">    &quot;inquirer&quot;: &quot;^6.2.1&quot;,</span><br><span class="line">    &quot;ora&quot;: &quot;^3.0.0&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对比文件内容，如果没有问题我们就开始发布了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm login</span><br><span class="line">$ npm publish</span><br></pre></td></tr></table></figure>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/前端/创建简单的npm脚手架/" title="创建简单的npm脚手架" target="_blank" rel="external">https://blog.mmzsblog.cn/前端/创建简单的npm脚手架/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/springboot/玩转SpringBoot之定时任务详解/" title="玩转SpringBoot之定时任务详解"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/利用SHA-1算法和RSA秘钥进行签名验签/" title="利用SHA-1算法和RSA秘钥进行签名验签"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

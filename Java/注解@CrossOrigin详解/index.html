@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>注解@CrossOrigin详解 | mmzsblog</title>
+  <meta name="description" content="注解@CrossOrigin　　出于安全原因，浏览器禁止Ajax调用驻留在当前原点之外的资源。例如，当你在一个标签中检查你的银行账户时，你可以在另一个选项卡上拥有EVILL网站。来自EVILL的脚本不能够对你的银行API做出Ajax请求（从你的帐户中取出钱！）使用您的凭据。 　　跨源资源共享（CORS）是由大多数浏览器实现的W3C规范，允许您灵活地指定什么样的跨域请求被授权，而不是使用一些不太安全">
+<meta name="keywords" content="注解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="注解@CrossOrigin详解">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/注解@CrossOrigin详解/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="注解@CrossOrigin　　出于安全原因，浏览器禁止Ajax调用驻留在当前原点之外的资源。例如，当你在一个标签中检查你的银行账户时，你可以在另一个选项卡上拥有EVILL网站。来自EVILL的脚本不能够对你的银行API做出Ajax请求（从你的帐户中取出钱！）使用您的凭据。 　　跨源资源共享（CORS）是由大多数浏览器实现的W3C规范，允许您灵活地指定什么样的跨域请求被授权，而不是使用一些不太安全">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.514Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="注解@CrossOrigin详解">
+<meta name="twitter:description" content="注解@CrossOrigin　　出于安全原因，浏览器禁止Ajax调用驻留在当前原点之外的资源。例如，当你在一个标签中检查你的银行账户时，你可以在另一个选项卡上拥有EVILL网站。来自EVILL的脚本不能够对你的银行API做出Ajax请求（从你的帐户中取出钱！）使用您的凭据。 　　跨源资源共享（CORS）是由大多数浏览器实现的W3C规范，允许您灵活地指定什么样的跨域请求被授权，而不是使用一些不太安全">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/注解@CrossOrigin详解/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#注解-CrossOrigin"><span class="toc-number">1.</span> <span class="toc-text">注解@CrossOrigin</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#跨域-CORS-支持："><span class="toc-number">1.1.</span> <span class="toc-text">跨域(CORS)支持：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用方法："><span class="toc-number">1.2.</span> <span class="toc-text">使用方法：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#controller配置CORS"><span class="toc-number">1.2.1.</span> <span class="toc-text">controller配置CORS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#controller方法的CORS配置"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">controller方法的CORS配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为整个controller启用-CrossOrigin"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">为整个controller启用@CrossOrigin</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#同时使用controller和方法级别的CORS配置"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">同时使用controller和方法级别的CORS配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如果正在使用Spring-Security"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">如果正在使用Spring Security</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#全局CORS配置"><span class="toc-number">1.2.2.</span> <span class="toc-text">全局CORS配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XML命名空间"><span class="toc-number">1.2.3.</span> <span class="toc-text">XML命名空间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如果整个项目所有方法都可以访问，则可以这样配置"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">如果整个项目所有方法都可以访问，则可以这样配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#也可以用定制属性声明几个CORS映射："><span class="toc-number">1.2.3.2.</span> <span class="toc-text">也可以用定制属性声明几个CORS映射：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如果使用Spring-Security，不要忘记在Spring安全级别启用CORS："><span class="toc-number">1.2.3.3.</span> <span class="toc-text">如果使用Spring Security，不要忘记在Spring安全级别启用CORS：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#How-does-it-work"><span class="toc-number">1.2.4.</span> <span class="toc-text">How does it work?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于过滤器的CORS支持"><span class="toc-number">1.2.5.</span> <span class="toc-text">基于过滤器的CORS支持</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#spring注解-CrossOrigin不起作用的原因"><span class="toc-number">1.3.</span> <span class="toc-text">spring注解@CrossOrigin不起作用的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章："><span class="toc-number">1.4.</span> <span class="toc-text">参考文章：</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-注解@CrossOrigin详解" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      注解@CrossOrigin详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/注解@CrossOrigin详解/" class="article-date">
+	  <time datetime="2017-08-08T02:24:00.000Z" itemprop="datePublished">2017-08-08</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/注解/">注解</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/注解@CrossOrigin详解/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.6k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="注解-CrossOrigin"><a href="#注解-CrossOrigin" class="headerlink" title="注解@CrossOrigin"></a>注解@CrossOrigin</h1><p>　　出于安全原因，浏览器禁止Ajax调用驻留在当前原点之外的资源。例如，当你在一个标签中检查你的银行账户时，你可以在另一个选项卡上拥有EVILL网站。来自EVILL的脚本不能够对你的银行API做出Ajax请求（从你的帐户中取出钱！）使用您的凭据。</p>
+<p>　　跨源资源共享（CORS）是由大多数浏览器实现的W3C规范，允许您灵活地指定什么样的跨域请求被授权，而不是使用一些不太安全和不太强大的策略，如IFRAME或JSONP。</p>
+<h2 id="跨域-CORS-支持："><a href="#跨域-CORS-支持：" class="headerlink" title="跨域(CORS)支持："></a>跨域(CORS)支持：</h2><p>　　Spring Framework 4.2 GA为CORS提供了第一类支持，使您比通常的基于过滤器的解决方案更容易和更强大地配置它。所以springMVC的版本要在4.2或以上版本才支持@CrossOrigin</p>
+<h2 id="使用方法："><a href="#使用方法：" class="headerlink" title="使用方法："></a>使用方法：</h2><h3 id="controller配置CORS"><a href="#controller配置CORS" class="headerlink" title="controller配置CORS"></a>controller配置CORS</h3><h4 id="controller方法的CORS配置"><a href="#controller方法的CORS配置" class="headerlink" title="controller方法的CORS配置"></a>controller方法的CORS配置</h4><p>你可以向@RequestMapping注解处理程序方法添加一个@CrossOrigin注解，以便启用CORS（默认情况下，@CrossOrigin允许在@RequestMapping注解中指定的所有源和HTTP方法）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/account"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccountController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@CrossOrigin</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Account <span class="title">retrieve</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中@CrossOrigin中的2个参数：</p>
+<ul>
+<li><strong>origins</strong>： 允许可访问的域列表</li>
+<li><strong>maxAge</strong>:准备响应前的缓存持续的最大时间（以秒为单位）。</li>
+</ul>
+<h4 id="为整个controller启用-CrossOrigin"><a href="#为整个controller启用-CrossOrigin" class="headerlink" title="为整个controller启用@CrossOrigin"></a>为整个controller启用@CrossOrigin</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CrossOrigin</span>(origins = <span class="string">"http://domain2.com"</span>, maxAge = <span class="number">3600</span>)</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/account"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccountController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Account <span class="title">retrieve</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，对于retrieve()和remove()处理方法都启用了跨域支持，还可以看到如何使用@CrossOrigin属性定制CORS配置。</p>
+<h4 id="同时使用controller和方法级别的CORS配置"><a href="#同时使用controller和方法级别的CORS配置" class="headerlink" title="同时使用controller和方法级别的CORS配置"></a>同时使用controller和方法级别的CORS配置</h4><p>Spring将合并两个注释属性以创建合并的CORS配置。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CrossOrigin</span>(maxAge = <span class="number">3600</span>)</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/account"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccountController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@CrossOrigin</span>(origins = <span class="string">"http://domain2.com"</span>)</span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Account <span class="title">retrieve</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">(@PathVariable Long id)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="如果正在使用Spring-Security"><a href="#如果正在使用Spring-Security" class="headerlink" title="如果正在使用Spring Security"></a>如果正在使用Spring Security</h4><p>请确保在Spring安全级别启用CORS，并允许它利用Spring MVC级别定义的配置。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        http.cors().and()...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="全局CORS配置"><a href="#全局CORS配置" class="headerlink" title="全局CORS配置"></a>全局CORS配置</h3><p>　　除了细粒度、基于注释的配置之外，您还可能需要定义一些全局CORS配置。这类似于使用筛选器，但可以声明为Spring MVC并结合细粒度@CrossOrigin配置。默认情况下，所有origins and GET, HEAD and POST methods是允许的。</p>
+<ul>
+<li><p>JavaConfig使整个应用程序的CORS简化为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebMvc</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebConfig</span> <span class="keyword">extends</span> <span class="title">WebMvcConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addMapping(<span class="string">"/**"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你正在使用Spring Boot，建议将WebMvcConfigurer bean声明如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> WebMvcConfigurer <span class="title">corsConfigurer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WebMvcConfigurerAdapter() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> </span>&#123;</span><br><span class="line">                registry.addMapping(<span class="string">"/**"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>你可以轻松地更改任何属性，以及仅将此CORS配置应用到特定的路径模式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> </span>&#123;</span><br><span class="line">    registry.addMapping(<span class="string">"/api/**"</span>)</span><br><span class="line">        .allowedOrigins(<span class="string">"http://domain2.com"</span>)</span><br><span class="line">        .allowedMethods(<span class="string">"PUT"</span>, <span class="string">"DELETE"</span>)</span><br><span class="line">            .allowedHeaders(<span class="string">"header1"</span>, <span class="string">"header2"</span>, <span class="string">"header3"</span>)</span><br><span class="line">        .exposedHeaders(<span class="string">"header1"</span>, <span class="string">"header2"</span>)</span><br><span class="line">        .allowCredentials(<span class="keyword">false</span>).maxAge(<span class="number">3600</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果你正在使用Spring Security，请确保在Spring安全级别启用CORS，并允许它利用Spring MVC级别定义的配置。</p>
+</li>
+</ul>
+<h3 id="XML命名空间"><a href="#XML命名空间" class="headerlink" title="XML命名空间"></a>XML命名空间</h3><p>还可以将CORS与MVC XML命名空间配置。</p>
+<h4 id="如果整个项目所有方法都可以访问，则可以这样配置"><a href="#如果整个项目所有方法都可以访问，则可以这样配置" class="headerlink" title="如果整个项目所有方法都可以访问，则可以这样配置"></a>如果整个项目所有方法都可以访问，则可以这样配置</h4><p>此最小XML配置使CORS在/**路径模式具有与JavaConfig相同的缺省属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:cors&gt;</span><br><span class="line">    &lt;mvc:mapping path=&quot;/**&quot; /&gt;</span><br><span class="line">&lt;/mvc:cors&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其中* 表示匹配到下一层；** 表示后面不管有多少层，都能匹配。</p>
+<p>如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:cors&gt;  </span><br><span class="line">    &lt;mvc:mapping path=&quot;/api/*&quot;/&gt;  </span><br><span class="line">&lt;/mvc:cors&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这个可以匹配到的路径有：</p>
+<p><code>/api/aaa</code></p>
+<p><code>/api/bbbb</code></p>
+<p>不能匹配的：</p>
+<p><code>/api/aaa/bbb</code></p>
+<p>因为* 只能匹配到下一层路径，如果想后面不管多少层都可以匹配，配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:cors&gt;  </span><br><span class="line">    &lt;mvc:mapping path=&quot;/api/**&quot;/&gt;  </span><br><span class="line">&lt;/mvc:cors&gt;</span><br></pre></td></tr></table></figure></p>
+<p>注：其实就是一个(*)变成两个(**)</p>
+<h4 id="也可以用定制属性声明几个CORS映射："><a href="#也可以用定制属性声明几个CORS映射：" class="headerlink" title="也可以用定制属性声明几个CORS映射："></a>也可以用定制属性声明几个CORS映射：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;mvc:cors&gt;</span><br><span class="line"></span><br><span class="line">    &lt;mvc:mapping path=&quot;/api/**&quot;</span><br><span class="line">        allowed-origins=&quot;http://domain1.com, http://domain2.com&quot;</span><br><span class="line">        allowed-methods=&quot;GET, PUT&quot;</span><br><span class="line">        allowed-headers=&quot;header1, header2, header3&quot;</span><br><span class="line">        exposed-headers=&quot;header1, header2&quot; allow-credentials=&quot;false&quot;</span><br><span class="line">        max-age=&quot;123&quot; /&gt;</span><br><span class="line"></span><br><span class="line">    &lt;mvc:mapping path=&quot;/resources/**&quot;</span><br><span class="line">        allowed-origins=&quot;http://domain1.com&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;/mvc:cors&gt;</span><br></pre></td></tr></table></figure>
+<p>请求路径有/api/，方法示例如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/api/crossDomain"</span>)  </span><br><span class="line"><span class="meta">@ResponseBody</span>  </span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">crossDomain</span><span class="params">(HttpServletRequest req, HttpServletResponse res, String name)</span></span>&#123;  </span><br><span class="line">    ……  </span><br><span class="line">    ……  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="如果使用Spring-Security，不要忘记在Spring安全级别启用CORS："><a href="#如果使用Spring-Security，不要忘记在Spring安全级别启用CORS：" class="headerlink" title="如果使用Spring Security，不要忘记在Spring安全级别启用CORS："></a>如果使用Spring Security，不要忘记在Spring安全级别启用CORS：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;http&gt;</span><br><span class="line">    &lt;!-- Default to Spring MVC&apos;s CORS configuration --&gt;</span><br><span class="line">    &lt;cors /&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/http&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="How-does-it-work"><a href="#How-does-it-work" class="headerlink" title="How does it work?"></a>How does it work?</h3><p>　　CORS请求（包括预选的带有选项方法）被自动发送到注册的各种<code>HandlerMapping</code>。它们处理CORS准备请求并拦截CORS简单和实际请求，这得益<code>于CorsProcessor</code>实现（默认情况下默认<code>DefaultCorsProcessor</code>处理器），以便添加相关的CORS响应头（如<code>Access-Control-Allow-Origin</code>）。<code>CorsConfiguration</code>允许您指定CORS请求应该如何处理：允许origins, headers, methods等。</p>
+<ul>
+<li><p><code>AbstractHandlerMapping#setCorsConfiguration()</code>允许指定一个映射，其中有几个<code>CorsConfiguration</code>映射在路径模式上，比如/api/**。</p>
+</li>
+<li><p>子类可以通过重写<code>AbstractHandlerMapping</code>类的<code>getCorsConfiguration(Object, HttpServletRequest)</code>方法来提供自己的<code>CorsConfiguration</code>。</p>
+</li>
+<li><p>处理程序可以实现<code>CorsConfigurationSource</code>接口（如<code>ResourceHttpRequestHandler</code>），以便为每个请求提供一个<code>CorsConfiguration</code>。</p>
+</li>
+</ul>
+<h3 id="基于过滤器的CORS支持"><a href="#基于过滤器的CORS支持" class="headerlink" title="基于过滤器的CORS支持"></a>基于过滤器的CORS支持</h3><p>　　作为上述其他方法的替代，Spring框架还提供了CorsFilter。在这种情况下，不用使用@CrossOrigin或WebMvcConfigurer#addCorsMappings(CorsRegistry),，例如，可以在Spring Boot应用程序中声明如下的过滤器：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> FilterRegistrationBean <span class="title">corsFilter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        UrlBasedCorsConfigurationSource source = <span class="keyword">new</span> UrlBasedCorsConfigurationSource();</span><br><span class="line">        CorsConfiguration config = <span class="keyword">new</span> CorsConfiguration();</span><br><span class="line">        config.setAllowCredentials(<span class="keyword">true</span>);</span><br><span class="line">        config.addAllowedOrigin(<span class="string">"http://domain1.com"</span>);</span><br><span class="line">        config.addAllowedHeader(<span class="string">"*"</span>);</span><br><span class="line">        config.addAllowedMethod(<span class="string">"*"</span>);</span><br><span class="line">        source.registerCorsConfiguration(<span class="string">"/**"</span>, config);</span><br><span class="line">        FilterRegistrationBean bean = <span class="keyword">new</span> FilterRegistrationBean(<span class="keyword">new</span> CorsFilter(source));</span><br><span class="line">        bean.setOrder(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">return</span> bean;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="spring注解-CrossOrigin不起作用的原因"><a href="#spring注解-CrossOrigin不起作用的原因" class="headerlink" title="spring注解@CrossOrigin不起作用的原因"></a>spring注解@CrossOrigin不起作用的原因</h2><ul>
+<li>1、是springMVC的版本要在4.2或以上版本才支持@CrossOrigin</li>
+<li>2、非@CrossOrigin没有解决跨域请求问题，而是不正确的请求导致无法得到预期的响应，导致浏览器端提示跨域问题。</li>
+<li>3、在Controller注解上方添加@CrossOrigin注解后，仍然出现跨域问题，解决方案之一就是：<br><br>在@RequestMapping注解中没有指定Get、Post方式，具体指定后，问题解决。<br><br>类似代码如下：  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CrossOrigin</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">person</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@RequestMapping</span>(method = RequestMethod.GET)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">add</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 若干代码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h2><ul>
+<li>1、官方文档：<a href="https://spring.io/blog/2015/06/08/cors-support-in-spring-framework" target="_blank" rel="noopener">https://spring.io/blog/2015/06/08/cors-support-in-spring-framework</a></li>
+<li>2、<a href="http://fanshuyao.iteye.com/blog/2384189" target="_blank" rel="noopener">http://fanshuyao.iteye.com/blog/2384189</a></li>
+<li>3、<a href="https://blog.csdn.net/taiyangnimeide/article/details/78305131" target="_blank" rel="noopener">https://blog.csdn.net/taiyangnimeide/article/details/78305131</a></li>
+<li>4、<a href="https://blog.csdn.net/snowin1994/article/details/53035433" target="_blank" rel="noopener">https://blog.csdn.net/snowin1994/article/details/53035433</a></li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/注解@CrossOrigin详解/" title="注解@CrossOrigin详解" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/注解@CrossOrigin详解/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/J2ee/日志框架/" title="日志框架"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/Java/初级程序员需要知道的基本代码规范/" title="初级程序员需要知道的基本代码规范"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

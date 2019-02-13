@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>利用SHA-1算法和RSA秘钥进行签名验签 | mmzsblog</title>
+  <meta name="description" content="背景介绍SHA安全散列算法SHA (Secure Hash Algorithm)是美国国家标准和技术局发布的国家标准FIPS PUB 180-1，一般称为SHA-1。其对长度不超过264二进制位的消息产生160位的消息摘要输出，按512比特块处理其输入。 SHA是一种数据加密算法，该算法经过加密专家多年来的发展和改进已日益完善，现在已成为公认的最安全的散列算法之一，并被广泛使用。 该算法的思想是接">
+<meta name="keywords" content="加密算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用SHA-1算法和RSA秘钥进行签名验签">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/利用SHA-1算法和RSA秘钥进行签名验签/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="背景介绍SHA安全散列算法SHA (Secure Hash Algorithm)是美国国家标准和技术局发布的国家标准FIPS PUB 180-1，一般称为SHA-1。其对长度不超过264二进制位的消息产生160位的消息摘要输出，按512比特块处理其输入。 SHA是一种数据加密算法，该算法经过加密专家多年来的发展和改进已日益完善，现在已成为公认的最安全的散列算法之一，并被广泛使用。 该算法的思想是接">
+<meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2019-02-13T06:40:51.486Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用SHA-1算法和RSA秘钥进行签名验签">
+<meta name="twitter:description" content="背景介绍SHA安全散列算法SHA (Secure Hash Algorithm)是美国国家标准和技术局发布的国家标准FIPS PUB 180-1，一般称为SHA-1。其对长度不超过264二进制位的消息产生160位的消息摘要输出，按512比特块处理其输入。 SHA是一种数据加密算法，该算法经过加密专家多年来的发展和改进已日益完善，现在已成为公认的最安全的散列算法之一，并被广泛使用。 该算法的思想是接">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/利用SHA-1算法和RSA秘钥进行签名验签/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/springboot/">springboot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/开发工具/">开发工具</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/程序人生/">程序人生</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/JVM虚拟机/">JVM虚拟机</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/">git</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/idea/">idea</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mmzs/">mmzs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node/">node</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot/">springboot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/加密算法/">加密算法</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/年终总结/">年终总结</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/框架/">框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/注解/">注解</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编程语言/">编程语言</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/设计模式/">设计模式</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/集合/">集合</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 14px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.5px;">Java</a> <a href="/tags/git/" style="font-size: 13px;">git</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/node/" style="font-size: 13px;">node</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">January 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">December 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">October 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">August 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">December 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">October 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">November 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">November 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">October 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">October 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/开发工具/">开发工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/开发工具/IDEA开发插件推荐/" class="title">IDEA开发插件推荐</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-09T04:55:04.000Z" itemprop="datePublished">2019-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="/Java/一文详解集合的不同之处/" class="title">一文详解集合的不同之处</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-01-04T04:40:48.000Z" itemprop="datePublished">2019-01-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/程序人生/">程序人生</a>
+              </p>
+              <p class="item-title">
+                <a href="/程序人生/2018年终总结/" class="title">2018年终总结</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/springboot/">springboot</a>
+              </p>
+              <p class="item-title">
+                <a href="/springboot/玩转SpringBoot之定时任务详解/" class="title">玩转SpringBoot之定时任务详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-21T07:13:29.000Z" itemprop="datePublished">2018-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/前端/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/前端/创建简单的npm脚手架/" class="title">创建简单的npm脚手架</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2018-12-18T08:57:18.000Z" itemprop="datePublished">2018-12-18</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景介绍"><span class="toc-number">1.</span> <span class="toc-text">背景介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SHA"><span class="toc-number">1.1.</span> <span class="toc-text">SHA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息摘要"><span class="toc-number">1.2.</span> <span class="toc-text">消息摘要</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#定义："><span class="toc-number">1.2.1.</span> <span class="toc-text">定义：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类型："><span class="toc-number">1.2.2.</span> <span class="toc-text">类型：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#公钥和私钥："><span class="toc-number">1.3.</span> <span class="toc-text">公钥和私钥：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#定义：-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">定义：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类型：-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">类型：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数字签名"><span class="toc-number">1.4.</span> <span class="toc-text">数字签名</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#电子商务中数据传输的几个安全性需求"><span class="toc-number">1.4.1.</span> <span class="toc-text">电子商务中数据传输的几个安全性需求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数字签名的含义"><span class="toc-number">1.4.2.</span> <span class="toc-text">数字签名的含义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数字签名的实现方法"><span class="toc-number">1.4.3.</span> <span class="toc-text">数字签名的实现方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#由SignerUtilities支持的签名算法"><span class="toc-number">1.4.4.</span> <span class="toc-text">由SignerUtilities支持的签名算法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用范例：（带注释）"><span class="toc-number">2.</span> <span class="toc-text">使用范例：（带注释）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SHA-1"><span class="toc-number">2.1.</span> <span class="toc-text">SHA-1:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SHA-1有如下特性："><span class="toc-number">2.1.1.</span> <span class="toc-text">SHA-1有如下特性：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#利用SHA-1算法和RSA秘钥进行签名验签"><span class="toc-number">2.1.2.</span> <span class="toc-text">利用SHA-1算法和RSA秘钥进行签名验签</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文章："><span class="toc-number">3.</span> <span class="toc-text">参考文章：</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-利用SHA-1算法和RSA秘钥进行签名验签" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      利用SHA-1算法和RSA秘钥进行签名验签
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/利用SHA-1算法和RSA秘钥进行签名验签/" class="article-date">
+	  <time datetime="2018-12-17T09:13:12.000Z" itemprop="datePublished">2018-12-17</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/加密算法/">加密算法</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/利用SHA-1算法和RSA秘钥进行签名验签/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="背景介绍"><a href="#背景介绍" class="headerlink" title="背景介绍"></a>背景介绍</h2><h3 id="SHA"><a href="#SHA" class="headerlink" title="SHA"></a>SHA</h3><p>安全散列算法SHA (Secure Hash Algorithm)是美国国家标准和技术局发布的国家标准FIPS PUB 180-1，一般称为SHA-1。其对长度不超过264二进制位的消息产生160位的消息摘要输出，按512比特块处理其输入。</p>
+<p>SHA是一种数据加密算法，该算法经过加密专家多年来的发展和改进已日益完善，现在已成为公认的最安全的散列算法之一，并被广泛使用。</p>
+<p>该算法的思想是接收一段明文，然后以一种不可逆的方式将它转换成一段（通常更小）密文，也可以简单的理解为取一串输入码（称为预映射或信息），并把它们转化为长度较短、位数固定的输出序列即散列值（也称为信息摘要或信息认证代码）的过程。散列函数值可以说时对明文的一种“指纹”或是“摘要”所以对散列值的数字签名就可以视为对此明文的数字签名。</p>
+<h3 id="消息摘要"><a href="#消息摘要" class="headerlink" title="消息摘要"></a>消息摘要</h3><h4 id="定义："><a href="#定义：" class="headerlink" title="定义："></a>定义：</h4><p><strong>消息摘要</strong>（Message Digest）又称为数字摘要(Digital Digest)。它是一个唯一对应一个消息或文本的固定长度的值，它由一个单向Hash加密函数对消息进行作用而产生。如果消息在途中改变了，则接收者通过对收到消息的新产生的摘要与原摘要比较，就可知道消息是否被改变了。因此消息摘要保证了消息的完整性。       </p>
+<p>消息摘要采用单向Hash函数将需加密的明文”摘要”成一串128bit的密文，这一串密文亦称为数字指纹(Finger Print)，它有固定的长度，且不同的明文摘要成密文，其结果总是不同的，而同样的明文其摘要必定一致。这样这串摘要便可成为验证明文是否是”真身”的”指纹”了。</p>
+<h4 id="类型："><a href="#类型：" class="headerlink" title="类型："></a>类型：</h4><p><strong>摘要</strong>：<code>GOST3411</code>，<code>Keccak</code>，<code>MD2</code>，<code>MD4</code>，<code>MD5</code>，<code>RIPEMD128</code>，<code>RIPEMD160</code>，<code>RIPEMD256</code>，<code>RIPEMD320</code>，<code>SHA-1</code>，<code>SHA-224</code>，<code>SHA-256</code>，<code>SHA-384</code>，<code>SHA-512</code>，<code>SHA3</code>，<code>Tiger</code>和<code>Whirlpool</code>。</p>
+<h3 id="公钥和私钥："><a href="#公钥和私钥：" class="headerlink" title="公钥和私钥："></a>公钥和私钥：</h3><h4 id="定义：-1"><a href="#定义：-1" class="headerlink" title="定义："></a>定义：</h4><p><strong>公钥和私钥</strong>就是俗称的不对称加密方式，是从以前的对称加密（使用用户名与密码）方式的提高。</p>
+<p>下面用电子邮件的方式说明一下原理：<br><br>使用公钥与私钥的目的就是实现安全的电子邮件，必须实现如下目的：</p>
+<ul>
+<li>1、我发送给你的内容必须加密，在邮件的传输过程中不能被别人看到。</li>
+<li>2、必须保证是我发送的邮件，不是别人冒充我的。<br><br>要达到这样的目标必须发送邮件的两人都有公钥和私钥。<br><br><br></li>
+<li><strong>公钥:</strong> 就是给大家用的，你可以通过电子邮件发布，可以通过网站让别人下载，公钥其实是用来加密/验章用的。</li>
+<li><strong>私钥:</strong> 就是自己的，必须非常小心保存，最好加上密码，私钥是用来解密/签章，首先就Key的所有权来说，私钥只有个人拥有。</li>
+<li><strong>公钥与私钥的作用是：</strong> 用公钥加密的内容只能用私钥解密，用私钥加密的内容只能用公钥解密。<br><br></li>
+<li><strong>举例：</strong><br><br>　　比如说，我要给你发送一个加密的邮件。首先，我必须拥有你的公钥，你也必须拥有我的公钥。<br><br>　　首先，我用你的公钥给这个邮件加密，这样就保证这个邮件不被别人看到，而且保证这个邮件在传送过程中没有被修改。你收到邮件后，用你的私钥就可以解密，就能看到内容。<br><br>　　其次我用我的私钥给这个邮件加密，发送到你手里后，你可以用我的公钥解密。因为私钥只有我手里有，这样就保证了这个邮件是我发送的。<br><br>　　当A-&gt;B资料时，A会使用B的公钥加密，这样才能确保只有B能解开，否则普罗大众都能解开加密的讯息，就是去了资料的保密性。验证方面则是使用签验章的机制，A传资料给大家时，会以自己的私钥做签章，如此所有收到讯息的人都可以用A的公钥进行验章，便可确认讯息是由A发出来的了。<h4 id="类型：-1"><a href="#类型：-1" class="headerlink" title="类型："></a>类型：</h4></li>
+<li>对称密钥算法： <code>AES</code>, <code>Blowfish</code>, <code>Camellia</code>, <code>CAST5</code>, <code>CAST6</code>,<code>ChaCha</code>, <code>DES</code>, <code>DESede</code>, <code>GOST28147</code>, <code>HC-128</code>, <code>HC-256</code>, <code>IDEA</code>, <code>ISAAC</code>, <code>Noekeon</code>, <code>RC2</code>, <code>RC4</code>, <code>RC5-32</code>, <code>RC5-64</code>, <code>RC6</code>, <code>Rijndael</code>, <code>Salsa20</code>, <code>SEED</code>, <code>Serpent</code>, <code>Skipjack</code>, <code>TEA/XTEA</code>, <code>Threefish</code>, <code>Tnepres</code>, <code>Twofish</code>, <code>VMPC</code> and <code>XSalsa20</code>.</li>
+<li>对称密钥模式：<code>CBC</code>，<code>CFB</code>，<code>CTS</code>，<code>GOFB</code>，<code>OFB</code>，<code>OpenPGPCFB</code>和<code>SIC（或CTR）</code>。</li>
+<li>对称密钥填充： <code>ISO10126d2</code>, <code>ISO7816d4</code>, <code>PKCS-5/7</code>, <code>TBC</code>, <code>X.923</code>, and <code>Zero Byte</code>.</li>
+<li>非对称密钥算法： <code>ElGamal</code>, <code>DSA</code>, <code>ECDSA</code>, <code>NaccacheStern</code> and <code>RSA (with blinding)</code>.</li>
+<li>非对称密钥填充/编码：<code>ISO9796d1</code>, <code>OAEP</code>, and <code>PKCS-1</code>.<h3 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h3><h4 id="电子商务中数据传输的几个安全性需求"><a href="#电子商务中数据传输的几个安全性需求" class="headerlink" title="电子商务中数据传输的几个安全性需求"></a>电子商务中数据传输的几个安全性需求</h4></li>
+<li>1、数据的保密性：用于防止非法用户进入系统及合法用户对系统资源的非法使用；通过对一些敏感的数据文件进行加密来保护系统之间的数据交换，防止除接收方之外的第三方截获数据及即使获取文件也无法得到其内容。如在电子交易中，避免遭到黑客的袭击使信用卡信息丢失的问题。</li>
+<li>2、数据的完整性：防止非法用户对进行交换的数据进行无意或恶意的修改、插入，防止交换的数据丢失等。</li>
+<li>3、数据的不可否认性：对数据和信息的来源进行验证，以确保数据由合法的用户发出；防止数据发送方在发出数据后又加以否认；同时防止接收方在收到数据后又否认曾收到过此数据及篡改数据。</li>
+</ul>
+<p>==<strong>注：</strong>== 上述需求对应于防火墙、加密、数字签名、身份认证等技术，但其关键在于数字签名技术。</p>
+<h4 id="数字签名的含义"><a href="#数字签名的含义" class="headerlink" title="数字签名的含义"></a>数字签名的含义</h4><p> 　数字签名是通过一个单向函数对要传送的报文进行处理得到的用以认证报文来源并核实报文是否发生变化的一个字母数字串。</p>
+<h4 id="数字签名的实现方法"><a href="#数字签名的实现方法" class="headerlink" title="数字签名的实现方法"></a>数字签名的实现方法</h4><p>实现数字签名有很多方法，目前数字签名采用较多的是公钥加密技术，如基于RSA Date Security 公司的PKCS( Public Key Cryptography Standards )、Digital Signature Algorithm、x.509、PGP(Pretty Good Privacy)。</p>
+<p>1994年美国标准与技术协会公布了数字签名标准(DSS)而使公钥加密技术广泛应用。公钥加密系统采用的是非对称加密算法。 </p>
+<h4 id="由SignerUtilities支持的签名算法"><a href="#由SignerUtilities支持的签名算法" class="headerlink" title="由SignerUtilities支持的签名算法"></a>由SignerUtilities支持的签名算法</h4><p><code>MD2withRSA</code>, <code>MD4withRSA</code>,<code>MD5withRSA</code>,<br><code>RIPEMD128withRSA</code>, <code>RIPEMD160withECDSA</code>, <code>RIPEMD160withRSA</code>,<br><code>RIPEMD256withRSA</code>, <code>SHA-1withRSA</code>, <code>SHA-224withRSA</code>,<br><code>SHA-256withRSAandMGF1</code>, <code>SHA-384withRSAandMGF1</code>, <code>SHA-512withRSAandMGF1</code>,<br><code>SHA-1withDSA</code>, and <code>SHA-1withECDSA</code></p>
+<h2 id="使用范例：（带注释）"><a href="#使用范例：（带注释）" class="headerlink" title="使用范例：（带注释）"></a>使用范例：（带注释）</h2><h3 id="SHA-1"><a href="#SHA-1" class="headerlink" title="SHA-1:"></a>SHA-1:</h3><p>对于长度小于2^64位的消息，SHA1会产生一个160位(40个字符)的消息摘要。当接收到消息的时候，这个消息摘要可以用来验证数据的完整性。在传输的过程中，数据很可能会发生变化，那么这时候就会产生不同的消息摘要。</p>
+<h4 id="SHA-1有如下特性："><a href="#SHA-1有如下特性：" class="headerlink" title="SHA-1有如下特性："></a>SHA-1有如下特性：</h4><ul>
+<li>不可以从消息摘要中复原信息；</li>
+<li>两个不同的消息不会产生同样的消息摘要,(但会有1x10 ^ 48分之一的机率出现相同的消息摘要,一般使用时忽略)。<h4 id="利用SHA-1算法和RSA秘钥进行签名验签"><a href="#利用SHA-1算法和RSA秘钥进行签名验签" class="headerlink" title="利用SHA-1算法和RSA秘钥进行签名验签"></a>利用SHA-1算法和RSA秘钥进行签名验签</h4><strong>代码如下：</strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br></pre></td><td class="code"><pre><span class="line">import javax.crypto.Cipher;</span><br><span class="line">import java.io.*;</span><br><span class="line">import java.security.*;</span><br><span class="line">import java.util.Base64;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author: mmzsit</span><br><span class="line"> * @date:   2018年10月24日</span><br><span class="line"> * @Description:</span><br><span class="line"> * 博客地址：https://blog.mmzsblog.cn</span><br><span class="line"> * @version V1.0</span><br><span class="line"> */</span><br><span class="line">public class EncryptUtil &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ObjectInputStream inputStream = null;</span><br><span class="line"></span><br><span class="line">        //参数字符串</span><br><span class="line">        String userName=&quot;测试test0-&gt;1&quot;;</span><br><span class="line">        String orderId=&quot;测试ID123456&quot;;</span><br><span class="line">        String price=&quot;666&quot;;</span><br><span class="line">        //构建用于签名和传输的字符串</span><br><span class="line">        StringBuffer bufferStr =new StringBuffer();</span><br><span class="line">        bufferStr.append(&quot;userName=&quot;).append(userName)</span><br><span class="line">                .append(&quot;&amp;orderId=&quot;).append(orderId)</span><br><span class="line">                .append(&quot;&amp;price=&quot;).append(price);</span><br><span class="line">        //将构建的字符串转化为String类型</span><br><span class="line">        String localStr =bufferStr.toString();</span><br><span class="line"></span><br><span class="line">        //签名算法加密</span><br><span class="line">        try &#123;</span><br><span class="line">            //随机生成秘钥对</span><br><span class="line">            // 检查是否存在这对密钥，否则生成这些密钥</span><br><span class="line">            if (!areKeysPresent()) &#123;</span><br><span class="line">                // 使用RSA算法生成一对密钥，并存储在指定路径的指定文件中</span><br><span class="line">                generateKey();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            //服务端数字签名开始</span><br><span class="line">            //第一步：用SHA-1算出原文的摘要</span><br><span class="line">            byte[] shaDigest = shaEncrypt(localStr);</span><br><span class="line">            System.out.println(&quot;原文本内容：\n&quot;+localStr);</span><br><span class="line">            String shaStr = new String(shaDigest,&quot;UTF-8&quot;);</span><br><span class="line">            System.out.println(&quot;原文本内容SHA-1算法后：\n&quot;+shaStr);</span><br><span class="line"></span><br><span class="line">            //第二步：使用私钥对原文进行加密</span><br><span class="line">            //读取文件中的私钥</span><br><span class="line">            inputStream = new ObjectInputStream(new FileInputStream(PRIVATE_KEY_FILE));</span><br><span class="line">            final PrivateKey privateKey = (PrivateKey) inputStream.readObject();</span><br><span class="line">            //使用私钥加密</span><br><span class="line">            byte[] rsaBytes = rsaEncrypt(shaDigest,privateKey);</span><br><span class="line"></span><br><span class="line">            //第三步：对密文进行BASE64编码</span><br><span class="line">            byte[] base64Str = Base64.getEncoder().encode(rsaBytes);</span><br><span class="line">            String base64enCode=new String(base64Str,&quot;UTF-8&quot;);</span><br><span class="line">            //一般长度是172</span><br><span class="line">            System.out.println(&quot;加密后的内容长度：\n&quot;+base64enCode.length());</span><br><span class="line">            System.out.println(&quot;加密后的内容：\n&quot;+base64enCode);</span><br><span class="line"></span><br><span class="line">            //签名加密完成数据传输到客户端</span><br><span class="line"></span><br><span class="line">            //客户端验证签名开始</span><br><span class="line">            //获取原文</span><br><span class="line">            String receiveStr=localStr;</span><br><span class="line">            //第一步：使用Base64解码密文</span><br><span class="line">            byte[] bese64Decoded =Base64.getDecoder().decode(base64enCode.getBytes(&quot;UTF-8&quot;));</span><br><span class="line"></span><br><span class="line">            //第二步：使用公钥对密文进行解码</span><br><span class="line">            //读取文件中的公钥</span><br><span class="line">            inputStream = new ObjectInputStream(new FileInputStream(PUBLIC_KEY_FILE));</span><br><span class="line">            final PublicKey publicKey = (PublicKey) inputStream.readObject();</span><br><span class="line">            //使用公钥解密</span><br><span class="line">            byte[] rsaDecode = rsaDecrypt(bese64Decoded,publicKey);</span><br><span class="line">            //公钥解密后的结果</span><br><span class="line">            String base64denCode=new String(rsaDecode,&quot;utf-8&quot;);</span><br><span class="line">            System.out.println(&quot;公钥解密后的结果：\n&quot;+base64denCode);</span><br><span class="line"></span><br><span class="line">            //第三步：验签</span><br><span class="line">            //读取解密后的摘要</span><br><span class="line">            String sha1=Base64.getEncoder().encodeToString(rsaDecode);</span><br><span class="line">            //使用Sha-1对原文计算摘要</span><br><span class="line">            MessageDigest md =MessageDigest.getInstance(&quot;SHA-1&quot;);</span><br><span class="line">            String sha2=Base64.getEncoder().encodeToString(md.digest(receiveStr.getBytes(&quot;utf-8&quot;)));</span><br><span class="line">            //用Sha-1对原文计算摘要结果和解密后的明文比对</span><br><span class="line">            if(sha1.equals(sha2)) &#123;</span><br><span class="line">                System.out.println(&quot;验签成功&quot;);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                System.out.println(&quot;验签失败&quot;);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            System.out.println(&quot;字符串sha1：\n&quot;+sha1);</span><br><span class="line">            System.out.println(&quot;字符串sha2：\n&quot;+sha2);</span><br><span class="line"></span><br><span class="line">        &#125;catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 用于保存加密算法名称的字符串</span><br><span class="line">     */</span><br><span class="line">    public static final String ALGORITHM = &quot;RSA&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     *</span><br><span class="line">     * 用于保存加密填充名称的字符串</span><br><span class="line">     * 如果不填写，那么RSA/NONE/NoPadding就是Bouncy Castle 的默认 RSA 实现</span><br><span class="line">     * 备用：</span><br><span class="line">     */</span><br><span class="line">    public static final String PADDING = &quot;RSA/ECB/PKCS1Padding&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 用于保存安全提供程序名称的字符串</span><br><span class="line">     */</span><br><span class="line">//    public static final String PROVIDER = &quot;BC&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 用于保存私钥文件名称的字符串</span><br><span class="line">     */</span><br><span class="line">    public static final String PRIVATE_KEY_FILE = &quot;d:/Temp/private.key&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 用于保存公钥文件名称的字符串</span><br><span class="line">     */</span><br><span class="line">    public static final String PUBLIC_KEY_FILE = &quot;d:/Temp/public.key&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 假设最高安全性(即4096位RSA密钥或更大)是非常安全</span><br><span class="line">     * 使用1024字节生成包含一对私钥和公钥的密钥。</span><br><span class="line">     * 将该组密钥存储在Prvate.key和Public.key文件中。</span><br><span class="line">     *</span><br><span class="line">     * @throws NoSuchAlgorithmException</span><br><span class="line">     * @throws IOException</span><br><span class="line">     * @throws FileNotFoundException</span><br><span class="line">     */</span><br><span class="line">    public static void generateKey() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line"></span><br><span class="line">            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());</span><br><span class="line">            final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);</span><br><span class="line">            //final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);</span><br><span class="line">            //密钥位数</span><br><span class="line">            keyGen.initialize(1024);</span><br><span class="line">            //密钥对</span><br><span class="line">            final KeyPair key = keyGen.generateKeyPair();</span><br><span class="line"></span><br><span class="line">            File privateKeyFile = new File(PRIVATE_KEY_FILE);</span><br><span class="line">            File publicKeyFile = new File(PUBLIC_KEY_FILE);</span><br><span class="line"></span><br><span class="line">            // 创建文件夹存储私钥</span><br><span class="line">            if (privateKeyFile.getParentFile() != null) &#123;</span><br><span class="line">                privateKeyFile.getParentFile().mkdirs();</span><br><span class="line">            &#125;</span><br><span class="line">            privateKeyFile.createNewFile();</span><br><span class="line">            // 创建文件夹存储公钥</span><br><span class="line">            if (publicKeyFile.getParentFile() != null) &#123;</span><br><span class="line">                publicKeyFile.getParentFile().mkdirs();</span><br><span class="line">            &#125;</span><br><span class="line">            publicKeyFile.createNewFile();</span><br><span class="line"></span><br><span class="line">            // 创建文件夹保存公钥</span><br><span class="line">            ObjectOutputStream publicKeyOS = new ObjectOutputStream(</span><br><span class="line">                    new FileOutputStream(publicKeyFile));</span><br><span class="line">            publicKeyOS.writeObject(key.getPublic());</span><br><span class="line">            publicKeyOS.close();</span><br><span class="line"></span><br><span class="line">            // 创建文件夹保存私钥</span><br><span class="line">            ObjectOutputStream privateKeyOS = new ObjectOutputStream(</span><br><span class="line">                    new FileOutputStream(privateKeyFile));</span><br><span class="line">            privateKeyOS.writeObject(key.getPrivate());</span><br><span class="line">            privateKeyOS.close();</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 检查是否已生成一对公钥和私钥</span><br><span class="line">     *</span><br><span class="line">     * @return boolean 返回是否生成秘钥对的标识</span><br><span class="line">     */</span><br><span class="line">    public static boolean areKeysPresent() &#123;</span><br><span class="line"></span><br><span class="line">        File privateKey = new File(PRIVATE_KEY_FILE);</span><br><span class="line">        File publicKey = new File(PUBLIC_KEY_FILE);</span><br><span class="line"></span><br><span class="line">        if (privateKey.exists() &amp;&amp; publicKey.exists()) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用公钥解密数据</span><br><span class="line">     *</span><br><span class="line">     * @param text 待解密文本</span><br><span class="line">     * @param key 公钥</span><br><span class="line">     * @return 解密文本</span><br><span class="line">     * @throws java.lang.Exception</span><br><span class="line">     */</span><br><span class="line">    public static byte[] rsaDecrypt(byte[] text, PublicKey key) &#123;</span><br><span class="line">        byte[] cipherText = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 获取RSA密码对象并打印提供程序</span><br><span class="line">//            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());</span><br><span class="line">            final Cipher cipher = Cipher.getInstance(PADDING);</span><br><span class="line">            //final Cipher cipher = Cipher.getInstance(PADDING, PROVIDER);</span><br><span class="line"></span><br><span class="line">            // 使用公钥，ENCRYPT_MODE表示为解密模式</span><br><span class="line">            cipher.init(Cipher.DECRYPT_MODE, key);</span><br><span class="line">            cipherText = cipher.doFinal(text);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return cipherText;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用私钥加密数据</span><br><span class="line">     *</span><br><span class="line">     * @param text 待加密文本</span><br><span class="line">     * @param key 私钥</span><br><span class="line">     * @return 加密后的数据</span><br><span class="line">     * @throws java.lang.Exception</span><br><span class="line">     */</span><br><span class="line">    public static byte[] rsaEncrypt(byte[] text, PrivateKey key) &#123;</span><br><span class="line">        byte[] dectyptedText = null;</span><br><span class="line">        try &#123;</span><br><span class="line">//            //获取RSA密码对象并打印提供程序</span><br><span class="line">//            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());</span><br><span class="line">            final Cipher cipher = Cipher.getInstance(PADDING);</span><br><span class="line">            //final Cipher cipher = Cipher.getInstance(PADDING, PROVIDER);</span><br><span class="line"></span><br><span class="line">            // 使用私钥加密文本</span><br><span class="line">            cipher.init(Cipher.ENCRYPT_MODE, key);</span><br><span class="line">            dectyptedText = cipher.doFinal(text);</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return dectyptedText;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 使用sha-1对摘要进行加密</span><br><span class="line">     * @param text 签名的原始文本</span><br><span class="line">     */</span><br><span class="line">    public static byte[] shaEncrypt(String text) &#123;</span><br><span class="line">        //创建消息摘要算法的类</span><br><span class="line">        MessageDigest md = null;</span><br><span class="line">        //由于接收加密后的摘要的字节数组</span><br><span class="line">        byte[] shaDigest = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            //使用getInstance(&quot;算法&quot;)来获得消息摘要</span><br><span class="line">            md = MessageDigest.getInstance(&quot;SHA-1&quot;);</span><br><span class="line">            //将摘要转化为UTF-8格式的字节数组</span><br><span class="line">            byte[] plainText = text.getBytes(&quot;UTF-8&quot;);</span><br><span class="line">            //使用指定的 byte 数组更新摘要</span><br><span class="line">            md.update(plainText);</span><br><span class="line">            //得出SHA-1算法加密后的结果</span><br><span class="line">            shaDigest=md.digest();</span><br><span class="line">        &#125; catch (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (UnsupportedEncodingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return shaDigest;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h2><ul>
+<li><a href="https://my.oschina.net/u/242764/blog/481503" target="_blank" rel="noopener">https://my.oschina.net/u/242764/blog/481503</a></li>
+<li><a href="https://blog.csdn.net/WuLex/article/details/72862140" target="_blank" rel="noopener">https://blog.csdn.net/WuLex/article/details/72862140</a></li>
+<li><a href="https://juejin.im/post/5aa22ee9518825558358d30c" target="_blank" rel="noopener">https://juejin.im/post/5aa22ee9518825558358d30c</a></li>
+</ul>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/利用SHA-1算法和RSA秘钥进行签名验签/" title="利用SHA-1算法和RSA秘钥进行签名验签" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/利用SHA-1算法和RSA秘钥进行签名验签/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/前端/创建简单的npm脚手架/" title="创建简单的npm脚手架"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/J2ee/日志框架/" title="日志框架"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>
