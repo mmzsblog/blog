@@ -17,19 +17,24 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>Archive: 2012 | mmzsblog</title>
-  <meta name="description" content="淼淼之森的博客">
-<meta property="og:type" content="website">
+  <title>mmzsblog</title>
+  <meta name="description" content="错误原因：大文件存在没有被提交的commit记录里面； 解决方案：删除有大文件的commit记录即可 移除大文件的正确姿势1234$ git rm --cached giant_file（文件名） # Stage our giant file for removal, but leave it on disk  $ git commit --amend -CHEAD  $ git push 解法一">
+<meta property="og:type" content="article">
 <meta property="og:title" content="mmzsblog">
-<meta property="og:url" content="https://blog.mmzsblog.cn/archive/2012/index.html">
+<meta property="og:url" content="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/index.html">
 <meta property="og:site_name" content="mmzsblog">
-<meta property="og:description" content="淼淼之森的博客">
+<meta property="og:description" content="错误原因：大文件存在没有被提交的commit记录里面； 解决方案：删除有大文件的commit记录即可 移除大文件的正确姿势1234$ git rm --cached giant_file（文件名） # Stage our giant file for removal, but leave it on disk  $ git commit --amend -CHEAD  $ git push 解法一">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/1.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/2.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/3.png">
+<meta property="og:updated_time" content="2019-02-19T06:59:46.979Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mmzsblog">
-<meta name="twitter:description" content="淼淼之森的博客">
+<meta name="twitter:description" content="错误原因：大文件存在没有被提交的commit记录里面； 解决方案：删除有大文件的commit记录即可 移除大文件的正确姿势1234$ git rm --cached giant_file（文件名） # Stage our giant file for removal, but leave it on disk  $ git commit --amend -CHEAD  $ git push 解法一">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/1.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://blog.mmzsblog.cn/archive/2012/index.html">
+  <link rel="canonical" href="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/index.html">
   
     <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
   
@@ -314,49 +319,194 @@
 
   
   
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#错误原因："><span class="toc-number">1.</span> <span class="toc-text">错误原因：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决方案："><span class="toc-number">2.</span> <span class="toc-text">解决方案：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#移除大文件的正确姿势"><span class="toc-number">2.1.</span> <span class="toc-text">移除大文件的正确姿势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解法一："><span class="toc-number">2.2.</span> <span class="toc-text">解法一：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解法二："><span class="toc-number">2.3.</span> <span class="toc-text">解法二：</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
 <main class="main" role="main">
-  	<article class="content article article-archives article-type-list" itemscope="">
-	    <header class="article-header">
-	      <h1 itemprop="title">Archive: 2012</h1>
-	      <p class="text-muted">Total 1 articles</p>
-	    </header>
-	    <div class="article-body">
-	      
-  
+  <div class="content">
+  <article id="post-git提交大文件报错" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/uncategorized/git提交大文件报错/" class="article-date">
+	  <time datetime="2019-02-19T06:58:46.486Z" itemprop="datePublished">2019-02-19</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsblog
+
+</span>
+
+        
+        
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/uncategorized/git提交大文件报错/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 477(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="错误原因："><a href="#错误原因：" class="headerlink" title="错误原因："></a>错误原因：</h2><p>大文件存在没有被提交的commit记录里面；</p>
+<h2 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h2><p>删除有大文件的commit记录即可</p>
+<h3 id="移除大文件的正确姿势"><a href="#移除大文件的正确姿势" class="headerlink" title="移除大文件的正确姿势"></a>移除大文件的正确姿势</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git rm --cached giant_file（文件名） </span><br><span class="line"><span class="comment"># Stage our giant file for removal, but leave it on disk  </span></span><br><span class="line">$ git commit --amend -CHEAD  </span><br><span class="line">$ git push</span><br></pre></td></tr></table></figure>
+<h3 id="解法一："><a href="#解法一：" class="headerlink" title="解法一："></a>解法一：</h3><p>以下操作完后，相当于把本地代码回滚到远端的代码一致；的远端代码文件过大时，此种方式比从远端重新拉取方便快捷<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git fetch -f -p</span><br><span class="line">git checkout dev</span><br><span class="line">git reset origin/dev --hard</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>第一句代码<code>git fetch -f -p</code>的作用就是从本地拿到远程最新分支，覆盖本地存放的远程分支</li>
+<li><p>第二句实际上因为主要开发分支就是 <code>dev</code> 分支，小伙伴就是把大文件合并到这个分支，所以需要切换到这个分支。如果你不小心把大文件提交其它的分支，记得切换的就是你提交的分支。<br><br>如果提交大文件只是在自己的分支，并且放到了远程分支，那么合并到远程开发分支，那么只需要删除自己远程分支就好了，不需要继续往下做。</p>
+</li>
+<li><p>第三句<code>git reset origin/dev --hard</code>是把自己的本地 <code>dev</code> 分支覆盖，使用远程的分支，如果开发分支不是 <code>dev</code> ，那么请用其它的分支。</p>
+</li>
+</ul>
+<h3 id="解法二："><a href="#解法二：" class="headerlink" title="解法二："></a>解法二：</h3><p>网友：<a href="https://blog.csdn.net/m0_37696127/article/details/78984216" target="_blank" rel="noopener">https://blog.csdn.net/m0_37696127/article/details/78984216</a>分享的，不过我试了后没解决问题，但是也分享一下。</p>
+<ul>
+<li>1、<code>git status</code> 查看未被传送到远程代码库的提交次数<br><img src="./1.png" alt="在这里插入图片描述"></li>
+<li>2、<code>git cherry -v</code> 查看未被传送到远程代码库的提交描述和说明<br><img src="./2.png" alt="在这里插入图片描述"></li>
+<li>3、<code>git reset commit_id</code> 撤销未被传送到远程代码库的提交<br><img src="./3.png" alt="在这里插入图片描述"><br>做到这里就已经可以重新添加提交了（注意一定要撤销有大文件的提交）</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/" title="" target="_blank" rel="external">https://blog.mmzsblog.cn/uncategorized/git提交大文件报错/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
   
     
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
     
-      
-      
-      <section class="panel panel-default b-no">
-        <div class="panel-heading" role="tab">
-          <h3 class="panel-title">
-            <a data-toggle="collapse" href="#collapse2012" aria-expanded="true">
-              <i class="icon icon-calendar-plus text-active"></i><i class="icon icon-calendar-minus text"></i>
-              2012
-            </a>
-            <!-- <a href="/archive/2012" class="archive-year">2012</a> -->
-          </h3>
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/mmzs/addGoogleSitemap/" title="Hexo优化：创建sitemap站点地图并向google提交"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div id="collapse2012" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading2012">
-        <div class="panel-body">
-          <div class="collection">
-    
-    
-<a href="/Java/安全控制框架ApacheShiro/" class="collection-item" target="_blank" itemprop="url">
-  <time datetime="2012-11-27T08:30:23.000Z" itemprop="datePublished">2012-11-27</time>
-  <span>&nbsp;&nbsp;&nbsp;</span> 安全控制框架ApacheShiro
-</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 
-  
-  
-    </div></div></div></section>
-  
 
-	    </div>
-  	</article>
-  	 	
 </main>
 
   <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
@@ -403,6 +553,37 @@ window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
 
 
 
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
 
 
 
