@@ -18,18 +18,18 @@
   
   
   <title>Spring(一):IoC容器的理解 | mmzsblog</title>
-  <meta name="description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。其实IoC包括依赖查找(DL)和依赖注入(DI) IoC粗理解IoC亦称为“依赖倒置原理”（Dependency Inversion Principle">
+  <meta name="description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
 <meta name="keywords" content="spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring(一):IoC容器的理解">
 <meta property="og:url" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/index.html">
 <meta property="og:site_name" content="mmzsblog">
-<meta property="og:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。其实IoC包括依赖查找(DL)和依赖注入(DI) IoC粗理解IoC亦称为“依赖倒置原理”（Dependency Inversion Principle">
+<meta property="og:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-02-20T07:15:12.979Z">
+<meta property="og:updated_time" content="2019-02-20T07:19:34.049Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(一):IoC容器的理解">
-<meta name="twitter:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。其实IoC包括依赖查找(DL)和依赖注入(DI) IoC粗理解IoC亦称为“依赖倒置原理”（Dependency Inversion Principle">
+<meta name="twitter:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
   <!-- Canonical links -->
   <link rel="canonical" href="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/index.html">
   
@@ -372,7 +372,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Spring/Spring之IoC容器理解/#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.1k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.2k(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
@@ -382,7 +382,8 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。其实IoC包括依赖查找(DL)和依赖注入(DI)</p>
+        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。</p>
+<p>其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以现在提到IoC，更多的想到的就是依赖注入(DI)了。</p>
 <h2 id="IoC粗理解"><a href="#IoC粗理解" class="headerlink" title="IoC粗理解"></a>IoC粗理解</h2><p>IoC亦称为“依赖倒置原理”（<code>Dependency Inversion Principle</code>),几乎所有框架都使用了倒置注入（<code>Martin Fowler</code>)技巧，是IoC原理的一项应用。<code>SmaIITaIk</code>、<code>C++</code>、<code>Java</code>和<code>.NET</code>面向对象语言的程序员已使用了这些原理。但是Spring是Java语言实现中最著名的一个。同时，控制反转即是Sprrng框架的核心，也是Spring框架要解决的核心问题。</p>
 <h2 id="IoC细理解"><a href="#IoC细理解" class="headerlink" title="IoC细理解"></a>IoC细理解</h2><p>由于很多对象的依赖关系和维护并不需要和系统运行状态有很强的关联性，所以可以把在面向对象编程中需要执行的诸如新建对象、为对象引用赋值等操作交由容器统一完成；这样一来，这些散落在不同代码中的功能相同的部分就集中成为容器的一部分，也就是面向对象系统的基础设施的一部分。同时，由于这些对象之间的相互依赖关系也是比较稳定的，一般不会随着应用的运行状态的改变而改变。</p>
 <p>基于以上特性，这些对象使用IoC容器来管理，简直就是天作之合。虽然这些特性存在于应用系统中，但是应用系统并不承担管理这些对象的责任，而是通过依赖反转把责任交给了容器（也可以说是平台）。</p>
