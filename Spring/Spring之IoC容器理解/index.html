@@ -27,7 +27,7 @@
 <meta property="og:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/1.png">
-<meta property="og:updated_time" content="2019-02-20T07:50:24.084Z">
+<meta property="og:updated_time" content="2019-02-20T08:12:00.795Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(一):IoC容器的理解">
 <meta name="twitter:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
@@ -416,7 +416,7 @@
 </ul>
 <h4 id="BeanDefinition的载入"><a href="#BeanDefinition的载入" class="headerlink" title="BeanDefinition的载入"></a>BeanDefinition的载入</h4><p>信息的载入过程。对IoC容器来说，这个载入过程，相当于把定义的BeanDefinition在IoC容器中转化成一个spring内部表示的数据结构的过程。IoC容器对Bean的管理和依赖注人功能的实现，都是通过对其持有的BeanDefinition进行各种相关操作来完成的。这些BeanDefinition数据在IoC容器中通过一个HashMap来保持和维护。当然这只是一种比较简单的维护方式，如果需要提高IoC容器的性能和容量，完全可以自己做一些扩展。</p>
 <h4 id="IoC容器的依赖注入"><a href="#IoC容器的依赖注入" class="headerlink" title="IoC容器的依赖注入"></a>IoC容器的依赖注入</h4><p>IoC容器的初始化过程完成的主要工作是在IoC容器中建立BeanDefinition数据映射。但在此过程中并没有IoC容器对Bean依赖关系进行注入，那么IoC容器是怎样对Bean的依赖关系进行注人的呢？</p>
-<p>假设当前IoC容器已经载入了用户定义的Bean信息，开始分析依赖注人的原理：<br><br>首先，依赖注入的过程是用户第一次向容器索要Bean时触发的，当然也有例外，也就是我们可以在BeanDefinition信息中通过控制lazy-init属性来让容器完成对Bean的预实例化。这个预实例化实际上也是一个完成依赖注入的过程，但它是在初始化的过程中完成的。</p>
+<p>假设当前IoC容器已经载入了用户定义的Bean信息，开始分析依赖注人的原理：<br>首先，依赖注入的过程是用户第一次向容器索要Bean时触发的，当然也有例外，也就是我们可以在BeanDefinition信息中通过控制lazy-init属性来让容器完成对Bean的预实例化。这个预实例化实际上也是一个完成依赖注入的过程，但它是在初始化的过程中完成的。</p>
 <p>所以，当用户向IoC容器索要Bean时，如果读者还有印象，那么一定还记得在基本的IoC容器接口BeanFactory中，有一个getBean的接口定义，这个接口的实现就是触发依赖注入发生的地方(也就是依赖注入的入口)；而依赖注入的发生是在容器中的BeanDefinition数据已经建立好的前提下才能完成的。</p>
 <h2 id="IoC小结"><a href="#IoC小结" class="headerlink" title="IoC小结"></a>IoC小结</h2><p>尽管可以用最简单的方式来描述IoC容器，将它视为一个hashMap，但只能说这个hashMap是容器的最基本的数据结构，而不是IoC容器的全部。Spring IoC容器作为一个产品，其价值体现在一系列相关的产品特性上，这些产品特性以依赖反转模式的实现为核心，为用户更好地使用依赖反转提供便利，从而实现了一个完整的IoC容器产品。这些产品特性的实现并不是一个</p>
 <h2 id="参考书籍："><a href="#参考书籍：" class="headerlink" title="参考书籍："></a>参考书籍：</h2><p>《Spring技术内幕：深入解析Spring架构与设计原理(第二版)》</p>
