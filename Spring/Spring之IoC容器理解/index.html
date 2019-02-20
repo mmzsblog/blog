@@ -18,18 +18,20 @@
   
   
   <title>Spring(一):IoC容器的理解 | mmzsblog</title>
-  <meta name="description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
+  <meta name="description" content="[toc] 序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经">
 <meta name="keywords" content="spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring(一):IoC容器的理解">
 <meta property="og:url" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/index.html">
 <meta property="og:site_name" content="mmzsblog">
-<meta property="og:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
+<meta property="og:description" content="[toc] 序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-02-20T07:19:34.049Z">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/1.png">
+<meta property="og:updated_time" content="2019-02-20T07:41:03.215Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(一):IoC容器的理解">
-<meta name="twitter:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以">
+<meta name="twitter:description" content="[toc] 序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/1.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/index.html">
   
@@ -382,7 +384,8 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。</p>
+        <p>[toc]</p>
+<h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是控制反转和依赖注入么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。</p>
 <p>其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)，已经被抛弃。所以现在提到IoC，更多的想到的就是依赖注入(DI)了。</p>
 <h2 id="IoC粗理解"><a href="#IoC粗理解" class="headerlink" title="IoC粗理解"></a>IoC粗理解</h2><p>IoC亦称为“依赖倒置原理”（<code>Dependency Inversion Principle</code>),几乎所有框架都使用了倒置注入（<code>Martin Fowler</code>)技巧，是IoC原理的一项应用。<code>SmaIITaIk</code>、<code>C++</code>、<code>Java</code>和<code>.NET</code>面向对象语言的程序员已使用了这些原理。但是Spring是Java语言实现中最著名的一个。同时，控制反转即是Sprrng框架的核心，也是Spring框架要解决的核心问题。</p>
 <h2 id="IoC细理解"><a href="#IoC细理解" class="headerlink" title="IoC细理解"></a>IoC细理解</h2><p>由于很多对象的依赖关系和维护并不需要和系统运行状态有很强的关联性，所以可以把在面向对象编程中需要执行的诸如新建对象、为对象引用赋值等操作交由容器统一完成；这样一来，这些散落在不同代码中的功能相同的部分就集中成为容器的一部分，也就是面向对象系统的基础设施的一部分。同时，由于这些对象之间的相互依赖关系也是比较稳定的，一般不会随着应用的运行状态的改变而改变。</p>
@@ -401,9 +404,8 @@
 <h3 id="BeanFactory的IoC实现过程："><a href="#BeanFactory的IoC实现过程：" class="headerlink" title="BeanFactory的IoC实现过程："></a>BeanFactory的IoC实现过程：</h3><p>IoC 在 Spring 里，只需要低级容器（BeanFactory）就可以实现，两个步骤：</p>
 <ul>
 <li>1、加载配置文件，解析成 BeanDefinition 放在 Map 里。</li>
-<li>2、调用 getBean 的时候，从 BeanDefinition 所属的 Map 里，拿出 Class 对象进行实例化，同时，如果有依赖关系，将递归调用 getBean 方法 —— 完成依赖注入。</li>
+<li>2、调用 getBean 的时候，从 BeanDefinition 所属的 Map 里，拿出 Class 对象进行实例化，同时，如果有依赖关系，将递归调用 getBean 方法 —— 完成依赖注入。getBean 的流程如下所示：<br><img src="./1.png" alt="getBean的流程"><h4 id="IoC容器初始化过程"><a href="#IoC容器初始化过程" class="headerlink" title="IoC容器初始化过程"></a>IoC容器初始化过程</h4>值得注意的是，在这个过程中，一般不包含Bean侬赖注人的实现。</li>
 </ul>
-<h4 id="IoC容器初始化过程"><a href="#IoC容器初始化过程" class="headerlink" title="IoC容器初始化过程"></a>IoC容器初始化过程</h4><p>值得注意的是，在这个过程中，一般不包含Bean侬赖注人的实现。</p>
 <p>在Spring IoC的设计中，Bean定义的载入和依赖注入是两个独立的过程。依赖注入一般发生在应用第一次通过getBean向容器索取Bean的时候。</p>
 <p>但有一个例外值得注意，在使用loc容器时有一个预实例化的配置，通过这个预实例化的配置（具体来说，可以通过为Bean定义信息中的lazyinit属性),用户可以对容器初始化过程作一个微小的控制，从而改变这个被设置了]azyinit属性的Bean的依赖注入过程。</p>
 <p>举例来说，如果我们对某个Bean设置了lazyinit属性，那么这个Bean的依赖注人在IoC容器初始化时就预先完成了，而不需要等到整个初始化完成以后，第一次使用getBean时才会触发。</p>
@@ -414,8 +416,9 @@
 <li>如果使用基本的BeanFactory作为loC容器，客户需要做的额外工作就是为BeanFactory指定相应的Resource来完成Bean信息的定位。</li>
 </ul>
 <h4 id="BeanDefinition的载入"><a href="#BeanDefinition的载入" class="headerlink" title="BeanDefinition的载入"></a>BeanDefinition的载入</h4><p>信息的载入过程。对IoC容器来说，这个载入过程，相当于把定义的BeanDefinition在IoC容器中转化成一个spring内部表示的数据结构的过程。IoC容器对Bean的管理和依赖注人功能的实现，都是通过对其持有的BeanDefinition进行各种相关操作来完成的。这些BeanDefinition数据在IoC容器中通过一个HashMap来保持和维护。当然这只是一种比较简单的维护方式，如果需要提高IoC容器的性能和容量，完全可以自己做一些扩展。</p>
-<h4 id="IoC容器的依赖注入"><a href="#IoC容器的依赖注入" class="headerlink" title="IoC容器的依赖注入"></a>IoC容器的依赖注入</h4><p>IoC容器的初始化过程完成的主要工作是在IoC容器中建立BeanDefinition数据映射。在此过程中并没有看到IoC容器对Bean依赖关系进行注入，接下来分析一下IoC容器是怎样对Bean的依赖关系进行注人的。</p>
-<p>假设当前IoC容器已经载入了用户定义的Bean信息，开始分析依赖注人的原理：<br><br>首先，注意到依赖注人的过程是用户第一次向]容器索要Bean时触发的，当然也有例外，也就是我们可以在BeanDefinition信息中通过控制lazy-init属性来让容器完成对Bean的预实例化。这个预实例化实际上也是一个完成依赖注人的过程，但它是在初始化的过程中完成的。当用户向IoC容器索要Bean时，如果读者还有印象，那么一定还记得在基本的IoC容器接口BeanFactory中，有一个geBean的接口定义，这个接口的实现就是触发依赖注人发生的地方。</p>
+<h4 id="IoC容器的依赖注入"><a href="#IoC容器的依赖注入" class="headerlink" title="IoC容器的依赖注入"></a>IoC容器的依赖注入</h4><p>IoC容器的初始化过程完成的主要工作是在IoC容器中建立BeanDefinition数据映射。但在此过程中并没有IoC容器对Bean依赖关系进行注入，那么IoC容器是怎样对Bean的依赖关系进行注人的呢？</p>
+<p>假设当前IoC容器已经载入了用户定义的Bean信息，开始分析依赖注人的原理：<br><br>首先，依赖注入的过程是用户第一次向容器索要Bean时触发的，当然也有例外，也就是我们可以在BeanDefinition信息中通过控制lazy-init属性来让容器完成对Bean的预实例化。这个预实例化实际上也是一个完成依赖注入的过程，但它是在初始化的过程中完成的。</p>
+<p>所以，当用户向IoC容器索要Bean时，如果读者还有印象，那么一定还记得在基本的IoC容器接口BeanFactory中，有一个geBean的接口定义，这个接口的实现就是触发依赖注入发生的地方(也就是依赖注入的入口)；而依赖注入的发生是在容器中的BeanDefinition数据已经建立好的前提下才能完成的。</p>
 <h2 id="IoC小结"><a href="#IoC小结" class="headerlink" title="IoC小结"></a>IoC小结</h2><p>尽管可以用最简单的方式来描述IoC容器，将它视为一个hashMap，但只能说这个hashMap是容器的最基本的数据结构，而不是IoC容器的全部。Spring IoC容器作为一个产品，其价值体现在一系列相关的产品特性上，这些产品特性以依赖反转模式的实现为核心，为用户更好地使用依赖反转提供便利，从而实现了一个完整的IoC容器产品。这些产品特性的实现并不是一个</p>
 <h2 id="参考书籍："><a href="#参考书籍：" class="headerlink" title="参考书籍："></a>参考书籍：</h2><p>《Spring技术内幕：深入解析Spring架构与设计原理(第二版)》</p>
 
