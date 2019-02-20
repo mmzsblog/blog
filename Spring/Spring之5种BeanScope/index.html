@@ -26,13 +26,13 @@
 <meta property="og:site_name" content="mmzsblog">
 <meta property="og:description" content="序言Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。 在创建bean的时候可以带上scope属性，scope有下面几种类型: 概念理解Spring官">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190220172456844.png">
-<meta property="og:updated_time" content="2019-02-20T09:38:13.688Z">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/2.png">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/1.png">
+<meta property="og:updated_time" content="2019-02-20T09:49:02.109Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(二):Spring支持的5种Bean Scope详解">
 <meta name="twitter:description" content="序言Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。 在创建bean的时候可以带上scope属性，scope有下面几种类型: 概念理解Spring官">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/2.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/index.html">
   
@@ -386,8 +386,8 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。</p>
-<p>在创建bean的时候可以带上scope属性，scope有下面几种类型:<br><img src="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h2><p>Spring官方文档表示有如下5种类型：<br><img src="https://img-blog.csdnimg.cn/20190220172456844.png" alt="在这里插入图片描述"></p>
+<p>在创建bean的时候可以带上scope属性，scope有下面几种类型:<br><img src="./2.png" alt="在这里插入图片描述"></p>
+<h2 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h2><p>Spring官方文档表示有如下5种类型：<br><img src="./1.png" alt="在这里插入图片描述"></p>
 <h3 id="singleton："><a href="#singleton：" class="headerlink" title="singleton："></a>singleton：</h3><p>这是Spring默认的scope，表示Spring容器只创建唯一一个bean的实例，所有该对象的引用都共享这个实例，并且Spring在创建第一次后，会在Spring的IoC容器中缓存起来，之后不再创建，就是设计模式中的单例模式的形式。</p>
 <p>并且对该bean的所有后续请求和引用都将返回该缓存中的对象实例。一般情况下，无状态的bean使用该scope。</p>
 <h3 id="prototype："><a href="#prototype：" class="headerlink" title="prototype："></a>prototype：</h3><p>代表线程每次调用或请求这个bean都会创建一个新的实例。一般情况下，有状态的bean使用该scope。</p>
