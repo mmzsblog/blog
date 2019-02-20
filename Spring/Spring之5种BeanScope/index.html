@@ -17,19 +17,24 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>mmzsblog</title>
-  <meta name="description" content="淼淼之森的博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="mmzsblog">
-<meta property="og:url" content="https://blog.mmzsblog.cn/page/4/index.html">
+  <title>Spring(二):Spring支持的5种Bean Scope详解 | mmzsblog</title>
+  <meta name="description" content="序言Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。 在创建bean的时候可以带上scope属性，scope有下面几种类型: 概念理解Spring官">
+<meta name="keywords" content="spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring(二):Spring支持的5种Bean Scope详解">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/index.html">
 <meta property="og:site_name" content="mmzsblog">
-<meta property="og:description" content="淼淼之森的博客">
+<meta property="og:description" content="序言Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。 在创建bean的时候可以带上scope属性，scope有下面几种类型: 概念理解Spring官">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190220172456844.png">
+<meta property="og:updated_time" content="2019-02-20T09:38:13.688Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="mmzsblog">
-<meta name="twitter:description" content="淼淼之森的博客">
+<meta name="twitter:title" content="Spring(二):Spring支持的5种Bean Scope详解">
+<meta name="twitter:description" content="序言Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。 在创建bean的时候可以带上scope属性，scope有下面几种类型: 概念理解Spring官">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://blog.mmzsblog.cn/page/4/index.html">
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/index.html">
   
     <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
   
@@ -313,351 +318,211 @@
 </aside>
 
   
-  <main class="main" role="main">
   
-  <div class="content article-list">
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/Java/虚拟机性能监控与JDK可视化工具/">虚拟机性能监控与JDK可视化工具</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Java/虚拟机性能监控与JDK可视化工具/" class="article-date">
-	  <time datetime="2016-10-26T02:24:00.000Z" itemprop="datePublished">10月 26</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    老王和小杨
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/虚拟机性能监控与JDK可视化工具/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 780(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
-	
-
-  </p>
-</article>
-
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/Java/GC与内存分配策略/">GC与内存分配策略</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Java/GC与内存分配策略/" class="article-date">
-	  <time datetime="2016-10-25T02:24:00.000Z" itemprop="datePublished">10月 25</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    老王和小杨
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/GC与内存分配策略/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 4.7k(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 18(分)</span>
-	
-
-  </p>
-</article>
-
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/Java/JVM内存划分及OOM分析/">JVM内存划分及OOM分析</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Java/JVM内存划分及OOM分析/" class="article-date">
-	  <time datetime="2016-10-24T02:24:00.000Z" itemprop="datePublished">10月 24</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    老王和小杨
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/JVM虚拟机/">JVM虚拟机</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/JVM内存划分及OOM分析/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.2k(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
-	
-
-  </p>
-</article>
-
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/Java/注解/">注解</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Java/注解/" class="article-date">
-	  <time datetime="2014-11-23T06:46:53.000Z" itemprop="datePublished">11月 23</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    mmzsit
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/Java/">Java</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/注解/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 903(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
-	
-
-  </p>
-</article>
-
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/DevelopmentTools/Git远程通信详解/">Git远程通信详解</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/DevelopmentTools/Git远程通信详解/" class="article-date">
-	  <time datetime="2013-11-23T12:47:23.000Z" itemprop="datePublished">11月 23</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    mmzsit
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/DevelopmentTools/">DevelopmentTools</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/git/">git</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/DevelopmentTools/Git远程通信详解/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 767(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
-	
-
-  </p>
-</article>
-
-    
-      <article class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
-  <div class="article-header">
-    
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/Java/安全控制框架ApacheShiro/">安全控制框架ApacheShiro</a>
-    </h1>
-  
-
-  </div>
-  
-  <p class="article-meta">
-    <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="/Java/安全控制框架ApacheShiro/" class="article-date">
-	  <time datetime="2012-11-27T08:30:23.000Z" itemprop="datePublished">11月 27</time>
-	</a>
-</span>
-    
-<span class="article-user">
-    <i class="icon icon-code"></i>
-
-    mmzsit
-
-</span>
-
-    
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="/categories/Java/">Java</a>
-  </span>
-
-    
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="/tags/Java/">Java</a>
-  </span>
-
-
-    <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/安全控制框架ApacheShiro/#comments" class="article-comment-link">评论</a></span>
-    
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.6k(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
-	
-
-  </p>
-</article>
-
-    
-  </div>
-
-  
-    
-    <nav class="bar bar-footer clearfix" data-stick-bottom="">
-        <div class="bar-inner">
-        <ul class="pager pull-left">
-            
-            <li class="prev">
-                <a href="/page/3/">
-                    <i class="icon icon-angle-left"></i>
-                    Prev
-                </a>
-            </li>
-            
-            
-            <li class="next">
-                <a href="/page/5/">
-                    Next
-                    <i class="icon icon-angle-right"></i>
-                </a>
-            </li>
-            
-        </ul>
-        <div class="total-article bar-right">Page 4 of 5</div>
-        </div>
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#序言"><span class="toc-number">1.</span> <span class="toc-text">序言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概念理解"><span class="toc-number">2.</span> <span class="toc-text">概念理解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#singleton："><span class="toc-number">2.1.</span> <span class="toc-text">singleton：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prototype："><span class="toc-number">2.2.</span> <span class="toc-text">prototype：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#request："><span class="toc-number">2.3.</span> <span class="toc-text">request：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session："><span class="toc-number">2.4.</span> <span class="toc-text">session：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#global-session："><span class="toc-number">2.5.</span> <span class="toc-text">global session：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用方式"><span class="toc-number">3.</span> <span class="toc-text">使用方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#XML方式："><span class="toc-number">3.1.</span> <span class="toc-text">XML方式：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注解方式"><span class="toc-number">3.2.</span> <span class="toc-text">注解方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考书籍："><span class="toc-number">4.</span> <span class="toc-text">参考书籍：</span></a></li></ol>
     </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Spring之5种BeanScope" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
     
- 
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Spring(二):Spring支持的5种Bean Scope详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Spring/Spring之5种BeanScope/" class="article-date">
+	  <time datetime="2019-02-21T02:24:00.000Z" itemprop="datePublished">2019-02-21</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Spring/">Spring</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/spring/">spring</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Spring/Spring之5种BeanScope/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 503(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>Scope是定义Spring如何创建bean的实例的。Spring容器最初提供了两种bean的scope类型：singleton和prototype,但发布2.0以后，又引入了另外三种scope类型：request、session和global session,这三种只能在web 应用中才可以使用。</p>
+<p>在创建bean的时候可以带上scope属性，scope有下面几种类型:<br><img src="https://img-blog.csdnimg.cn/20190220173653494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L01vYml1c1N0cmlw,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="概念理解"><a href="#概念理解" class="headerlink" title="概念理解"></a>概念理解</h2><p>Spring官方文档表示有如下5种类型：<br><img src="https://img-blog.csdnimg.cn/20190220172456844.png" alt="在这里插入图片描述"></p>
+<h3 id="singleton："><a href="#singleton：" class="headerlink" title="singleton："></a>singleton：</h3><p>这是Spring默认的scope，表示Spring容器只创建唯一一个bean的实例，所有该对象的引用都共享这个实例，并且Spring在创建第一次后，会在Spring的IoC容器中缓存起来，之后不再创建，就是设计模式中的单例模式的形式。</p>
+<p>并且对该bean的所有后续请求和引用都将返回该缓存中的对象实例。一般情况下，无状态的bean使用该scope。</p>
+<h3 id="prototype："><a href="#prototype：" class="headerlink" title="prototype："></a>prototype：</h3><p>代表线程每次调用或请求这个bean都会创建一个新的实例。一般情况下，有状态的bean使用该scope。</p>
+<h3 id="request："><a href="#request：" class="headerlink" title="request："></a>request：</h3><p>每次http请求将会有各自的bean实例，类似于prototype。<br>也就是说每个request作用域内的请求只创建一个实例。</p>
+<h3 id="session："><a href="#session：" class="headerlink" title="session："></a>session：</h3><p>在一个http session中，一个bean定义对应一个bean实例。也就是说每个session作用域内的请求只创建一个实例。</p>
+<h3 id="global-session："><a href="#global-session：" class="headerlink" title="global session："></a>global session：</h3><p>在一个全局的http session中，一个bean定义对应一个bean实例。<br><br><br>但是，这个scope只在porlet的web应用程序中才有意义，它映射到porlet的global范围的session，如果普通的web应用使用了这个scope，容器会把它作为普通的session作用域的scope创建。</p>
+<p><strong>注：</strong> 再次说明spring的默认scope（bean作用域）是singleton</p>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>创建bean的时候如何指定其作用域呢？</p>
+<h3 id="XML方式："><a href="#XML方式：" class="headerlink" title="XML方式："></a>XML方式：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt; <span class="attr">bean</span>  <span class="attr">id</span> = <span class="string">“accountService”</span>  <span class="attr">class</span> = <span class="string">“com.foo.DefaultAccountService”</span>  <span class="attr">scope</span> = <span class="string">“prototype”</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="注解方式"><a href="#注解方式" class="headerlink" title="注解方式"></a>注解方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">@Scope(&quot;prototype&quot;)</span><br><span class="line">public class User&#123;</span><br><span class="line">    …………</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考书籍："><a href="#参考书籍：" class="headerlink" title="参考书籍："></a>参考书籍：</h2><p>Spring官网：<a href="https://docs.spring.io/spring/docs/3.0.0.M3/reference/html/ch04s04.html" target="_blank" rel="noopener">https://docs.spring.io/spring/docs/3.0.0.M3/reference/html/ch04s04.html</a></p>
+<p><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/" title="Spring(二):Spring支持的5种Bean Scope详解" target="_blank" rel="external">https://blog.mmzsblog.cn/Spring/Spring之5种BeanScope/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/Spring/Spring之IoC容器理解/" title="Spring(一):IoC容器的理解"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 </main>
 
   <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
@@ -708,6 +573,33 @@ window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
    
 
 
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
 
 
 
