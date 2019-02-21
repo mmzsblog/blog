@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.mmzsblog.cn/DevelopmentTools/git%E6%8F%90%E4%BA%A4%E5%A4%A7%E6%96%87%E4%BB%B6%E6%8A%A5%E9%94%99/</loc>
+    
+    <lastmod>2019-02-21T04:33:14.197Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://blog.mmzsblog.cn/Spring/Spring%E4%B9%8B%E5%AD%A6%E4%B9%A0Spring%E7%9A%84%E4%BB%B7%E5%80%BC/</loc>
+    
+    <lastmod>2019-02-21T04:33:04.005Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.mmzsblog.cn/Spring/Spring%E4%B9%8BIoC%E5%AE%B9%E5%99%A8%E7%90%86%E8%A7%A3/</loc>
     
     <lastmod>2019-02-21T02:17:49.741Z</lastmod>
@@ -12,13 +26,6 @@
     <loc>https://blog.mmzsblog.cn/Spring/Spring%E4%B9%8B5%E7%A7%8DBeanScope/</loc>
     
     <lastmod>2019-02-20T09:49:02.109Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.mmzsblog.cn/DevelopmentTools/git%E6%8F%90%E4%BA%A4%E5%A4%A7%E6%96%87%E4%BB%B6%E6%8A%A5%E9%94%99/</loc>
-    
-    <lastmod>2019-02-19T07:05:33.825Z</lastmod>
     
   </url>
   
