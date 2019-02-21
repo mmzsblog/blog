@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/4.png">
 <meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/2.png">
 <meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之IoC容器理解/3.png">
-<meta property="og:updated_time" content="2019-02-21T01:47:24.458Z">
+<meta property="og:updated_time" content="2019-02-21T02:17:49.741Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(一):IoC容器的理解">
 <meta name="twitter:description" content="序言记得刚毕业那会儿，出来招工作被问到Spring的核心时，都觉得简单的一笔，直接说不就是IoC(控制反转)和DI(依赖注入)么，然后省略一万字对两个名词的解释。最近空来整理了一下Spring中IoC的相关概念，即是复习，也是希望分享出来能帮助到大家更快理解IoC。 其实IoC包括依赖查找(DL)和依赖注入(DI)；只不过DL因为有侵入性 (它需要用户自己去是使用 API 进行查找资源和组装对象)">
@@ -411,6 +411,7 @@
 <p>故我们可以认为直接的BeanFactory实现是IoC容器的基本形式，而各种ApplicationContext的实现是IoC容器的高级表现形式。所以亦可简单的把Spring IoC通过BeanFactory的实现当做低级容器；把ApplicationContext的实现当做高级容器。</p>
 <p>此文我们主要讲解Spring 低级容器（BeanFactory）的 IoC；因为高级容器 ApplicationContext，它包含了低级容器的功能，当它执行 refresh 模板方法的时候，将刷新整个容器的 Bean。同时其作为高级容器，它包含了太多的功能，不仅仅是 IoC。它支持不同信息源头，支持 BeanFactory 工具类、支持层级容器、支持访问文件资源、支持事件发布通知、支持接口回调等等。</p>
 <p><img src="./2.png" alt=""></p>
+<p>图片来源于：《Spring技术内幕：深入解析Spring架构与设计原理(第2版)》</p>
 <h3 id="BeanFactory的IoC实现过程："><a href="#BeanFactory的IoC实现过程：" class="headerlink" title="BeanFactory的IoC实现过程："></a>BeanFactory的IoC实现过程：</h3><p>IoC 在 Spring 里，只需要低级容器（BeanFactory）就可以实现，两个步骤：</p>
 <ul>
 <li>1、加载配置文件，解析成 BeanDefinition 放在 Map 里。</li>
