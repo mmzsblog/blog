@@ -26,10 +26,12 @@
 <meta property="og:site_name" content="mmzsblog">
 <meta property="og:description" content="序言通过使用Spring的IoC容器，可以对这些耦合关系（对Java代码而言）实现一个简单的文本化的操作；即是说通过一个或几个XML文文件，我们就可以方便的对应用对象的耦合关系进行浏览、修改和维护，这样可以在很大程度上简化应用的开发。并且，通过IoC容器实现的依赖反转，可以把依赖关系的管理从Java对象中解放出来交给IoC容器（即Spring框架）来完成，从而完成对象之间的关系解耦；让原本的对象-">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-02-21T04:33:04.005Z">
+<meta property="og:image" content="https://blog.mmzsblog.cn/Spring/Spring之学习Spring的价值/Spring框架图.png">
+<meta property="og:updated_time" content="2019-02-22T02:39:20.875Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring(零):学习Spring的价值">
 <meta name="twitter:description" content="序言通过使用Spring的IoC容器，可以对这些耦合关系（对Java代码而言）实现一个简单的文本化的操作；即是说通过一个或几个XML文文件，我们就可以方便的对应用对象的耦合关系进行浏览、修改和维护，这样可以在很大程度上简化应用的开发。并且，通过IoC容器实现的依赖反转，可以把依赖关系的管理从Java对象中解放出来交给IoC容器（即Spring框架）来完成，从而完成对象之间的关系解耦；让原本的对象-">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/Spring/Spring之学习Spring的价值/Spring框架图.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://blog.mmzsblog.cn/Spring/Spring之学习Spring的价值/index.html">
   
@@ -389,7 +391,7 @@
 <li>另一方面，可以通过AOP，以动态和非侵人式的方式来增强服务的功能。</li>
 </ul>
 <p>所以，我们可以把IoC容器和AOP模块看做Spring的核心部分。作为核心，它们代表了最为基础的底层抽象，同时也是Spring其它模块实现的基础。虽然作为使用者的我们大多数是开发者，只是在这两个模块的基础上进行相关的配置和使用，但是如果能够了解这两个核心模块的设计和实现，就像了解Linux核心的实现一样！<strong>毫无疑问，会让我们对整个平台的了解更上一层楼，对平台的认识也更为全面和系统</strong>。</p>
-<h2 id="Spring整体架构草图"><a href="#Spring整体架构草图" class="headerlink" title="Spring整体架构草图"></a>Spring整体架构草图</h2><p>待画</p>
+<h2 id="Spring整体架构草图"><a href="#Spring整体架构草图" class="headerlink" title="Spring整体架构草图"></a>Spring整体架构草图</h2><p><img src="./Spring框架图.png" alt="Spring整体架构草图"></p>
 <h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>Spring是一个轻量级的框架。在Spring这个一站式应用平台或框架中，其中的各个模块除了依赖IoC容器和AOP之外，相互之间并没有很强的耦合性。Spring的最终目标是简化应用开发的编程模型。</p>
 <p>它所提供的服务，可以贯穿应用到整个软件中，从最上层的WebUI到底层的数据操作，到其他企业信息数据的集成，再到各种J2EE服务的使用等等。这些企业应用服务，Spring都通过其特有的IoC容器和AOP模块实现。在实现过程中，Spring没有把这种复杂性转换成自己被使用的复杂性，这点无疑是成功的，同时大大拓宽了Spring的应用场景。一方面，我们可以把Spring作为一个整体来使用，另一方面，也可以各取所需，把Spring的各个模块拿出来独立使用，提供服务的具体需求。</p>
 <p>因而，在对Spring的使用中，我们看到应用很少依赖于Spring特有的API；同时，由于spring本身的设计也是非常模块化的，这就为应用开发提供了EJB开发不曾提供的便利。</p>
