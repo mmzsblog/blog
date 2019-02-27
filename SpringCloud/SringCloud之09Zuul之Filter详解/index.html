@@ -26,12 +26,12 @@
 <meta property="og:site_name" content="mmzsblog">
 <meta property="og:description" content="Zuul详解官方文档：https://github.com/Netflix/zuul/wiki/How-it-Works Zuul的中心是一系列过滤器，能够在HTTP请求和响应的路由过程中执行一系列操作。 以下是Zuul过滤器的主要特征：  类型：通常在应用过滤器时在路由流程中定义阶段（尽管它可以是任何自定义字符串） 执行顺序：在类型中应用，定义跨多个过滤器的执行顺序 标准：执行过滤器所需的条件">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_zuulfilter.png">
-<meta property="og:updated_time" content="2019-02-27T06:09:51.854Z">
+<meta property="og:image" content="https://blog.mmzsblog.cn/SpringCloud/SringCloud之09Zuul之Filter详解/1.png">
+<meta property="og:updated_time" content="2019-02-27T07:22:16.974Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SpringCloud(九):Zuul之Filter详解">
 <meta name="twitter:description" content="Zuul详解官方文档：https://github.com/Netflix/zuul/wiki/How-it-Works Zuul的中心是一系列过滤器，能够在HTTP请求和响应的路由过程中执行一系列操作。 以下是Zuul过滤器的主要特征：  类型：通常在应用过滤器时在路由流程中定义阶段（尽管它可以是任何自定义字符串） 执行顺序：在类型中应用，定义跨多个过滤器的执行顺序 标准：执行过滤器所需的条件">
-<meta name="twitter:image" content="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_zuulfilter.png">
+<meta name="twitter:image" content="https://blog.mmzsblog.cn/SpringCloud/SringCloud之09Zuul之Filter详解/1.png">
   <!-- Canonical links -->
   <link rel="canonical" href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之09Zuul之Filter详解/index.html">
   
@@ -403,7 +403,7 @@
 <li><strong>ERROR</strong>：过滤器在其中一个阶段发生错误时执行。</li>
 </ul>
 <p>除了默认的过滤器类型，Zuul还允许我们创建自定义过滤器类型。例如，我们有一个自定义STATIC类型的过滤器，它直接在Zuul中生成响应，而不是将请求转发到后端的微服务。</p>
-<h2 id="Zuul请求的生命周期"><a href="#Zuul请求的生命周期" class="headerlink" title="Zuul请求的生命周期"></a>Zuul请求的生命周期</h2><p>Zuul请求的生命周期如下图所示，改图详细的描述了各种类型的过滤器执行顺序。<br><img src="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_zuulfilter.png" alt="image"></p>
+<h2 id="Zuul请求的生命周期"><a href="#Zuul请求的生命周期" class="headerlink" title="Zuul请求的生命周期"></a>Zuul请求的生命周期</h2><p>Zuul请求的生命周期如下图所示，改图详细的描述了各种类型的过滤器执行顺序。<br><img src="./1.png" alt="image"></p>
 
       
     </div>
