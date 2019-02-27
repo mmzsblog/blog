@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SpringCloud学习中遇到的一些bug | mmzsblog</title>
+  <meta name="description" content="[toc] bugThere was a problem with the instance info replicator 错误原因：该服务尝试将自己作为客服端注册 解决办法：在application.yml配置文件中，设置123456# 注册Eureka服务eureka:  client:    # Eureka服务注册中心会将自己作为客户端来尝试注册它自己，必須禁止    register-">
+<meta name="keywords" content="SpringCloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud学习中遇到的一些bug">
+<meta property="og:url" content="https://blog.mmzsblog.cn/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="[toc] bugThere was a problem with the instance info replicator 错误原因：该服务尝试将自己作为客服端注册 解决办法：在application.yml配置文件中，设置123456# 注册Eureka服务eureka:  client:    # Eureka服务注册中心会将自己作为客户端来尝试注册它自己，必須禁止    register-">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_QQ%e5%9b%be%e7%89%8720180914170639.png">
+<meta property="og:updated_time" content="2019-02-27T06:44:23.665Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud学习中遇到的一些bug">
+<meta name="twitter:description" content="[toc] bugThere was a problem with the instance info replicator 错误原因：该服务尝试将自己作为客服端注册 解决办法：在application.yml配置文件中，设置123456# 注册Eureka服务eureka:  client:    # Eureka服务注册中心会将自己作为客户端来尝试注册它自己，必須禁止    register-">
+<meta name="twitter:image" content="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_QQ%e5%9b%be%e7%89%8720180914170639.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DesignPatterns/">DesignPatterns</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevelopmentTools/">DevelopmentTools</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Node/">Node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ProgramLife/">ProgramLife</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringCloud/">SpringCloud</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 13.75px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.25px;">Java</a> <a href="/tags/SpringCloud/" style="font-size: 14px;">SpringCloud</a> <a href="/tags/git/" style="font-size: 13.25px;">git</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/npm/" style="font-size: 13px;">npm</a> <a href="/tags/spring/" style="font-size: 13.5px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/02/">二月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">一月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">十二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">八月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">十月 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">十一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">十一月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">十一月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">十月 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">十月 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之5种BeanScope/" class="title">Spring(二):Spring支持的5种Bean Scope详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-21T02:24:00.000Z" itemprop="datePublished">2019-02-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之IoC容器理解/" class="title">Spring(一):IoC容器的理解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-20T02:24:00.000Z" itemprop="datePublished">2019-02-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之学习Spring的价值/" class="title">Spring(零):学习Spring的价值</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-19T02:24:00.000Z" itemprop="datePublished">2019-02-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevelopmentTools/">DevelopmentTools</a>
+              </p>
+              <p class="item-title">
+                <a href="/DevelopmentTools/git提交大文件报错/" class="title">git提交报错，提示文件过大，且去掉大文件也报同样的错误</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-18T10:16:19.000Z" itemprop="datePublished">2019-02-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mmzs/">mmzs</a>
+              </p>
+              <p class="item-title">
+                <a href="/mmzs/addGoogleSitemap/" class="title">Hexo优化：创建sitemap站点地图并向google提交</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-14T03:15:33.000Z" itemprop="datePublished">2019-02-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#bug"><span class="toc-number">1.</span> <span class="toc-text">bug</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#There-was-a-problem-with-the-instance-info-replicator"><span class="toc-number">1.1.</span> <span class="toc-text">There was a problem with the instance info replicator</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实体类转化出错：-disable-SerializationFeature-FAIL-ON-EMPTY-BEANS"><span class="toc-number">1.2.</span> <span class="toc-text">实体类转化出错： disable SerializationFeature.FAIL_ON_EMPTY_BEANS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#This-application-has-no-explicit-mapping-for-error-so-you-are-seeing-this-as-a-fallback"><span class="toc-number">1.3.</span> <span class="toc-text">This application has no explicit mapping for /error, so you are seeing this as a fallback.</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#message-Request-method-‘POST’-not-supported"><span class="toc-number">1.4.</span> <span class="toc-text">message:Request method ‘POST’ not supported</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Error-creating-bean-with-name-‘eurekaAutoServiceRegistration’"><span class="toc-number">1.5.</span> <span class="toc-text">Error creating bean with name ‘eurekaAutoServiceRegistration’</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Read-timed-out"><span class="toc-number">1.6.</span> <span class="toc-text">Read timed out</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决第一次请求报超时异常的方案"><span class="toc-number">1.7.</span> <span class="toc-text">解决第一次请求报超时异常的方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cannot-execute-request-on-any-known-server"><span class="toc-number">1.8.</span> <span class="toc-text">Cannot execute request on any known server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#com-netflix-client-ClientException-Load-balancer-does-not-have-available-server-for-client-microservice-provider-user"><span class="toc-number">1.9.</span> <span class="toc-text">com.netflix.client.ClientException: Load balancer does not have available server for client: microservice-provider-user</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unable-to-connect-to-Command-Metric-Stream"><span class="toc-number">1.10.</span> <span class="toc-text">Unable to connect to Command Metric Stream</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hystrix-stream一直是ping"><span class="toc-number">1.11.</span> <span class="toc-text">hystrix.stream一直是ping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#turbine-stream一直是ping"><span class="toc-number">1.12.</span> <span class="toc-text">turbine.stream一直是ping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Health-Indicator访问无结果"><span class="toc-number">1.13.</span> <span class="toc-text">Health Indicator访问无结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Turbine监控多个服务-配置后-出现只监控到一部分服务情况"><span class="toc-number">1.14.</span> <span class="toc-text">Turbine监控多个服务,配置后,出现只监控到一部分服务情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#“description”-”No-key-was-installed-for-encryption-service”-”status”-”NO-KEY”"><span class="toc-number">1.15.</span> <span class="toc-text">“description”:”No key was installed for encryption service”,”status”:”NO_KEY”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#待添加"><span class="toc-number">1.16.</span> <span class="toc-text">待添加</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-SringCloud之19SpringCloud学习中遇到的一些bug" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringCloud学习中遇到的一些bug
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/" class="article-date">
+	  <time datetime="2019-01-28T02:24:00.000Z" itemprop="datePublished">2019-01-28</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/SpringCloud/">SpringCloud</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/SpringCloud/">SpringCloud</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>[toc]</p>
+<h1 id="bug"><a href="#bug" class="headerlink" title="bug"></a>bug</h1><h2 id="There-was-a-problem-with-the-instance-info-replicator"><a href="#There-was-a-problem-with-the-instance-info-replicator" class="headerlink" title="There was a problem with the instance info replicator"></a>There was a problem with the instance info replicator</h2><ul>
+<li><strong>错误原因：</strong><br>该服务尝试将自己作为客服端注册</li>
+<li><strong>解决办法：</strong><br>在application.yml配置文件中，设置<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 注册Eureka服务</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    # Eureka服务注册中心会将自己作为客户端来尝试注册它自己，必須禁止</span><br><span class="line">    register-with-eureka: false</span><br><span class="line">    fetch-registry: false</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="实体类转化出错：-disable-SerializationFeature-FAIL-ON-EMPTY-BEANS"><a href="#实体类转化出错：-disable-SerializationFeature-FAIL-ON-EMPTY-BEANS" class="headerlink" title="实体类转化出错： disable SerializationFeature.FAIL_ON_EMPTY_BEANS"></a>实体类转化出错： disable SerializationFeature.FAIL_ON_EMPTY_BEANS</h2><ul>
+<li><strong>错误原因：</strong><br>使用的框架是Spring Boot，处理完请求之后，返回数据之前，在POJO转化成JSON时，有些属性违背输出规则或者有些属性循环引用会造成无法输出。</li>
+<li><strong>解决办法：</strong><br>在实体类上面加上注解<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@JsonIgnoreProperties(value = &#123; &quot;hibernateLazyInitializer&quot;, &quot;handler&quot; &#125;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="This-application-has-no-explicit-mapping-for-error-so-you-are-seeing-this-as-a-fallback"><a href="#This-application-has-no-explicit-mapping-for-error-so-you-are-seeing-this-as-a-fallback" class="headerlink" title="This application has no explicit mapping for /error, so you are seeing this as a fallback."></a>This application has no explicit mapping for /error, so you are seeing this as a fallback.</h2><ul>
+<li><strong>错误原因：</strong> 很可能是你Application启动类放的位置不对。要将Application放在最外层，也就是要包含所有子包。</li>
+<li><strong>解决办法：</strong> 将Application放在最外层，也就是要包含所有子包。<h2 id="message-Request-method-‘POST’-not-supported"><a href="#message-Request-method-‘POST’-not-supported" class="headerlink" title="message:Request method ‘POST’ not supported"></a>message:Request method ‘POST’ not supported</h2>There was an unexpected error (type=Internal Server Error, status=500).<br>status 405 reading UserFeignClient#getUser(User); content: {“timestamp”:”2018-09-07T09:01:14.290+0000”,”status”:405,”error”:”Method Not Allowed”,”message”:”Request method ‘POST’ not supported”,”path”:”/feign-get-user”}</li>
+<li><p><strong>错误原因：</strong><br>该请求不会成功，只要参数是复杂对象，即使指定了是GET方法，feign依然会以POST方法进行发送请求。可能是我没找到相应的注解或使用方法错误。</p>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">	// 该请求不会成功，只要参数是复杂对象，即使指定了是GET方法，feign依然会以POST方法进行发送请求。可能是我没找到相应的注解或使用方法错误。</span><br><span class="line">	@RequestMapping(method = RequestMethod.GET, value = &quot;/feign-get-user&quot;)</span><br><span class="line">	public User getUser(User user);</span><br><span class="line">	</span><br><span class="line">	//正确用法</span><br><span class="line">	@RequestMapping(method = RequestMethod.GET, value = &quot;/feign-get-user&quot;)</span><br><span class="line">	public User getUser(@RequestParam(&quot;id&quot;) Long id, @RequestParam(&quot;username&quot;) String username, @RequestParam(&quot;age&quot;) String age);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Error-creating-bean-with-name-‘eurekaAutoServiceRegistration’"><a href="#Error-creating-bean-with-name-‘eurekaAutoServiceRegistration’" class="headerlink" title="Error creating bean with name ‘eurekaAutoServiceRegistration’"></a>Error creating bean with name ‘eurekaAutoServiceRegistration’</h2><p>org.springframework.beans.factory.BeanCreationNotAllowedException: Error creating bean with name ‘eurekaAutoServiceRegistration’: Singleton bean creation not allowed while singletons of this factory are in destruction (Do not request a bean from a BeanFactory in a destroy method implementation!)</p>
+<ul>
+<li><strong>错误原因：</strong> <ul>
+<li>同一个服务重复启了;</li>
+<li>或者是端口被其他应用占用了。</li>
+</ul>
+</li>
+<li><strong>解决办法：</strong><br>释放被占用的端口即可<h2 id="Read-timed-out"><a href="#Read-timed-out" class="headerlink" title="Read timed out"></a>Read timed out</h2></li>
+<li><strong>详细描述：</strong> com.sun.jersey.api.client.ClientHandlerException: java.net.SocketTimeoutException: Read timed out</li>
+<li><strong>错误原因：</strong><br>应用刚启动，需要通过ribbon从eureka上拉取服务；需要将虚拟主机名转化为ip地址</li>
+<li><strong>解决办法：</strong><br>这是比较正常的现象，只需要再次刷新就好了<h2 id="解决第一次请求报超时异常的方案"><a href="#解决第一次请求报超时异常的方案" class="headerlink" title="解决第一次请求报超时异常的方案"></a>解决第一次请求报超时异常的方案</h2></li>
+<li><strong>错误原因：</strong><br>网络等原因，导致请求时间过长，进而引发timeout的错误</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li><p>默认时间是超过1秒就是超时，将其设置为5秒</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 5000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁用超时时间timeout</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hystrix.command.default.execution.timeout.enabled: false</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>索性禁用feign的hystrix支持</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feign.hystrix.enabled: false</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>超时的issue：<a href="https://github.com/spring-cloud/spring-cloud-netflix/issues/768" target="_blank" rel="noopener">https://github.com/spring-cloud/spring-cloud-netflix/issues/768</a></p>
+</li>
+<li>超时的解决方案： <a href="http://stackoverflow.com/questions/27375557/hystrix-command-fails-with-timed-out-and-no-fallback-available" target="_blank" rel="noopener">http://stackoverflow.com/questions/27375557/hystrix-command-fails-with-timed-out-and-no-fallback-available</a></li>
+<li>hystrix配置： <a href="https://github.com/Netflix/Hystrix/wiki/Configuration#execution.isolation.thread.timeoutInMilliseconds" target="_blank" rel="noopener">https://github.com/Netflix/Hystrix/wiki/Configuration#execution.isolation.thread.timeoutInMilliseconds</a> <h2 id="Cannot-execute-request-on-any-known-server"><a href="#Cannot-execute-request-on-any-known-server" class="headerlink" title="Cannot execute request on any known server"></a>Cannot execute request on any known server</h2></li>
+</ul>
+</li>
+<li><strong>错误详细描述：</strong> com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server</li>
+<li><p><strong>错误原因：</strong><br>Peer Awareness配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># application.yml (Two Peer Aware Eureka Servers). </span><br><span class="line">---</span><br><span class="line">spring:</span><br><span class="line">  profiles: peer1</span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    hostname: peer1</span><br><span class="line">  client:</span><br><span class="line">    serviceUrl:</span><br><span class="line">      defaultZone: http://peer2/eureka/</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">spring:</span><br><span class="line">  profiles: peer2</span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    hostname: peer2</span><br><span class="line">  client:</span><br><span class="line">    serviceUrl:</span><br><span class="line">      defaultZone: http://peer1/eureka/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>解决办法：</strong><br>修改C:\Windows\System32\drivers\etc路径下的hosts文件，在文末加入以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1 peer1 peer2 peer3</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="com-netflix-client-ClientException-Load-balancer-does-not-have-available-server-for-client-microservice-provider-user"><a href="#com-netflix-client-ClientException-Load-balancer-does-not-have-available-server-for-client-microservice-provider-user" class="headerlink" title="com.netflix.client.ClientException: Load balancer does not have available server for client: microservice-provider-user"></a>com.netflix.client.ClientException: Load balancer does not have available server for client: microservice-provider-user</h2><ul>
+<li><strong>错误原因：</strong><br>消费者调用服务时无服务可用</li>
+<li><strong>解决办法：</strong></li>
+</ul>
+<ol>
+<li>确定本机是否关闭防火墙</li>
+<li><p>是否导入eureka的jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 注册Eureka服务 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-netflix-eureka-client&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>确定是否导入hystrix的jar包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置hystrix所需依赖的包 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>确定配置文件服务前面是否有空格<br><img src="https://www.cnblogs.com/images/cnblogs_com/mmzs/1301081/o_QQ%e5%9b%be%e7%89%8720180914170639.png" alt="image"></p>
+</li>
+</ol>
+<h2 id="Unable-to-connect-to-Command-Metric-Stream"><a href="#Unable-to-connect-to-Command-Metric-Stream" class="headerlink" title="Unable to connect to Command Metric Stream"></a>Unable to connect to Command Metric Stream</h2><ul>
+<li><strong>错误原因：</strong><br>配置文件不完整</li>
+<li><p><strong>解决办法：</strong><br><strong>Hystrix Metrics Stream</strong><br>要启用Hystrix度量标准流，请在spring-boot-starter-actuator上包含依赖项，并设置<strong>management.endpoints.web.exposure.include：hystrix.stream</strong> 。 这样做会将 /actuator/hystrix.stream公开为管理端点，如以下示例所示：<br></p>
+</li>
+<li><p>pom.xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">	&lt;dependency&gt;</span><br><span class="line">		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">		&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">	&lt;/dependency&gt;</span><br><span class="line">```  </span><br><span class="line">- application.yml</span><br><span class="line">配置Hystrix Metrics Stream</span><br><span class="line">```yml</span><br><span class="line">	management:</span><br><span class="line">	  endpoints:</span><br><span class="line">		web:</span><br><span class="line">		  exposure:</span><br><span class="line">			include: hystrix.stream</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="hystrix-stream一直是ping"><a href="#hystrix-stream一直是ping" class="headerlink" title="hystrix.stream一直是ping"></a>hystrix.stream一直是ping</h2><ul>
+<li><strong>错误原因：</strong> <ul>
+<li>因为没有请求任何东西，所以看不到内容;</li>
+<li>缺少配置监控的依赖</li>
+<li>配置环境不完善</li>
+</ul>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li>访问一下其他服务,比如<a href="http://localhost:9000/goods/2(自己写的一个服务)即可看到内容" target="_blank" rel="noopener">http://localhost:9000/goods/2(自己写的一个服务)即可看到内容</a></li>
+<li><p>客服端添加依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  	&lt;!-- Actuator是SpringBoot提供的对应用系统的自省和监控的集成功能，可以查看应用配置的详细信息;</span><br><span class="line"> 	   如果提示 Unable to connect to Command Metric Stream.则需要引入以下包!</span><br><span class="line">   	--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>完善配置环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 使用Hystrix Metrics Stream必备 </span><br><span class="line">management:</span><br><span class="line">  endpoints: </span><br><span class="line">    web:</span><br><span class="line">      exposure: </span><br><span class="line">        include: hystrix.stream</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="turbine-stream一直是ping"><a href="#turbine-stream一直是ping" class="headerlink" title="turbine.stream一直是ping"></a>turbine.stream一直是ping</h2><ul>
+<li><p><strong>错误原因：</strong> </p>
+<ul>
+<li>因为没有请求任何东西，所以看不到内容;</li>
+<li>缺少配置监控的依赖 </li>
+<li><p>Eureka服务注册中心未将自己作为客户端来尝试注册它自己</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 注册Eureka服务</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    register-with-eureka: false</span><br><span class="line">    fetch-registry: false</span><br></pre></td></tr></table></figure>
+<ul>
+<li>缺少配置监控的依赖</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li>访问一下其他服务,比如<a href="http://localhost:9000/goods/2(自己写的一个服务)即可看到内容" target="_blank" rel="noopener">http://localhost:9000/goods/2(自己写的一个服务)即可看到内容</a></li>
+<li><p>客服端添加依赖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  	&lt;!-- Actuator是SpringBoot提供的对应用系统的自省和监控的集成功能，可以查看应用配置的详细信息;</span><br><span class="line"> 	   如果提示 Unable to connect to Command Metric Stream.则需要引入以下包!</span><br><span class="line">   	--&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Eureka服务注册中心未将自己作为客户端来尝试注册它自己</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 注册Eureka服务</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">#    register-with-eureka: false</span><br><span class="line">#    fetch-registry: false</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加配置的依赖(作为客服端的都需要配置)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Health-Indicator访问无结果"><a href="#Health-Indicator访问无结果" class="headerlink" title="Health Indicator访问无结果"></a>Health Indicator访问无结果</h2><ul>
+<li><strong>错误原因：</strong> <ul>
+<li>未导入依赖包</li>
+<li>版本原因导致访问方式改变了</li>
+</ul>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li><p>导入依赖包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">  	&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问<a href="http://localhost:8030/actuator查看" target="_blank" rel="noopener">http://localhost:8030/actuator查看</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;_links&quot;: &#123;</span><br><span class="line">        &quot;self&quot;: &#123;</span><br><span class="line">            &quot;href&quot;: &quot;http://localhost:8030/actuator&quot;,</span><br><span class="line">            &quot;templated&quot;: false</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;health&quot;: &#123;</span><br><span class="line">            &quot;href&quot;: &quot;http://localhost:8030/actuator/health&quot;,</span><br><span class="line">            &quot;templated&quot;: false</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;info&quot;: &#123;</span><br><span class="line">            &quot;href&quot;: &quot;http://localhost:8030/actuator/info&quot;,</span><br><span class="line">            &quot;templated&quot;: false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>访问<a href="http://localhost:8030/actuator/health即可" target="_blank" rel="noopener">http://localhost:8030/actuator/health即可</a></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="Turbine监控多个服务-配置后-出现只监控到一部分服务情况"><a href="#Turbine监控多个服务-配置后-出现只监控到一部分服务情况" class="headerlink" title="Turbine监控多个服务,配置后,出现只监控到一部分服务情况"></a>Turbine监控多个服务,配置后,出现只监控到一部分服务情况</h2><ul>
+<li><strong>错误原因：</strong><ul>
+<li>配置有问题</li>
+</ul>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li><p>application.xml配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 0、配置多个监控服务</span><br><span class="line">turbine:</span><br><span class="line">  appConfig: microservice-consumer-goods-feign-with-hystrix,microservice-consumer-goods-ribbon-with-hystrix</span><br><span class="line">  clusterNameExpression: &quot;&apos;default&apos;&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 1、仅配置监控一个服务</span><br><span class="line">turbine:</span><br><span class="line">  aggregator:</span><br><span class="line">    clusterConfig: MICROSERVICE-CONSUMER-GOODS-RIBBON-WITH-HYSTRIX</span><br><span class="line">  appConfig: microservice-consumer-goods-ribbon-with-hystrix</span><br></pre></td></tr></table></figure>
+<ul>
+<li>各个微服务的Controller配置<br><br>每个微服务均需要加上如下注解：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//配置hystrix所需注解</span><br><span class="line">@EnableCircuitBreaker</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="“description”-”No-key-was-installed-for-encryption-service”-”status”-”NO-KEY”"><a href="#“description”-”No-key-was-installed-for-encryption-service”-”status”-”NO-KEY”" class="headerlink" title="“description”:”No key was installed for encryption service”,”status”:”NO_KEY”"></a>“description”:”No key was installed for encryption service”,”status”:”NO_KEY”</h2><ul>
+<li><p><strong>错误描述</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;description&quot;: &quot;No key was installed for encryption service&quot;,</span><br><span class="line">    &quot;status&quot;: &quot;NO_KEY&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>错误原因：</strong> </p>
+<ul>
+<li>jce安装有问题</li>
+<li>没有配置对应的密钥或未读取到配置文件中的秘钥</li>
+<li>SpringCloud Config的.yml文件配置有问题</li>
+</ul>
+</li>
+<li><p><strong>解决办法：</strong></p>
+<ul>
+<li>第一种问题：<br><br>安装JCE即可解决！<br><br><strong>下载地址</strong>：<br><br>JDK 6 JCE<br><br><a href="http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html</a><br><br>JDK 7 JCE<br><br><a href="http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html</a><br><br>JDK 8 JCE<br><br><a href="http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html</a><br><br><strong>安装方法：</strong><br><br>下载完后，可看到这两个jar包：<code>local_policy.jar</code>和<code>US_export_policy.jar</code><br><br>替换或新增<code>%JDK_HOME%\jre\lib\security</code>目录下的这两个jar。</li>
+<li>第二、三个问题：<br>在<code>bootstrap.yml</code>文件中配置秘钥：<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">encrypt:</span> </span><br><span class="line"><span class="attr">  key:</span> <span class="string">foobar</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>如果是在<code>application.yml</code>中配置秘钥有可能读取不到，依然报该错误</p>
+<ul>
+<li>查看JCE提供者，和一些相应算法<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.security.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JceInfo</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"-------列出加密服务提供者-----"</span>);</span><br><span class="line">		Provider[] pro = Security.getProviders();</span><br><span class="line">		<span class="keyword">for</span> (Provider p : pro) &#123;</span><br><span class="line">			System.out.println(<span class="string">"Provider:"</span> + p.getName() + <span class="string">" - version:"</span> + p.getVersion());</span><br><span class="line">			System.out.println(p.getInfo());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		System.out.println();</span><br><span class="line">		System.out.println(<span class="string">"-------列出系统支持的 消息摘要算法："</span>);</span><br><span class="line">		<span class="keyword">for</span> (String s : Security.getAlgorithms(<span class="string">"MessageDigest"</span>)) &#123;</span><br><span class="line">			System.out.println(s);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		System.out.println();</span><br><span class="line">		System.out.println(<span class="string">"-------列出系统支持的生成 公钥和 私钥对的算法："</span>);</span><br><span class="line">		<span class="keyword">for</span> (String s : Security.getAlgorithms(<span class="string">"KeyPairGenerator"</span>)) &#123;</span><br><span class="line">			System.out.println(s);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="待添加"><a href="#待添加" class="headerlink" title="待添加"></a>待添加</h2><ul>
+<li><p><strong>错误描述</strong></p>
+</li>
+<li><p><strong>错误原因：</strong> </p>
+</li>
+<li><p><strong>解决办法：</strong></p>
+</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/" title="SpringCloud学习中遇到的一些bug" target="_blank" rel="external">https://blog.mmzsblog.cn/SpringCloud/SringCloud之19SpringCloud学习中遇到的一些bug/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/Java/一文详解集合的不同之处/" title="一文详解集合的不同之处"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/SpringCloud/SringCloud之11SringCloud Config-配置Git仓库详解/" title="SringCloud(十一):SringCloud Config-配置Git仓库详解"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

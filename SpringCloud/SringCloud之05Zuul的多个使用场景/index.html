@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SpringCloud(五):Zuul的多个使用场景 | mmzsblog</title>
+  <meta name="description" content="Zuul Http客户端 Zuul使用的默认HTTP客户端现在由Apache HTTP Client支持，而不是已经不推荐使用的Ribbon RestClient。 要使用RestClient或okhttp3.0kHttpClient，请分别设置  123ribbon.restclient.enabled = true//或ribbon.okhttp.enabled = true   如果要自定义">
+<meta name="keywords" content="SpringCloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud(五):Zuul的多个使用场景">
+<meta property="og:url" content="https://blog.mmzsblog.cn/SpringCloud/SringCloud之05Zuul的多个使用场景/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="Zuul Http客户端 Zuul使用的默认HTTP客户端现在由Apache HTTP Client支持，而不是已经不推荐使用的Ribbon RestClient。 要使用RestClient或okhttp3.0kHttpClient，请分别设置  123ribbon.restclient.enabled = true//或ribbon.okhttp.enabled = true   如果要自定义">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-27T06:09:09.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud(五):Zuul的多个使用场景">
+<meta name="twitter:description" content="Zuul Http客户端 Zuul使用的默认HTTP客户端现在由Apache HTTP Client支持，而不是已经不推荐使用的Ribbon RestClient。 要使用RestClient或okhttp3.0kHttpClient，请分别设置  123ribbon.restclient.enabled = true//或ribbon.okhttp.enabled = true   如果要自定义">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之05Zuul的多个使用场景/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DesignPatterns/">DesignPatterns</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevelopmentTools/">DevelopmentTools</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Node/">Node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ProgramLife/">ProgramLife</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringCloud/">SpringCloud</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 13.75px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.25px;">Java</a> <a href="/tags/SpringCloud/" style="font-size: 14px;">SpringCloud</a> <a href="/tags/git/" style="font-size: 13.25px;">git</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/npm/" style="font-size: 13px;">npm</a> <a href="/tags/spring/" style="font-size: 13.5px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/02/">二月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">一月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">十二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">八月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">十月 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">十一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">十一月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">十一月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">十月 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">十月 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之5种BeanScope/" class="title">Spring(二):Spring支持的5种Bean Scope详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-21T02:24:00.000Z" itemprop="datePublished">2019-02-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之IoC容器理解/" class="title">Spring(一):IoC容器的理解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-20T02:24:00.000Z" itemprop="datePublished">2019-02-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之学习Spring的价值/" class="title">Spring(零):学习Spring的价值</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-19T02:24:00.000Z" itemprop="datePublished">2019-02-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevelopmentTools/">DevelopmentTools</a>
+              </p>
+              <p class="item-title">
+                <a href="/DevelopmentTools/git提交大文件报错/" class="title">git提交报错，提示文件过大，且去掉大文件也报同样的错误</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-18T10:16:19.000Z" itemprop="datePublished">2019-02-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mmzs/">mmzs</a>
+              </p>
+              <p class="item-title">
+                <a href="/mmzs/addGoogleSitemap/" class="title">Hexo优化：创建sitemap站点地图并向google提交</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-14T03:15:33.000Z" itemprop="datePublished">2019-02-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Zuul-Http客户端"><span class="toc-number">1.</span> <span class="toc-text">Zuul Http客户端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Cookies-and-Sensitive-Headers"><span class="toc-number">2.</span> <span class="toc-text">Cookies and Sensitive Headers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ignored-Headers"><span class="toc-number">3.</span> <span class="toc-text">Ignored Headers</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Routes-Endpoint"><span class="toc-number">4.</span> <span class="toc-text">Routes Endpoint</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Strangulation-Patterns-and-Local-Forwards"><span class="toc-number">5.</span> <span class="toc-text">Strangulation Patterns and Local Forwards</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Uploading-Files-through-Zuul"><span class="toc-number">6.</span> <span class="toc-text">Uploading Files through Zuul</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Disable-Zuul-Filters"><span class="toc-number">7.</span> <span class="toc-text">Disable Zuul Filters</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-SringCloud之05Zuul的多个使用场景" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringCloud(五):Zuul的多个使用场景
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/SpringCloud/SringCloud之05Zuul的多个使用场景/" class="article-date">
+	  <time datetime="2019-01-11T02:24:00.000Z" itemprop="datePublished">2019-01-11</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/SpringCloud/">SpringCloud</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/SpringCloud/">SpringCloud</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/SpringCloud/SringCloud之05Zuul的多个使用场景/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.2k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 4(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="Zuul-Http客户端"><a href="#Zuul-Http客户端" class="headerlink" title="Zuul Http客户端"></a>Zuul Http客户端</h1><ul>
+<li>Zuul使用的默认HTTP客户端现在由<code>Apache HTTP Client</code>支持，而不是已经不推荐使用的<code>Ribbon RestClient</code>。</li>
+<li>要使用<code>RestClient</code>或<code>okhttp3.0kHttpClient</code>，请分别设置  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ribbon.restclient.enabled = true</span><br><span class="line">//或</span><br><span class="line">ribbon.okhttp.enabled = true</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>如果要自定义Apache HTTP客户端或OK HTTP客户端，请提供ClosableHttpClient或OkHttpClient类型的bean。</p>
+<h1 id="Cookies-and-Sensitive-Headers"><a href="#Cookies-and-Sensitive-Headers" class="headerlink" title="Cookies and Sensitive Headers"></a>Cookies and Sensitive Headers</h1><p>配置文件application.yml中设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    users:</span><br><span class="line">      path: /myusers/**</span><br><span class="line">      sensitiveHeaders: Cookie,Set-Cookie,Authorization</span><br><span class="line">      url: https://downstream</span><br></pre></td></tr></table></figure></p>
+<p>这里<code>sensitiveHeaders</code>是默认值，所以当你希望它不同时，才需进行设置。 这是<code>Spring Cloud Netflix 1.1</code>中的新功能（在1.0中，用户无法控制标题，并且所有Cookie都在两个方向上流动）。</p>
+<p><code>sensitiveHeaders</code>是黑名单，且默认不为空。 因此，要使Zuul发送所有标头（忽略的标头除外），您必须将其明确设置为空列表。 如果要将cookie或授权标头传递到后端，则必须这样做。 以下示例显示了如何使用sensitiveHeaders：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    users:</span><br><span class="line">      path: /myusers/**</span><br><span class="line">      sensitiveHeaders:</span><br><span class="line">      url: https://downstream</span><br></pre></td></tr></table></figure></p>
+<p>您还可以通过设置<code>sensitiveHeaders</code>来设置<code>zuul.sensitiveHeaders</code>。 如果在路由上设置了<code>sensitiveHeaders</code>，它将覆盖全局<code>sensitiveHeaders</code>设置。</p>
+<h1 id="Ignored-Headers"><a href="#Ignored-Headers" class="headerlink" title="Ignored Headers"></a>Ignored Headers</h1><ul>
+<li>常规理解：<br><br><code>zuul.ignoreHeaders</code>属性可用于丢弃一些标题。<br><br>例如，设置<code>zuul.ignoredHeaders = Header1，Header2</code>;<br>那么Header1和Header2将不会传播到任何其他服务。<br><br>默认情况下，<code>zuul.ignoredHeaders=</code>是空的。但如果<code>Spring Securuty</code>在classpath中。<br>它的值在是：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Pragma,Cache-Control,X-Frame-Options,X-Content-Type-Options,X-XSS-Protextion,Expires</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><code>zuul.ignoreSecurityHeaders</code>的默认值为true。但是当我想要标头值的值时<br>从下游服务我们需要设置为false。</p>
+<ul>
+<li>通俗来讲就是：<br><br>除<code>route-sensitive</code>外，您还可以将与下游服务交互期间应丢弃的值（请求和响应）设置名为<code>zuul.ignoredHeaders</code>的全局值。 默认情况下，如果<code>Spring Security</code>不在类路径中，则它们为空。 否则，它们被初始化为一组众所周知的“安全”头文件（例如，涉及缓存），如<code>Spring Security</code>所指定的那样。 在这种情况下的假设是下游服务也可能添加这些头，但我们想从代理中获得这些值。 如果要在<code>Spring Security</code>位于类路径时不丢弃这些众所周知的<code>security headers</code>，可以将<code>zuul.ignoreSecurityHeaders</code>设置为<code>false</code>。 如果您<code>在Spring Security</code>中禁用了HTTP安全响应标头并希望下游服务提供的值，那么这样做会非常有用。<h1 id="Routes-Endpoint"><a href="#Routes-Endpoint" class="headerlink" title="Routes Endpoint"></a>Routes Endpoint</h1></li>
+<li>使用routes 端点的前提：<br><ul>
+<li>Zuul Server需要有<code>Spring Boot Actuator</code>的依赖，否则访问/routes 端点将会返回404；</li>
+<li>设置<code>management.security.enabled = false</code>，否则将会返回401；也可添加Spring Security的依赖，这样可通过账号、密码访问routes 端点。<h1 id="Strangulation-Patterns-and-Local-Forwards"><a href="#Strangulation-Patterns-and-Local-Forwards" class="headerlink" title="Strangulation Patterns and Local Forwards"></a>Strangulation Patterns and Local Forwards</h1><strong>标题：</strong> 扼杀模式和本地转发<br></li>
+</ul>
+</li>
+</ul>
+<p>迁移现有应用程序或API时的一种常见模式是“扼杀”旧端点，慢慢用不同的实现替换它们。 Zuul代理是一个有用的工具，因为您可以使用它来处理来自旧端点的客户端的所有流量，但将一些请求重定向到新的端点。</p>
+<p>以下示例显示“strangle”方案的配置详细信息：</p>
+<ul>
+<li>application.yml配置示例：<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">zuul:</span></span><br><span class="line"><span class="attr">  routes:</span></span><br><span class="line"><span class="attr">    first:</span></span><br><span class="line"><span class="attr">      path:</span> <span class="string">/first/**</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">http://first.example.com</span></span><br><span class="line"><span class="attr">    second:</span></span><br><span class="line"><span class="attr">      path:</span> <span class="string">/second/**</span></span><br><span class="line">      <span class="comment"># forward的是本地转发</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">forward:/second</span></span><br><span class="line"><span class="attr">    third:</span></span><br><span class="line"><span class="attr">      path:</span> <span class="string">/third/**</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">forward:/3rd</span></span><br><span class="line"><span class="attr">    legacy:</span></span><br><span class="line"><span class="attr">      path:</span> <span class="string">/**</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">http://legacy.example.com</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>==<strong>[注意]</strong>== 忽略的模式不会被完全忽略，它们只是不由代理处理（因此它们也可以在本地有效转发）。</p>
+<h1 id="Uploading-Files-through-Zuul"><a href="#Uploading-Files-through-Zuul" class="headerlink" title="Uploading Files through Zuul"></a>Uploading Files through Zuul</h1><p><strong>标题：</strong> 通过zuul上传文件</p>
+<ul>
+<li><p>如果使用<code>@EnableZuulProxy</code>注解，可以用代理路径上传文件，只要文件很小，它就可以正常工作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -F &quot;file=@d:/tmp.txt&quot; localhost:8050/upload</span><br><span class="line"></span><br><span class="line">curl -F &quot;file=@d:/tmp.txt&quot; localhost:8050/microservice-file-upload/upload</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>而对于大型文件，需要使用一个替代路径绕过<code>/zuul/*</code>中的Spring DispatcherServlet;<br>即使用<code>/zuul/*</code>的方式绕过Spring DispatcherServlet（以避免多部分处理）</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -F &quot;file=@d:/tmp.txt&quot; localhost:8050/zuul/microservice-file-upload/upload</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>application.yml配置中需要加如下语句，主要是为了避免文件过大和上传超时：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 经过zuul的请求都会使用hystrix进行包裹</span></span><br><span class="line"><span class="comment"># hystrix的超时时间</span></span><br><span class="line"><span class="string">hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds:</span> <span class="number">60000</span></span><br><span class="line"><span class="comment"># zuul使用了ribbon做负载均衡</span></span><br><span class="line"><span class="attr">ribbon:</span></span><br><span class="line"><span class="attr">  ConnectTimeout:</span> <span class="number">3000</span></span><br><span class="line"><span class="attr">  ReadTimeout:</span> <span class="number">60000</span></span><br></pre></td></tr></table></figure>
+<p>==<strong>[注]</strong>== 超时问题解决后，也可能存在堆内存太小，导致上传失败，可以堆tomcat进行如下设置： <a href="https://www.cnblogs.com/mmzs/p/7662863.html#_label0_6" target="_blank" rel="noopener">点这里</a></p>
+<h1 id="Disable-Zuul-Filters"><a href="#Disable-Zuul-Filters" class="headerlink" title="Disable Zuul Filters"></a>Disable Zuul Filters</h1><p><strong>标题：</strong> 禁用zuul过滤器</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>SpringCloud在代理和服务器模式下都默认启用了许多ZuulFilter bean。</p>
+<p>有关可以启用的过滤器列表，请参阅<a href="https://github.com/spring-cloud/spring-cloud-netflix/tree/master/spring-cloud-netflix-zuul/src/main/java/org/springframework/cloud/netflix/zuul/filters" target="_blank" rel="noopener">Zuul过滤器包</a>。 </p>
+<p>如果要禁用一个过滤器，请参照如下设置<code>zuul.&lt;SimpleClassName&gt;.&lt;filterType&gt;.disable=true</code>;按照惯例，过滤器后的包是Zuul过滤器类型。</p>
+<p>例如，要禁用<code>org.springframework.cloud.netflix.zuul.filters.post.SendResponseFilter</code>需设置<code>zuul.SendResponseFilter.post.disable = true</code></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之05Zuul的多个使用场景/" title="SpringCloud(五):Zuul的多个使用场景" target="_blank" rel="external">https://blog.mmzsblog.cn/SpringCloud/SringCloud之05Zuul的多个使用场景/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/SpringCloud/SringCloud之06Zuul的Fallback回退机制/" title="SpringCloud(六):Zuul的Fallback回退机制"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/SpringCloud/SringCloud之04Zuul-注册zuul反向代理的几种配置形式/" title="SpringCloud(四):Zuul-注册zuul反向代理的几种配置形式"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>

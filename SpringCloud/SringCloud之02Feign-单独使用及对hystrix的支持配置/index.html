@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SpringCloud(二):Feign-单独使用及对hystrix的支持配置 | mmzsblog</title>
+  <meta name="description" content="Feign自定义配置时，@Configuration和@ComponentScan包不应重叠 示例：  @FeignClient注解的放在com.mmzs.cloud.feign包下面 1@FeignClient(name = &amp;quot;xxxx&amp;quot;, url = &amp;quot;http://localhost:8761/&amp;quot;, configuration = Configurat">
+<meta name="keywords" content="SpringCloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringCloud(二):Feign-单独使用及对hystrix的支持配置">
+<meta property="og:url" content="https://blog.mmzsblog.cn/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="Feign自定义配置时，@Configuration和@ComponentScan包不应重叠 示例：  @FeignClient注解的放在com.mmzs.cloud.feign包下面 1@FeignClient(name = &amp;quot;xxxx&amp;quot;, url = &amp;quot;http://localhost:8761/&amp;quot;, configuration = Configurat">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-27T06:09:29.211Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringCloud(二):Feign-单独使用及对hystrix的支持配置">
+<meta name="twitter:description" content="Feign自定义配置时，@Configuration和@ComponentScan包不应重叠 示例：  @FeignClient注解的放在com.mmzs.cloud.feign包下面 1@FeignClient(name = &amp;quot;xxxx&amp;quot;, url = &amp;quot;http://localhost:8761/&amp;quot;, configuration = Configurat">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DesignPatterns/">DesignPatterns</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevelopmentTools/">DevelopmentTools</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Node/">Node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ProgramLife/">ProgramLife</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringCloud/">SpringCloud</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 13.75px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.25px;">Java</a> <a href="/tags/SpringCloud/" style="font-size: 14px;">SpringCloud</a> <a href="/tags/git/" style="font-size: 13.25px;">git</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/npm/" style="font-size: 13px;">npm</a> <a href="/tags/spring/" style="font-size: 13.5px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/02/">二月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">一月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">十二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">八月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">十月 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">十一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">十一月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">十一月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">十月 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">十月 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之5种BeanScope/" class="title">Spring(二):Spring支持的5种Bean Scope详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-21T02:24:00.000Z" itemprop="datePublished">2019-02-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之IoC容器理解/" class="title">Spring(一):IoC容器的理解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-20T02:24:00.000Z" itemprop="datePublished">2019-02-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之学习Spring的价值/" class="title">Spring(零):学习Spring的价值</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-19T02:24:00.000Z" itemprop="datePublished">2019-02-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevelopmentTools/">DevelopmentTools</a>
+              </p>
+              <p class="item-title">
+                <a href="/DevelopmentTools/git提交大文件报错/" class="title">git提交报错，提示文件过大，且去掉大文件也报同样的错误</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-18T10:16:19.000Z" itemprop="datePublished">2019-02-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mmzs/">mmzs</a>
+              </p>
+              <p class="item-title">
+                <a href="/mmzs/addGoogleSitemap/" class="title">Hexo优化：创建sitemap站点地图并向google提交</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-14T03:15:33.000Z" itemprop="datePublished">2019-02-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Feign"><span class="toc-number">1.</span> <span class="toc-text">Feign</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义配置时，-Configuration和-ComponentScan包不应重叠"><span class="toc-number">1.1.</span> <span class="toc-text">自定义配置时，@Configuration和@ComponentScan包不应重叠</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FeignClient所在的接口中，不支持-GetMapping等组合注解"><span class="toc-number">1.2.</span> <span class="toc-text">@FeignClient所在的接口中，不支持@GetMapping等组合注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-PathVariable时，需要指定其value"><span class="toc-number">1.3.</span> <span class="toc-text">使用@PathVariable时，需要指定其value</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Feign暂不支持复杂对象作为一个参数"><span class="toc-number">1.4.</span> <span class="toc-text">Feign暂不支持复杂对象作为一个参数</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#feign对hystrix的支持"><span class="toc-number">2.</span> <span class="toc-text">feign对hystrix的支持</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#添加feign对hystrix的支持-全局配置"><span class="toc-number">2.1.</span> <span class="toc-text">添加feign对hystrix的支持,全局配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#禁用单个FegionClient的Hystrix的支持"><span class="toc-number">2.2.</span> <span class="toc-text">禁用单个FegionClient的Hystrix的支持</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fallback和fallbackFactory定义的类"><span class="toc-number">2.3.</span> <span class="toc-text">fallback和fallbackFactory定义的类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fallback和fallbackFactory"><span class="toc-number">2.4.</span> <span class="toc-text">fallback和fallbackFactory</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-SringCloud之02Feign-单独使用及对hystrix的支持配置" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringCloud(二):Feign-单独使用及对hystrix的支持配置
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/" class="article-date">
+	  <time datetime="2019-01-08T02:24:00.000Z" itemprop="datePublished">2019-01-08</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/SpringCloud/">SpringCloud</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/SpringCloud/">SpringCloud</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 648(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h1><h2 id="自定义配置时，-Configuration和-ComponentScan包不应重叠"><a href="#自定义配置时，-Configuration和-ComponentScan包不应重叠" class="headerlink" title="自定义配置时，@Configuration和@ComponentScan包不应重叠"></a>自定义配置时，@Configuration和@ComponentScan包不应重叠</h2><ul>
+<li><p>示例：</p>
+<ul>
+<li><p>@FeignClient注解的放在com.mmzs.cloud.feign包下面</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(name = &quot;xxxx&quot;, url = &quot;http://localhost:8761/&quot;, configuration = Configuration2.class)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>@Configuration注解的放在com.mmzs.config包下面</p>
+<h2 id="FeignClient所在的接口中，不支持-GetMapping等组合注解"><a href="#FeignClient所在的接口中，不支持-GetMapping等组合注解" class="headerlink" title="@FeignClient所在的接口中，不支持@GetMapping等组合注解"></a>@FeignClient所在的接口中，不支持@GetMapping等组合注解</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//value此处的值一定要和指定的应用microservice-provider-user的controller中的映射路径一致</span><br><span class="line">@RequestMapping(method = RequestMethod.GET, value = &quot;/user/&#123;id&#125;&quot;, consumes = &quot;application/json&quot;)</span><br><span class="line">// 此处有两个坑：</span><br><span class="line">//- 1. 不支持@GetMapping等组合注解   </span><br><span class="line">//- 2. @PathVariable得设置value</span><br><span class="line">public User findById(@PathVariable(&quot;id&quot;) Long id);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="使用-PathVariable时，需要指定其value"><a href="#使用-PathVariable时，需要指定其value" class="headerlink" title="使用@PathVariable时，需要指定其value"></a>使用@PathVariable时，需要指定其value</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public String findServiceName(@PathVariable(&quot;serviceName&quot;) String serviceName);</span><br></pre></td></tr></table></figure>
+<h2 id="Feign暂不支持复杂对象作为一个参数"><a href="#Feign暂不支持复杂对象作为一个参数" class="headerlink" title="Feign暂不支持复杂对象作为一个参数"></a>Feign暂不支持复杂对象作为一个参数</h2><ul>
+<li><p>[ ] <strong>==错误用法==</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 该请求不会成功，只要参数是复杂对象，即使指定了是GET方法，feign依然会以POST方法进行发送请求。可能是我没找到相应的注解或使用方法错误。</span><br><span class="line">@RequestMapping(method = RequestMethod.GET, value = &quot;/feign-get-user&quot;)</span><br><span class="line">public User getUser(User user);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>[x] <strong>==正确用法==</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@RequestMapping(method = RequestMethod.GET, value = &quot;/feign-get-user&quot;)</span><br><span class="line">public User getUser(@RequestParam(&quot;id&quot;) Long id, @RequestParam(&quot;username&quot;) String username, @RequestParam(&quot;age&quot;) String age);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="feign对hystrix的支持"><a href="#feign对hystrix的支持" class="headerlink" title="feign对hystrix的支持"></a>feign对hystrix的支持</h1><h2 id="添加feign对hystrix的支持-全局配置"><a href="#添加feign对hystrix的支持-全局配置" class="headerlink" title="添加feign对hystrix的支持,全局配置"></a>添加feign对hystrix的支持,全局配置</h2><p>application.xml配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">feign.hystrix.enabled = true</span><br></pre></td></tr></table></figure></p>
+<h2 id="禁用单个FegionClient的Hystrix的支持"><a href="#禁用单个FegionClient的Hystrix的支持" class="headerlink" title="禁用单个FegionClient的Hystrix的支持"></a>禁用单个FegionClient的Hystrix的支持</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// Configuration1表示feign的自定义配置类</span><br><span class="line">@FeignClient(name = &quot;microservice-provider-user&quot;, configuration = Configuration1.class)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class Configuration1 &#123;</span><br><span class="line"></span><br><span class="line">	//禁用当前配置的hystrix，局部禁用</span><br><span class="line">	@Bean</span><br><span class="line">	@Scope(&quot;prototype&quot;)</span><br><span class="line">	public Feign.Builder feignBuilder() &#123;</span><br><span class="line">		return Feign.builder();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="fallback和fallbackFactory定义的类"><a href="#fallback和fallbackFactory定义的类" class="headerlink" title="fallback和fallbackFactory定义的类"></a>fallback和fallbackFactory定义的类</h2><ul>
+<li><p>fallback定义的类</p>
+<ul>
+<li>只重写了一个方法 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">//这个类不一定要和UserFeignClient写在同一个类中，</span><br><span class="line">public class HystrixClientFallback implements UserFeignClient &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public User findById(Long id) &#123;</span><br><span class="line">		User user = new User();</span><br><span class="line">		user.setId(1L);</span><br><span class="line">		user.setUsername(&quot;我是HystrixClientFallback&quot;);</span><br><span class="line">		return user;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>fallbackFactory定义的类</p>
+<ul>
+<li>不只重写了方法，还能捕获异常<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class HystrixClientFallbackFactory implements FallbackFactory&lt;UserFeignClient&gt; &#123;</span><br><span class="line">	</span><br><span class="line">	private static Logger LOGGER = LoggerFactory.getLogger(HystrixClientFallbackFactory.class);</span><br><span class="line">	</span><br><span class="line">	@Override</span><br><span class="line">	public UserFeignClient create(Throwable cause) &#123;</span><br><span class="line">		//打印日志</span><br><span class="line">		HystrixClientFallbackFactory.LOGGER.info(&quot;fallback; reason was: &quot; + cause.getMessage());</span><br><span class="line">		</span><br><span class="line">		return new UserFeignClient() &#123;</span><br><span class="line">			@Override</span><br><span class="line">			public User findById(Long id) &#123;</span><br><span class="line">				User user = new User();</span><br><span class="line">				user.setId(-1L);</span><br><span class="line">				user.setUsername(&quot;我是HystrixClientFallbackFactory&quot;);</span><br><span class="line">				</span><br><span class="line">				return user;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<p>==<strong>注</strong>：== fallbackFactory相当于fallback的增强版，也就是说fallbackFactory的范围更广，到收集异常的边界处了。因此我们是可以利用fallbackFactory属性来打印fallback异常的。<br>-正确用法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(name = &quot;microservice-provider-user&quot;, /*fallback = HystrixClientFallback.class,*/ fallbackFactory = HystrixClientFallbackFactory.class)</span><br></pre></td></tr></table></figure></p>
+<h2 id="fallback和fallbackFactory"><a href="#fallback和fallbackFactory" class="headerlink" title="fallback和fallbackFactory"></a>fallback和fallbackFactory</h2><p>如下这种方式的注解，fallback和fallbackFactory是会有冲突的，但不会报错，只是会让断路器执行fallback中重写的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@FeignClient(name = &quot;microservice-provider-user&quot;, fallback = HystrixClientFallback.class, fallbackFactory = HystrixClientFallbackFactory.class)</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/" title="SpringCloud(二):Feign-单独使用及对hystrix的支持配置" target="_blank" rel="external">https://blog.mmzsblog.cn/SpringCloud/SringCloud之02Feign-单独使用及对hystrix的支持配置/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/SpringCloud/SringCloud之03Hystrix-有界面和无界面的配置/" title="SpringCloud(三):Hystrix-有界面和无界面的配置"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/SpringCloud/SringCloud之01Ribbon-几种配置方式/" title="SpringCloud(一):深入理解Eureka"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>
