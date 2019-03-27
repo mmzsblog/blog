@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>ftp工具类实现文件的上传与下载 | mmzsblog</title>
+  <meta name="description" content="准备工作服务器已经配置好ftp服务linux服务器搭建ftp服务： https://program.blog.csdn.net/article/details/88825921 需要用到的jar包：12345&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;commons-net&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;commons-net&amp;lt;/">
+<meta name="keywords" content="util">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ftp工具类实现文件的上传与下载">
+<meta property="og:url" content="https://blog.mmzsblog.cn/Java/ftp工具类/index.html">
+<meta property="og:site_name" content="mmzsblog">
+<meta property="og:description" content="准备工作服务器已经配置好ftp服务linux服务器搭建ftp服务： https://program.blog.csdn.net/article/details/88825921 需要用到的jar包：12345&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;commons-net&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;commons-net&amp;lt;/">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-27T03:56:50.726Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ftp工具类实现文件的上传与下载">
+<meta name="twitter:description" content="准备工作服务器已经配置好ftp服务linux服务器搭建ftp服务： https://program.blog.csdn.net/article/details/88825921 需要用到的jar包：12345&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;commons-net&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;commons-net&amp;lt;/">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.mmzsblog.cn/Java/ftp工具类/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="mmzsblog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/mmzsblog" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">mmzsblog</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Java Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> ChengDu, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archive">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>感谢光临本博客网站，本博客将持续更新技术帖，你也可关注微信公众号，第一时间收到最新文章</p><div class="text-center"><img src="/images/weChat.jpg" width="169px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/DesignPatterns/">DesignPatterns</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/DevelopmentTools/">DevelopmentTools</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/J2ee/">J2ee</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Node/">Node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/ProgramLife/">ProgramLife</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringCloud/">SpringCloud</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mmzs/">mmzs</a><span class="category-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/JVM虚拟机/" style="font-size: 13.75px;">JVM虚拟机</a> <a href="/tags/Java/" style="font-size: 13.25px;">Java</a> <a href="/tags/SpringCloud/" style="font-size: 14px;">SpringCloud</a> <a href="/tags/git/" style="font-size: 13.25px;">git</a> <a href="/tags/hexo/" style="font-size: 13px;">hexo</a> <a href="/tags/idea/" style="font-size: 13px;">idea</a> <a href="/tags/mmzs/" style="font-size: 13px;">mmzs</a> <a href="/tags/npm/" style="font-size: 13px;">npm</a> <a href="/tags/spring/" style="font-size: 13.5px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/util/" style="font-size: 13px;">util</a> <a href="/tags/加密算法/" style="font-size: 13px;">加密算法</a> <a href="/tags/年终总结/" style="font-size: 13px;">年终总结</a> <a href="/tags/框架/" style="font-size: 13px;">框架</a> <a href="/tags/注解/" style="font-size: 13px;">注解</a> <a href="/tags/编程语言/" style="font-size: 13px;">编程语言</a> <a href="/tags/设计模式/" style="font-size: 13px;">设计模式</a> <a href="/tags/集合/" style="font-size: 13px;">集合</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/02/">二月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2019/01/">一月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/12/">十二月 2018</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2017/08/">八月 2017</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/12/">十二月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2016/10/">十月 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2014/11/">十一月 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2013/11/">十一月 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2012/11/">十一月 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2011/10/">十月 2011</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archive/2010/10/">十月 2010</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之5种BeanScope/" class="title">Spring(二):Spring支持的5种Bean Scope详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-21T02:24:00.000Z" itemprop="datePublished">2019-02-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之IoC容器理解/" class="title">Spring(一):IoC容器的理解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-20T02:24:00.000Z" itemprop="datePublished">2019-02-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Spring/">Spring</a>
+              </p>
+              <p class="item-title">
+                <a href="/Spring/Spring之学习Spring的价值/" class="title">Spring(零):学习Spring的价值</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-19T02:24:00.000Z" itemprop="datePublished">2019-02-19</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/DevelopmentTools/">DevelopmentTools</a>
+              </p>
+              <p class="item-title">
+                <a href="/DevelopmentTools/git提交大文件报错/" class="title">git提交报错，提示文件过大，且去掉大文件也报同样的错误</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-18T10:16:19.000Z" itemprop="datePublished">2019-02-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/mmzs/">mmzs</a>
+              </p>
+              <p class="item-title">
+                <a href="/mmzs/addGoogleSitemap/" class="title">Hexo优化：创建sitemap站点地图并向google提交</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-14T03:15:33.000Z" itemprop="datePublished">2019-02-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc" id="collapseToc" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备工作"><span class="toc-number">1.</span> <span class="toc-text">准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器已经配置好ftp服务"><span class="toc-number">1.1.</span> <span class="toc-text">服务器已经配置好ftp服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#需要用到的jar包："><span class="toc-number">1.2.</span> <span class="toc-text">需要用到的jar包：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置文件"><span class="toc-number">1.3.</span> <span class="toc-text">配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#工具类FtpUtil内容"><span class="toc-number">2.</span> <span class="toc-text">工具类FtpUtil内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问测试"><span class="toc-number">3.</span> <span class="toc-text">访问测试</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-ftp工具类" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ftp工具类实现文件的上传与下载
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/Java/ftp工具类/" class="article-date">
+	  <time datetime="2018-12-31T15:59:59.000Z" itemprop="datePublished">2018-12-31</time>
+	</a>
+</span>
+	
+<span class="article-user">
+    <i class="icon icon-code"></i>
+
+    mmzsit
+
+</span>
+
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/util/">util</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/Java/ftp工具类/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.9k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 9(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="服务器已经配置好ftp服务"><a href="#服务器已经配置好ftp服务" class="headerlink" title="服务器已经配置好ftp服务"></a>服务器已经配置好ftp服务</h3><p>linux服务器搭建ftp服务： <a href="https://program.blog.csdn.net/article/details/88825921" target="_blank" rel="noopener">https://program.blog.csdn.net/article/details/88825921</a></p>
+<h3 id="需要用到的jar包："><a href="#需要用到的jar包：" class="headerlink" title="需要用到的jar包："></a>需要用到的jar包：</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-net<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-net<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><ul>
+<li><p>application.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置ftp服务器信息</span></span><br><span class="line"><span class="attr">ftp:</span> </span><br><span class="line">  <span class="comment"># ftp服务器的IP地址</span></span><br><span class="line"><span class="attr">  url:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">  <span class="comment"># 默认端口是21</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">21</span></span><br><span class="line"><span class="attr">  username:</span> <span class="string">ftpuser</span></span><br><span class="line"><span class="attr">  password:</span> <span class="string">ftpuser</span></span><br><span class="line">  <span class="comment"># ftp服务器存放文件的路径</span></span><br><span class="line"><span class="attr">  remotePath:</span> <span class="string">/data/ftp</span></span><br><span class="line">  <span class="comment"># 本地需要上传的文件的路径</span></span><br><span class="line"><span class="attr">  localDir:</span> <span class="attr">D:/test</span></span><br><span class="line">  <span class="comment"># ftp上文件下载到本地存放的路径</span></span><br><span class="line"><span class="attr">  downDir:</span> <span class="attr">D:/test</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>FtpConfig配置信息类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Getter</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FtpConfig</span> </span>&#123;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * ftp服务器地址</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.url&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String url;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * ftp服务器端口</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.port&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * ftp服务器用户名</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.username&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String username;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * ftp服务器密码</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.password&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String password;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * ftp服务器存放文件的路径</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.remotePath&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String remotePath;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 本地需要上传的文件的路径</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.localDir&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String localDir;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 下载文件时，存放在本地的路径</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@Value</span>(<span class="string">"$&#123;ftp.downDir&#125;"</span>)</span><br><span class="line">	<span class="keyword">private</span> String downDir;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="工具类FtpUtil内容"><a href="#工具类FtpUtil内容" class="headerlink" title="工具类FtpUtil内容"></a>工具类FtpUtil内容</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j(topic=<span class="string">"文件上传/下载===ftp服务器:"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FtpUtil</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> FTPClient mFTPClient = <span class="keyword">new</span> FTPClient();</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> FtpUtil ftp = <span class="keyword">new</span> FtpUtil();</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">FtpUtil</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 在控制台打印操作过程</span></span><br><span class="line">		 mFTPClient.addProtocolCommandListener(<span class="keyword">new</span> PrintCommandListener(<span class="keyword">new</span> PrintWriter(System.out)));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 上传文件到ftp服务器</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">ftpUpload</span><span class="params">(String fileName, String ftpUrl, <span class="keyword">int</span> ftpPort,</span></span></span><br><span class="line"><span class="function"><span class="params">			String ftpUsername, String ftpPassword, String ftpLocalDir, String ftpRemotePath)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">boolean</span> isConnection = ftp.openConnection(ftpUrl, ftpPort, ftpUsername, ftpPassword);</span><br><span class="line">			<span class="keyword">if</span> (isConnection) &#123;</span><br><span class="line">				<span class="keyword">boolean</span> isSuccess = ftp.upload(ftpRemotePath, ftpLocalDir + <span class="string">"/"</span> + fileName);</span><br><span class="line">				<span class="keyword">if</span> (isSuccess) &#123;</span><br><span class="line">					log.info(<span class="string">"文件上传成功！"</span>);</span><br><span class="line">					result = <span class="keyword">true</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					log.info(<span class="string">"文件上传失败！"</span>);</span><br><span class="line">					result = <span class="keyword">false</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				ftp.logout();</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				log.info(<span class="string">"链接ftp服务器失败，请检查配置信息是否正确！"</span>);</span><br><span class="line">				result = <span class="keyword">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125; <span class="keyword">catch</span> (SocketException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 从ftp服务器下载文件到本地</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">ftpDownload</span><span class="params">(String fileName, String ftpUrl, <span class="keyword">int</span> ftpPort,</span></span></span><br><span class="line"><span class="function"><span class="params">			String ftpUsername, String ftpPassword, String ftpRemotePath, String ftpDownDir)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">boolean</span> isConnection = ftp.openConnection(ftpUrl, ftpPort, ftpUsername, ftpPassword);</span><br><span class="line">			<span class="keyword">if</span> (isConnection) &#123;</span><br><span class="line">				<span class="keyword">boolean</span> isDownloadOk = ftp.downLoad(fileName, ftpDownDir);</span><br><span class="line">				<span class="keyword">boolean</span> isCreateOk = ftp.createDirectory(ftpRemotePath, ftp.mFTPClient);</span><br><span class="line">				<span class="keyword">if</span> (isDownloadOk &amp;&amp; isCreateOk) &#123;</span><br><span class="line">					log.info(<span class="string">"文件下载成功！"</span>);</span><br><span class="line">					result = <span class="keyword">true</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					log.info(<span class="string">"文件下载失败！"</span>);</span><br><span class="line">					result = <span class="keyword">false</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				ftp.logout();</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				log.info(<span class="string">"链接ftp服务器失败，请检查配置信息是否正确！"</span>);</span><br><span class="line">				result = <span class="keyword">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125; <span class="keyword">catch</span> (SocketException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 连接ftp服务器</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> host</span></span><br><span class="line"><span class="comment">	 *            ip地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> port</span></span><br><span class="line"><span class="comment">	 *            端口号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> account</span></span><br><span class="line"><span class="comment">	 *            账号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> pwd</span></span><br><span class="line"><span class="comment">	 *            密码</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> 是否连接成功</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> SocketException</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">openConnection</span><span class="params">(String host, <span class="keyword">int</span> port, String account, String pwd)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> SocketException, IOException </span>&#123;</span><br><span class="line">		mFTPClient.setControlEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line">		mFTPClient.connect(host, port);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) &#123;</span><br><span class="line">			mFTPClient.login(account, pwd);</span><br><span class="line">			<span class="keyword">if</span> (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) &#123;</span><br><span class="line">				System.err.println(mFTPClient.getSystemType());</span><br><span class="line">				FTPClientConfig config = <span class="keyword">new</span> FTPClientConfig(mFTPClient.getSystemType().split(<span class="string">" "</span>)[<span class="number">0</span>]);</span><br><span class="line">				config.setServerLanguageCode(<span class="string">"zh"</span>);</span><br><span class="line">				mFTPClient.configure(config);</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		disConnection();</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 登出并断开连接</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">"logout"</span>);</span><br><span class="line">		<span class="keyword">if</span> (mFTPClient.isConnected()) &#123;</span><br><span class="line">			System.err.println(<span class="string">"logout"</span>);</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				mFTPClient.logout();</span><br><span class="line">				disConnection();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 断开连接</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">disConnection</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (mFTPClient.isConnected()) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				mFTPClient.disconnect();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 下载文件到本地地址</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> remotePath</span></span><br><span class="line"><span class="comment">	 *            远程地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> loacal</span></span><br><span class="line"><span class="comment">	 *            本地地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">downLoad</span><span class="params">(String remotePath, String localDir)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="comment">// 进入被动模式</span></span><br><span class="line">		mFTPClient.enterLocalPassiveMode();</span><br><span class="line">		<span class="comment">// 以二进制进行传输数据</span></span><br><span class="line">		mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);</span><br><span class="line">		FTPFile[] ftpFiles = mFTPClient.listFiles(remotePath);</span><br><span class="line">		<span class="keyword">if</span> (ftpFiles == <span class="keyword">null</span> || ftpFiles.length == <span class="number">0</span>) &#123;</span><br><span class="line">			log.info(<span class="string">"远程文件不存在"</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (ftpFiles.length &gt; <span class="number">1</span>) &#123;</span><br><span class="line">			log.info(<span class="string">"远程文件是文件夹"</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">long</span> lRemoteSize = ftpFiles[<span class="number">0</span>].getSize();</span><br><span class="line">		<span class="comment">// 本地文件的地址</span></span><br><span class="line">		File localFileDir = <span class="keyword">new</span> File(localDir);</span><br><span class="line">		<span class="keyword">if</span> (!localFileDir.exists()) &#123;</span><br><span class="line">			localFileDir.mkdirs();</span><br><span class="line">		&#125;</span><br><span class="line">		File localFile = <span class="keyword">new</span> File(localFileDir, ftpFiles[<span class="number">0</span>].getName());</span><br><span class="line">		<span class="keyword">long</span> localSize = <span class="number">0</span>;</span><br><span class="line">		FileOutputStream fos = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">if</span> (localFile.exists()) &#123;</span><br><span class="line">			<span class="keyword">if</span> (localFile.length() == lRemoteSize) &#123;</span><br><span class="line">				System.err.println(<span class="string">"已经下载完毕"</span>);</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> <span class="keyword">if</span> (localFile.length() &lt; lRemoteSize) &#123;</span><br><span class="line">				<span class="comment">// 要下载的文件存在，进行断点续传</span></span><br><span class="line">				localSize = localFile.length();</span><br><span class="line">				mFTPClient.setRestartOffset(localSize);</span><br><span class="line">				fos = <span class="keyword">new</span> FileOutputStream(localFile, <span class="keyword">true</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (fos == <span class="keyword">null</span>) &#123;</span><br><span class="line">			fos = <span class="keyword">new</span> FileOutputStream(localFile);</span><br><span class="line">		&#125;</span><br><span class="line">		InputStream is = mFTPClient.retrieveFileStream(remotePath);</span><br><span class="line">		<span class="keyword">byte</span>[] buffers = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">		<span class="keyword">long</span> step = lRemoteSize / <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">long</span> process = localSize / step;</span><br><span class="line">		<span class="keyword">int</span> len = -<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">while</span> ((len = is.read(buffers)) != -<span class="number">1</span>) &#123;</span><br><span class="line">			fos.write(buffers, <span class="number">0</span>, len);</span><br><span class="line">			localSize += len;</span><br><span class="line">			<span class="keyword">long</span> newProcess = localSize / step;</span><br><span class="line">			<span class="keyword">if</span> (newProcess &gt; process) &#123;</span><br><span class="line">				process = newProcess;</span><br><span class="line">				System.err.println(<span class="string">"下载进度:"</span> + process);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		is.close();</span><br><span class="line">		fos.close();</span><br><span class="line">		<span class="keyword">boolean</span> isDo = mFTPClient.completePendingCommand();</span><br><span class="line">		<span class="keyword">if</span> (isDo) &#123;</span><br><span class="line">			System.err.println(<span class="string">"下载成功"</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			System.err.println(<span class="string">"下载失败"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> isDo;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 创建远程目录</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> remote</span></span><br><span class="line"><span class="comment">	 *            远程目录</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> ftpClient</span></span><br><span class="line"><span class="comment">	 *            ftp客户端</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> 是否创建成功</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">createDirectory</span><span class="params">(String remote, FTPClient ftpClient)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		String dirctory = remote.substring(<span class="number">0</span>, remote.lastIndexOf(<span class="string">"/"</span>) + <span class="number">1</span>);</span><br><span class="line">		<span class="keyword">if</span> (!dirctory.equalsIgnoreCase(<span class="string">"/"</span>) &amp;&amp; !ftpClient.changeWorkingDirectory(dirctory)) &#123;</span><br><span class="line">			<span class="keyword">int</span> start = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">int</span> end = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">if</span> (dirctory.startsWith(<span class="string">"/"</span>)) &#123;</span><br><span class="line">				start = <span class="number">1</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			end = dirctory.indexOf(<span class="string">"/"</span>, start);</span><br><span class="line">			<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">				String subDirctory = remote.substring(start, end);</span><br><span class="line">				<span class="keyword">if</span> (!ftpClient.changeWorkingDirectory(subDirctory)) &#123;</span><br><span class="line">					<span class="keyword">if</span> (ftpClient.makeDirectory(subDirctory)) &#123;</span><br><span class="line">						ftpClient.changeWorkingDirectory(subDirctory);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						System.err.println(<span class="string">"创建目录失败"</span>);</span><br><span class="line">						<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				start = end + <span class="number">1</span>;</span><br><span class="line">				end = dirctory.indexOf(<span class="string">"/"</span>, start);</span><br><span class="line">				<span class="keyword">if</span> (end &lt;= start) &#123;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 上传的文件</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> remotePath</span></span><br><span class="line"><span class="comment">	 *            上传文件的路径地址（文件夹地址）</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> localPath</span></span><br><span class="line"><span class="comment">	 *            本地文件的地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">	 *             异常</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">upload</span><span class="params">(String remotePath, String localPath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="comment">// 进入被动模式</span></span><br><span class="line">		mFTPClient.enterLocalPassiveMode();</span><br><span class="line">		<span class="comment">// 以二进制进行传输数据</span></span><br><span class="line">		mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);</span><br><span class="line">		File localFile = <span class="keyword">new</span> File(localPath);</span><br><span class="line">		<span class="keyword">if</span> (!localFile.exists()) &#123;</span><br><span class="line">			System.err.println(<span class="string">"本地文件不存在"</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		String fileName = localFile.getName();</span><br><span class="line">		<span class="keyword">if</span> (remotePath.contains(<span class="string">"/"</span>)) &#123;</span><br><span class="line">			<span class="keyword">boolean</span> isCreateOk = createDirectory(remotePath, mFTPClient);</span><br><span class="line">			<span class="keyword">if</span> (!isCreateOk) &#123;</span><br><span class="line">				System.err.println(<span class="string">"文件夹创建失败"</span>);</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 列出ftp服务器上的文件</span></span><br><span class="line">		FTPFile[] ftpFiles = mFTPClient.listFiles(remotePath);</span><br><span class="line">		<span class="keyword">long</span> remoteSize = <span class="number">0l</span>;</span><br><span class="line">		String remoteFilePath = remotePath + <span class="string">"/"</span> + fileName;</span><br><span class="line">		<span class="keyword">if</span> (ftpFiles.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			FTPFile mFtpFile = <span class="keyword">null</span>;</span><br><span class="line">			<span class="keyword">for</span> (FTPFile ftpFile : ftpFiles) &#123;</span><br><span class="line">				<span class="keyword">if</span> (ftpFile.getName().endsWith(fileName)) &#123;</span><br><span class="line">					mFtpFile = ftpFile;</span><br><span class="line">					<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (mFtpFile != <span class="keyword">null</span>) &#123;</span><br><span class="line">				remoteSize = mFtpFile.getSize();</span><br><span class="line">				<span class="keyword">if</span> (remoteSize == localFile.length()) &#123;</span><br><span class="line">					System.err.println(<span class="string">"文件已经上传成功"</span>);</span><br><span class="line">					<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (remoteSize &gt; localFile.length()) &#123;</span><br><span class="line">					<span class="keyword">if</span> (!mFTPClient.deleteFile(remoteFilePath)) &#123;</span><br><span class="line">						System.err.println(<span class="string">"服务端文件操作失败"</span>);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						<span class="keyword">boolean</span> isUpload = uploadFile(remoteFilePath, localFile, <span class="number">0</span>);</span><br><span class="line">						System.err.println(<span class="string">"是否上传成功："</span> + isUpload);</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (!uploadFile(remoteFilePath, localFile, remoteSize)) &#123;</span><br><span class="line">					System.err.println(<span class="string">"文件上传成功"</span>);</span><br><span class="line">					<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					<span class="comment">// 断点续传失败删除文件，重新上传</span></span><br><span class="line">					<span class="keyword">if</span> (!mFTPClient.deleteFile(remoteFilePath)) &#123;</span><br><span class="line">						System.err.println(<span class="string">"服务端文件操作失败"</span>);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						<span class="keyword">boolean</span> isUpload = uploadFile(remoteFilePath, localFile, <span class="number">0</span>);</span><br><span class="line">						System.err.println(<span class="string">"是否上传成功："</span> + isUpload);</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">boolean</span> isUpload = uploadFile(remoteFilePath, localFile, remoteSize);</span><br><span class="line">		System.err.println(<span class="string">"是否上传成功："</span> + isUpload);</span><br><span class="line">		<span class="keyword">return</span> isUpload;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 上传文件</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> remoteFile</span></span><br><span class="line"><span class="comment">	 *            包含文件名的地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> localFile</span></span><br><span class="line"><span class="comment">	 *            本地文件</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> remoteSize</span></span><br><span class="line"><span class="comment">	 *            服务端已经存在的文件大小</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span> 是否上传成功</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">uploadFile</span><span class="params">(String remoteFile, File localFile, <span class="keyword">long</span> remoteSize)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="keyword">long</span> step = localFile.length() / <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">long</span> process = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">long</span> readByteSize = <span class="number">0</span>;</span><br><span class="line">		RandomAccessFile randomAccessFile = <span class="keyword">new</span> RandomAccessFile(localFile, <span class="string">"r"</span>);</span><br><span class="line">		OutputStream os = mFTPClient.appendFileStream(remoteFile);</span><br><span class="line">		<span class="keyword">if</span> (remoteSize &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="comment">// 已经上传一部分的时候就要进行断点续传</span></span><br><span class="line">			process = remoteSize / step;</span><br><span class="line">			readByteSize = remoteSize;</span><br><span class="line">			randomAccessFile.seek(remoteSize);</span><br><span class="line">			mFTPClient.setRestartOffset(remoteSize);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">byte</span>[] buffers = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">		<span class="keyword">int</span> len = -<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">while</span> ((len = randomAccessFile.read(buffers)) != -<span class="number">1</span>) &#123;</span><br><span class="line">			os.write(buffers, <span class="number">0</span>, len);</span><br><span class="line">			readByteSize += len;</span><br><span class="line">			<span class="keyword">long</span> newProcess = readByteSize / step;</span><br><span class="line">			<span class="keyword">if</span> (newProcess &gt; process) &#123;</span><br><span class="line">				process = newProcess;</span><br><span class="line">				System.err.println(<span class="string">"当前上传进度为："</span> + process);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		os.flush();</span><br><span class="line">		randomAccessFile.close();</span><br><span class="line">		os.close();</span><br><span class="line">		<span class="keyword">boolean</span> result = mFTPClient.completePendingCommand();</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="访问测试"><a href="#访问测试" class="headerlink" title="访问测试"></a>访问测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/ftp"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j(topic=<span class="string">"请求ftp服务器"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FtpController</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	FtpConfig ftpConfig;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@GetMapping</span>(<span class="string">"/upload"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">upload</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		String fileName = <span class="string">"uploadfile.txt"</span>;</span><br><span class="line">		<span class="keyword">boolean</span> result = FtpUtil.ftpUpload(fileName, ftpConfig.getUrl(),ftpConfig.getPort(),ftpConfig.getUsername(),</span><br><span class="line">				ftpConfig.getPassword(), ftpConfig.getLocalDir(), ftpConfig.getRemotePath());</span><br><span class="line">		<span class="keyword">if</span> (result) &#123;</span><br><span class="line">			log.info(<span class="string">"=======上传文件"</span>+ fileName +<span class="string">"成功======="</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			log.info(<span class="string">"=======上传文件"</span>+ fileName +<span class="string">"失败======="</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result?<span class="string">"上传成功"</span>:<span class="string">"上传失败"</span>;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@GetMapping</span>(<span class="string">"/download"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">download</span><span class="params">()</span></span>&#123;</span><br><span class="line">		String fileName = <span class="string">"welcome.txt"</span>;</span><br><span class="line">		<span class="keyword">boolean</span> result = FtpUtil.ftpDownload(fileName, ftpConfig.getUrl(),ftpConfig.getPort(),ftpConfig.getUsername(),</span><br><span class="line">				ftpConfig.getPassword(), ftpConfig.getRemotePath(), ftpConfig.getLocalDir() );</span><br><span class="line">		<span class="keyword">if</span> (result) &#123;</span><br><span class="line">			log.info(<span class="string">"=======下载文件"</span>+ fileName +<span class="string">"成功======="</span>);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			log.info(<span class="string">"=======下载文件"</span>+ fileName +<span class="string">"失败======="</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result?<span class="string">"下载成功"</span>:<span class="string">"下载失败"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>测试结果1：</strong> 上传成功<br><br><strong>测试结果2：</strong> 下载成功<br><br><br>代码 github 地址：<a href="https://github.com/mmzsblog/springboot-FtpUtil" target="_blank" rel="noopener">https://github.com/mmzsblog/springboot-FtpUtil</a><br><br><br></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.mmzsblog.cn/Java/ftp工具类/" title="ftp工具类实现文件的上传与下载" target="_blank" rel="external">https://blog.mmzsblog.cn/Java/ftp工具类/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/mmzsblog" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/mmzsblog" target="_blank"><span class="text-dark">mmzsblog</span><small class="ml-1x">Web Developer &amp; Java Developer</small></a></h3>
+        <div>这里是一群热爱技术的人儿！这里只聊技术，不聊其它，因为没有比编程更纯粹的事了。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/SpringCloud/SringCloud之00深入理解Eureka/" title="SpringCloud(零):深入理解Eureka"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/ProgramLife/2018年终总结/" title="2018年终总结"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,twitter" data-mobile-sites="weibo,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan">
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/mmzsblog" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+        &copy; 2019 mmzsblog
+        
+        <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1275844022&web_id=1275844022"></script>
+         
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: true,
+    appId: 'BBUCe5DaUH5jQi1wYMQ0rTwH-gzGzoHsz',
+    appKey: 'qgW4CjNI3tM14wBB9Q0R8o0k',
+    placeholder: '来都来了，不说点什么',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+
+</body>
+</html>
